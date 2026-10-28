@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MERN + AI - Complete Fresher Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f9;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            color: #1a2332;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0b1e33 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 28px;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(11, 30, 51, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 i {
+            color: #10b981;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid #10b981;
+        }
+
+        .header .badge-group {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .header .badge-group span {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .topic-nav {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .topic-nav .label {
+            font-weight: 600;
+            color: #334155;
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .topic-btn {
+            background: transparent;
+            border: 1px solid #d1d9e6;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            white-space: nowrap;
+        }
+
+        .topic-btn:hover {
+            background: #e6edf8;
+            border-color: #7c9bcf;
+            transform: translateY(-1px);
+        }
+
+        .topic-btn.active {
+            background: #0b5e4b;
+            border-color: #0b5e4b;
+            color: white;
+            box-shadow: 0 4px 8px rgba(11, 94, 75, 0.3);
+        }
+
+        .topic-btn.priority-high {
+            border-color: #ef4444;
+        }
+
+        .topic-btn.priority-high.active {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .topic-btn.priority-medium {
+            border-color: #f59e0b;
+        }
+
+        .topic-btn.priority-medium.active {
+            background: #d97706;
+            border-color: #d97706;
+        }
+
+        /* Content */
+        .content {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0b1e33;
+        }
+
+        .topic-header .badge {
+            background: #dbeafe;
+            color: #1e4a7a;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .topic-header .badge.required {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .topic-header .badge.important {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+        .note-section {
+            margin-bottom: 2rem;
+        }
+
+        .note-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0b5e4b;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .note-section h3 i {
+            color: #10b981;
+            font-size: 1rem;
+            width: 1.5rem;
+        }
+
+        .note-section p,
+        .note-section li {
+            color: #334155;
+            line-height: 1.7;
+            font-size: 0.98rem;
+        }
+
+        .note-section ul,
+        .note-section ol {
+            padding-left: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .note-section li {
+            margin-bottom: 0.3rem;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0b1e33;
+            color: #e2e8f0;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            margin: 0.8rem 0 1.2rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .code-block .lang-tag {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.1rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .code-block .comment {
+            color: #94a3b8;
+        }
+        .code-block .keyword {
+            color: #f472b6;
+        }
+        .code-block .string {
+            color: #34d399;
+        }
+        .code-block .function {
+            color: #60a5fa;
+        }
+        .code-block .variable {
+            color: #fbbf24;
+        }
+        .code-block .tag {
+            color: #f87171;
+        }
+
+        /* Note Boxes */
+        .note-box {
+            background: #f1f6fe;
+            border-left: 4px solid #2563eb;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+        }
+
+        .note-box.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .note-box.success {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .note-box.danger {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .note-box i {
+            margin-right: 0.5rem;
+        }
+
+        .note-box ul,
+        .note-box ol {
+            margin-top: 0.3rem;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e9edf4;
+        }
+
+        .feature-item i {
+            color: #10b981;
+            margin-right: 0.5rem;
+        }
+
+        .feature-item .icon-red {
+            color: #ef4444;
+        }
+        .feature-item .icon-yellow {
+            color: #f59e0b;
+        }
+        .feature-item .icon-blue {
+            color: #3b82f6;
+        }
+
+        /* Progress */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9edf4;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #2563eb);
+            border-radius: 4px;
+            width: 100%;
+            transition: width 0.3s;
+        }
+
+        /* Priority Tags */
+        .priority-tag {
+            display: inline-block;
+            padding: 0.15rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .priority-tag.must {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .priority-tag.should {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+        .priority-tag.nice {
+            background: #dbeafe;
+            color: #1e4a7a;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .header {
+                padding: 1.5rem;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+                flex-wrap: wrap;
+            }
+            .content {
+                padding: 1.5rem;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .topic-header h2 {
+                font-size: 1.4rem;
+            }
+            .code-block {
+                font-size: 0.8rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1><i class="fas fa-robot"></i> MERN + AI Notes</h1>
+        <p>Complete fresher-friendly guide to integrating AI with the MERN stack · 25 topics · code examples · build projects</p>
+        <div class="badge-group">
+            <span><i class="fas fa-check-circle"></i> 25 Topics</span>
+            <span><i class="fas fa-code"></i> 80+ Examples</span>
+            <span><i class="fas fa-brain"></i> Fresher Friendly</span>
+            <span><i class="fas fa-rocket"></i> Project-Based</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="topic-nav" id="topicNav">
+        <span class="label"><i class="fas fa-tag"></i> Topics:</span>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="contentArea">
+        <div class="topic-header">
+            <h2 id="topicTitle">Loading...</h2>
+            <span class="badge" id="topicBadge">Complete Notes</span>
+        </div>
+        <div id="notesContent"></div>
+        <div class="progress-bar">
+            <div class="fill" id="progressFill"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // COMPLETE NOTES DATA - 25 TOPICS (Fresher-Friendly)
+    // ================================================================
+
+    const NOTES = {
+
+        // ============================================================
+        // PHASE 1: MERN BASICS (Must Learn)
+        // ============================================================
+
+        '1. MERN Stack Setup & Architecture': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-cubes"></i> What is MERN Stack?</h3>
+                        <p><strong>MERN</strong> stands for <strong>M</strong>ongoDB, <strong>E</strong>xpress.js, <strong>R</strong>eact, and <strong>N</strong>ode.js. It's a full-stack JavaScript framework for building web applications.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-sitemap"></i> Architecture Overview</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Architecture</span>
+                            ┌─────────────────────────────────────────────────────┐
+                            │              FRONTEND (React)                     │
+                            │         User Interface, Components, State          │
+                            └─────────────────────────────────────────────────────┘
+                                                  │
+                                                  ▼ (HTTP/API Calls)
+                            ┌─────────────────────────────────────────────────────┐
+                            │            BACKEND (Node.js + Express)             │
+                            │        API Routes, Business Logic, Auth            │
+                            └─────────────────────────────────────────────────────┘
+                                                  │
+                                                  ▼
+                            ┌─────────────────────────────────────────────────────┐
+                            │             DATABASE (MongoDB)                     │
+                            │         Store Data, User Info, Chat History        │
+                            └─────────────────────────────────────────────────────┘
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Project Setup</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            <span class="comment"># Create backend</span>
+                            mkdir mern-ai-app
+                            cd mern-ai-app
+                            mkdir backend frontend
+                            cd backend
+                            npm init -y
+                            npm install express mongoose cors dotenv
+
+                            <span class="comment"># Create frontend (React)</span>
+                            cd ../frontend
+                            npx create-react-app .
+                            npm install axios react-router-dom
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Basic Express Server</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// backend/server.js</span>
+                            <span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+                            <span class="keyword">const</span> mongoose = <span class="function">require</span>(<span class="string">'mongoose'</span>);
+                            <span class="keyword">const</span> cors = <span class="function">require</span>(<span class="string">'cors'</span>);
+                            <span class="keyword">require</span>(<span class="string">'dotenv'</span>).<span class="function">config</span>();
+
+                            <span class="keyword">const</span> app = <span class="function">express</span>();
+                            <span class="keyword">const</span> PORT = process.<span class="variable">env</span>.<span class="variable">PORT</span> || 5000;
+
+                            <span class="comment">// Middleware</span>
+                            app.<span class="function">use</span>(<span class="function">cors</span>());
+                            app.<span class="function">use</span>(express.<span class="function">json</span>());
+
+                            <span class="comment">// Connect to MongoDB</span>
+                            mongoose.<span class="function">connect</span>(process.<span class="variable">env</span>.<span class="variable">MONGODB_URI</span>)
+                                .<span class="function">then</span>(() => <span class="function">console</span>.<span class="function">log</span>(<span class="string">'MongoDB connected'</span>))
+                                .<span class="function">catch</span>(err => <span class="function">console</span>.<span class="function">error</span>(err));
+
+                            <span class="comment">// Test route</span>
+                            app.<span class="function">get</span>(<span class="string">'/api/test'</span>, (req, res) => {
+                                res.<span class="function">json</span>({ message: <span class="string">'MERN + AI API is working!'</span> });
+                            });
+
+                            app.<span class="function">listen</span>(PORT, () => {
+                                <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`Server running on port \${PORT}\`</span>);
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Get this basic setup working first before adding AI. A working MERN app is your foundation.
+                    </div>
+                `
+        },
+
+        '2. REST APIs & Express Routes': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-plug"></i> What are REST APIs?</h3>
+                        <p><strong>REST API</strong> is how your frontend communicates with your backend. It uses HTTP methods:</p>
+                        <ul>
+                            <li><strong>GET</strong> - Fetch data</li>
+                            <li><strong>POST</strong> - Send data</li>
+                            <li><strong>PUT</strong> - Update data</li>
+                            <li><strong>DELETE</strong> - Remove data</li>
+                        </ul>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Creating API Routes</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// backend/routes/userRoutes.js</span>
+                            <span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+                            <span class="keyword">const</span> router = express.<span class="function">Router</span>();
+                            <span class="keyword">const</span> User = <span class="function">require</span>(<span class="string">'../models/User'</span>);
+
+                            <span class="comment">// GET - Fetch all users</span>
+                            router.<span class="function">get</span>(<span class="string">'/'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> users = <span class="keyword">await</span> User.<span class="function">find</span>();
+                                    res.<span class="function">json</span>({ success: <span class="keyword">true</span>, data: users });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(500).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: error.<span class="variable">message</span> });
+                                }
+                            });
+
+                            <span class="comment">// POST - Create new user</span>
+                            router.<span class="function">post</span>(<span class="string">'/'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">create</span>(req.<span class="variable">body</span>);
+                                    res.<span class="function">status</span>(201).<span class="function">json</span>({ success: <span class="keyword">true</span>, data: user });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(400).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: error.<span class="variable">message</span> });
+                                }
+                            });
+
+                            <span class="comment">// PUT - Update user</span>
+                            router.<span class="function">put</span>(<span class="string">'/:id'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findByIdAndUpdate</span>(
+                                        req.<span class="variable">params</span>.<span class="variable">id</span>,
+                                        req.<span class="variable">body</span>,
+                                        { <span class="variable">new</span>: <span class="keyword">true</span> }
+                                    );
+                                    res.<span class="function">json</span>({ success: <span class="keyword">true</span>, data: user });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(400).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: error.<span class="variable">message</span> });
+                                }
+                            });
+
+                            <span class="comment">// DELETE - Remove user</span>
+                            router.<span class="function">delete</span>(<span class="string">'/:id'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">await</span> User.<span class="function">findByIdAndDelete</span>(req.<span class="variable">params</span>.<span class="variable">id</span>);
+                                    res.<span class="function">json</span>({ success: <span class="keyword">true</span>, message: <span class="string">'User deleted'</span> });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(400).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: error.<span class="variable">message</span> });
+                                }
+                            });
+
+                            <span class="keyword">module</span>.<span class="variable">exports</span> = router;
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Using Routes in Server</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// backend/server.js</span>
+                            <span class="keyword">const</span> userRoutes = <span class="function">require</span>(<span class="string">'./routes/userRoutes'</span>);
+                            app.<span class="function">use</span>(<span class="string">'/api/users'</span>, userRoutes);
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Always test your APIs with <strong>Postman</strong> or <strong>Thunder Client</strong> before connecting to frontend.
+                    </div>
+                `
+        },
+
+        '3. MongoDB Schema Design for AI Apps': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-database"></i> Why Schema Design Matters</h3>
+                        <p>Good schema design makes your AI features work efficiently. Bad design makes everything slow and complicated.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Essential Schemas for AI Apps</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// models/User.js</span>
+                            <span class="keyword">const</span> userSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                                <span class="variable">name</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">email</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span>, <span class="variable">unique</span>: <span class="keyword">true</span> },
+                                <span class="variable">password</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">preferences</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">Mixed</span> },
+                                <span class="variable">createdAt</span>: { <span class="variable">type</span>: Date, <span class="variable">default</span>: Date.<span class="function">now</span> }
+                            });
+
+                            <span class="comment">// models/Conversation.js</span>
+                            <span class="keyword">const</span> conversationSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                                <span class="variable">userId</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">ObjectId</span>, <span class="variable">ref</span>: <span class="string">'User'</span>, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">sessionId</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">messages</span>: [{
+                                    <span class="variable">role</span>: { <span class="variable">type</span>: String, <span class="variable">enum</span>: [<span class="string">'user'</span>, <span class="string">'assistant'</span>] },
+                                    <span class="variable">content</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                    <span class="variable">timestamp</span>: { <span class="variable">type</span>: Date, <span class="variable">default</span>: Date.<span class="function">now</span> }
+                                }],
+                                <span class="variable">tokensUsed</span>: { <span class="variable">type</span>: Number, <span class="variable">default</span>: 0 },
+                                <span class="variable">createdAt</span>: { <span class="variable">type</span>: Date, <span class="variable">default</span>: Date.<span class="function">now</span> }
+                            });
+
+                            <span class="comment">// models/Document.js (For RAG)</span>
+                            <span class="keyword">const</span> documentSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                                <span class="variable">userId</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">ObjectId</span>, <span class="variable">ref</span>: <span class="string">'User'</span> },
+                                <span class="variable">title</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">content</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">embedding</span>: { <span class="variable">type</span>: [Number] }, <span class="comment">// 1536 dimensions</span>
+                                <span class="variable">metadata</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">Mixed</span> },
+                                <span class="variable">createdAt</span>: { <span class="variable">type</span>: Date, <span class="variable">default</span>: Date.<span class="function">now</span> }
+                            });
+
+                            <span class="comment">// models/Usage.js (Track AI costs)</span>
+                            <span class="keyword">const</span> usageSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                                <span class="variable">userId</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">ObjectId</span>, <span class="variable">ref</span>: <span class="string">'User'</span> },
+                                <span class="variable">model</span>: { <span class="variable">type</span>: String },
+                                <span class="variable">tokens</span>: { <span class="variable">type</span>: Number },
+                                <span class="variable">cost</span>: { <span class="variable">type</span>: Number },
+                                <span class="variable">timestamp</span>: { <span class="variable">type</span>: Date, <span class="variable">default</span>: Date.<span class="function">now</span> }
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Start with just User and Conversation schemas. Add more as you need them.
+                    </div>
+                `
+        },
+
+        '4. Authentication (JWT)': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-lock"></i> Why Authentication?</h3>
+                        <p>Authentication lets users <strong>sign up</strong>, <strong>log in</strong>, and have their own <strong>private data</strong>. JWT (JSON Web Token) is the most common method.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> JWT Authentication Setup</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            npm install jsonwebtoken bcryptjs
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> User Model with Password Hashing</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// models/User.js</span>
+                            <span class="keyword">const</span> bcrypt = <span class="function">require</span>(<span class="string">'bcryptjs'</span>);
+
+                            userSchema.<span class="function">pre</span>(<span class="string">'save'</span>, <span class="keyword">async</span> <span class="keyword">function</span>(next) {
+                                <span class="keyword">if</span> (!<span class="keyword">this</span>.<span class="function">isModified</span>(<span class="string">'password'</span>)) <span class="keyword">return</span> <span class="function">next</span>();
+                                <span class="keyword">this</span>.<span class="variable">password</span> = <span class="keyword">await</span> bcrypt.<span class="function">hash</span>(<span class="keyword">this</span>.<span class="variable">password</span>, 10);
+                                <span class="function">next</span>();
+                            });
+
+                            userSchema.<span class="function">method</span>.<span class="function">comparePassword</span> = <span class="keyword">async</span> <span class="keyword">function</span>(password) {
+                                <span class="keyword">return</span> <span class="keyword">await</span> bcrypt.<span class="function">compare</span>(password, <span class="keyword">this</span>.<span class="variable">password</span>);
+                            };
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Auth Routes</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// routes/authRoutes.js</span>
+                            <span class="keyword">const</span> jwt = <span class="function">require</span>(<span class="string">'jsonwebtoken'</span>);
+                            <span class="keyword">const</span> User = <span class="function">require</span>(<span class="string">'../models/User'</span>);
+
+                            <span class="comment">// Register</span>
+                            router.<span class="function">post</span>(<span class="string">'/register'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> { name, email, password } = req.<span class="variable">body</span>;
+                                    <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">create</span>({ name, email, password });
+                                    <span class="keyword">const</span> token = jwt.<span class="function">sign</span>({ <span class="variable">id</span>: user.<span class="variable">_id</span> }, process.<span class="variable">env</span>.<span class="variable">JWT_SECRET</span>, { <span class="variable">expiresIn</span>: <span class="string">'7d'</span> });
+                                    res.<span class="function">json</span>({ success: <span class="keyword">true</span>, token, user: { <span class="variable">id</span>: user.<span class="variable">_id</span>, <span class="variable">name</span>: user.<span class="variable">name</span>, <span class="variable">email</span>: user.<span class="variable">email</span> } });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(400).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: error.<span class="variable">message</span> });
+                                }
+                            });
+
+                            <span class="comment">// Login</span>
+                            router.<span class="function">post</span>(<span class="string">'/login'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> { email, password } = req.<span class="variable">body</span>;
+                                    <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findOne</span>({ email });
+                                    <span class="keyword">if</span> (!user || !(<span class="keyword">await</span> user.<span class="function">comparePassword</span>(password))) {
+                                        <span class="keyword">return</span> res.<span class="function">status</span>(401).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: <span class="string">'Invalid credentials'</span> });
+                                    }
+                                    <span class="keyword">const</span> token = jwt.<span class="function">sign</span>({ <span class="variable">id</span>: user.<span class="variable">_id</span> }, process.<span class="variable">env</span>.<span class="variable">JWT_SECRET</span>, { <span class="variable">expiresIn</span>: <span class="string">'7d'</span> });
+                                    res.<span class="function">json</span>({ success: <span class="keyword">true</span>, token, user: { <span class="variable">id</span>: user.<span class="variable">_id</span>, <span class="variable">name</span>: user.<span class="variable">name</span>, <span class="variable">email</span>: user.<span class="variable">email</span> } });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(500).<span class="function">json</span>({ success: <span class="keyword">false</span>, error: error.<span class="variable">message</span> });
+                                }
+                            });
+
+                            <span class="comment">// Auth Middleware (Protect Routes)</span>
+                            <span class="keyword">const</span> protect = <span class="keyword">async</span> (req, res, next) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> token = req.<span class="variable">headers</span>.<span class="variable">authorization</span>?.<span class="function">split</span>(<span class="string">' '</span>)[1];
+                                    <span class="keyword">if</span> (!token) <span class="keyword">return</span> res.<span class="function">status</span>(401).<span class="function">json</span>({ error: <span class="string">'Not authorized'</span> });
+                                    <span class="keyword">const</span> decoded = jwt.<span class="function">verify</span>(token, process.<span class="variable">env</span>.<span class="variable">JWT_SECRET</span>);
+                                    req.<span class="variable">user</span> = <span class="keyword">await</span> User.<span class="function">findById</span>(decoded.<span class="variable">id</span>).<span class="function">select</span>(<span class="string">'-password'</span>);
+                                    <span class="function">next</span>();
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(401).<span class="function">json</span>({ error: <span class="string">'Not authorized'</span> });
+                                }
+                            };
+                        </div>
+                    </div>
+
+                    <div class="note-box warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Important:</strong> Never store JWT in localStorage in production. Use HTTP-only cookies for better security.
+                    </div>
+                `
+        },
+
+        // ============================================================
+        // PHASE 2: AI INTEGRATION (Must Learn)
+        // ============================================================
+
+        '5. AI API Integration (OpenAI)': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-plug"></i> Integrating OpenAI with MERN</h3>
+                        <p>This is the <strong>most important</strong> topic. You'll learn how to make your first AI call from Node.js.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 1: Install & Setup</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            npm install openai
+
+                            <span class="comment"># Add to .env</span>
+                            OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 2: Create AI Service</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// services/aiService.js</span>
+                            <span class="keyword">const</span> OpenAI = <span class="function">require</span>(<span class="string">'openai'</span>);
+
+                            <span class="keyword">const</span> openai = <span class="keyword">new</span> <span class="function">OpenAI</span>({
+                                <span class="variable">apiKey</span>: process.<span class="variable">env</span>.<span class="variable">OPENAI_API_KEY</span>
+                            });
+
+                            <span class="comment">// 1. Basic Chat Completion</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">getAIResponse</span>(userMessage) {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> response = <span class="keyword">await</span> openai.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({
+                                        <span class="variable">model</span>: <span class="string">'gpt-3.5-turbo'</span>, <span class="comment">// Cheaper & faster for learning</span>
+                                        <span class="variable">messages</span>: [
+                                            { <span class="variable">role</span>: <span class="string">'system'</span>, <span class="variable">content</span>: <span class="string">'You are a helpful assistant.'</span> },
+                                            { <span class="variable">role</span>: <span class="string">'user'</span>, <span class="variable">content</span>: userMessage }
+                                        ],
+                                        <span class="variable">temperature</span>: 0.7,
+                                        <span class="variable">max_tokens</span>: 500
+                                    });
+
+                                    <span class="keyword">return</span> response.<span class="variable">choices</span>[0].<span class="variable">message</span>.<span class="variable">content</span>;
+                                } <span class="keyword">catch</span> (error) {
+                                    <span class="function">console</span>.<span class="function">error</span>(<span class="string">'OpenAI Error:'</span>, error);
+                                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Error</span>(<span class="string">'Failed to get AI response'</span>);
+                                }
+                            }
+
+                            <span class="comment">// 2. Generate Embeddings (for RAG/Vector Search)</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">generateEmbedding</span>(text) {
+                                <span class="keyword">const</span> response = <span class="keyword">await</span> openai.<span class="variable">embeddings</span>.<span class="function">create</span>({
+                                    <span class="variable">model</span>: <span class="string">'text-embedding-3-small'</span>,
+                                    <span class="variable">input</span>: text
+                                });
+                                <span class="keyword">return</span> response.<span class="variable">data</span>[0].<span class="variable">embedding</span>;
+                            }
+
+                            <span class="keyword">module</span>.<span class="variable">exports</span> = { getAIResponse, generateEmbedding };
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 3: AI API Route</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// routes/aiRoutes.js</span>
+                            <span class="keyword">const</span> { getAIResponse } = <span class="function">require</span>(<span class="string">'../services/aiService'</span>);
+
+                            router.<span class="function">post</span>(<span class="string">'/chat'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> { message } = req.<span class="variable">body</span>;
+
+                                    <span class="comment">// Validate</span>
+                                    <span class="keyword">if</span> (!message || message.<span class="function">trim</span>().<span class="variable">length</span> === 0) {
+                                        <span class="keyword">return</span> res.<span class="function">status</span>(400).<span class="function">json</span>({ error: <span class="string">'Message is required'</span> });
+                                    }
+
+                                    <span class="comment">// Get AI response</span>
+                                    <span class="keyword">const</span> aiResponse = <span class="keyword">await</span> <span class="function">getAIResponse</span>(message);
+
+                                    res.<span class="function">json</span>({
+                                        success: <span class="keyword">true</span>,
+                                        message: aiResponse
+                                    });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(500).<span class="function">json</span>({
+                                        success: <span class="keyword">false</span>,
+                                        error: error.<span class="variable">message</span>
+                                    });
+                                }
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 4: Frontend (React)</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// components/Chat.jsx</span>
+                            <span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+                            <span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">'axios'</span>;
+
+                            <span class="keyword">function</span> <span class="function">Chat</span>() {
+                                <span class="keyword">const</span> [message, setMessage] = <span class="function">useState</span>(<span class="string">''</span>);
+                                <span class="keyword">const</span> [response, setResponse] = <span class="function">useState</span>(<span class="string">''</span>);
+                                <span class="keyword">const</span> [loading, setLoading] = <span class="function">useState</span>(<span class="keyword">false</span>);
+
+                                <span class="keyword">const</span> sendMessage = <span class="keyword">async</span> () => {
+                                    <span class="keyword">if</span> (!message.<span class="function">trim</span>()) <span class="keyword">return</span>;
+                                    <span class="function">setLoading</span>(<span class="keyword">true</span>);
+                                    <span class="function">setResponse</span>(<span class="string">''</span>);
+
+                                    <span class="keyword">try</span> {
+                                        <span class="keyword">const</span> res = <span class="keyword">await</span> axios.<span class="function">post</span>(<span class="string">'/api/ai/chat'</span>, { <span class="variable">message</span>: message });
+                                        <span class="function">setResponse</span>(res.<span class="variable">data</span>.<span class="variable">message</span>);
+                                    } <span class="keyword">catch</span> (error) {
+                                        <span class="function">setResponse</span>(<span class="string">'Error: '</span> + error.<span class="variable">message</span>);
+                                    } <span class="keyword">finally</span> {
+                                        <span class="function">setLoading</span>(<span class="keyword">false</span>);
+                                    }
+                                };
+
+                                <span class="keyword">return</span> (
+                                    <span class="tag">&lt;div</span> <span class="variable">className</span>=<span class="string">"chat"</span><span class="tag">&gt;</span>
+                                        <span class="tag">&lt;input</span>
+                                            <span class="variable">value</span>={message}
+                                            <span class="variable">onChange</span>={(e) => <span class="function">setMessage</span>(e.<span class="variable">target</span>.<span class="variable">value</span>)}
+                                            <span class="variable">placeholder</span>=<span class="string">"Type your message..."</span>
+                                        <span class="tag">/&gt;</span>
+                                        <span class="tag">&lt;button</span> <span class="variable">onClick</span>={sendMessage} <span class="variable">disabled</span>={loading}<span class="tag">&gt;</span>
+                                            {loading ? <span class="string">'Thinking...'</span> : <span class="string">'Send'</span>}
+                                        <span class="tag">&lt;/button&gt;</span>
+                                        {response && <span class="tag">&lt;div</span> <span class="variable">className</span>=<span class="string">"response"</span><span class="tag">&gt;</span>{response}<span class="tag">&lt;/div&gt;</span>}
+                                    <span class="tag">&lt;/div&gt;</span>
+                                );
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Use <strong>gpt-3.5-turbo</strong> while learning. It's cheaper and faster than GPT-4.
+                    </div>
+                `
+        },
+
+        '6. Prompt Engineering Basics': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-pen-fancy"></i> What is Prompt Engineering?</h3>
+                        <p><strong>Prompt engineering</strong> is the art of writing instructions that get the best responses from AI. It's the most important skill for working with LLMs.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Prompt Techniques</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// 1. System Prompt (Sets the AI's role)</span>
+                            <span class="keyword">const</span> systemPrompt = <span class="string">'You are a senior software engineer. Provide clean, well-documented code.'</span>;
+
+                            <span class="comment">// 2. Zero-shot Prompt (No examples)</span>
+                            <span class="keyword">const</span> zeroShot = <span class="string">'Translate "Hello" to Spanish.'</span>;
+
+                            <span class="comment">// 3. Few-shot Prompt (Give examples)</span>
+                            <span class="keyword">const</span> fewShot = <span class="string">'Examples:\nApple → Pomme\nCat → Chat\n\nTranslate "Dog" →'</span>;
+
+                            <span class="comment">// 4. Chain of Thought (Step by step)</span>
+                            <span class="keyword">const</span> chainOfThought = <span class="string">'Let\'s solve this step by step:\n1. First...\n2. Then...\n3. Finally...'</span>;
+
+                            <span class="comment">// 5. Structured Output (Get JSON)</span>
+                            <span class="keyword">const</span> structuredPrompt = <span class="string">'Return ONLY JSON with fields: name, age, city. No other text.'</span>;
+
+                            <span class="comment">// 6. Role-based Prompting</span>
+                            <span class="keyword">const</span> rolePrompt = <span class="string">'Act as a hiring manager. Review this resume and give feedback.'</span>;
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Building a Prompt Template</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="keyword">function</span> <span class="function">buildPrompt</span>({ <span class="variable">context</span>, <span class="variable">question</span>, <span class="variable">format</span> }) {
+                                <span class="keyword">return</span> <span class="string">\`
+                                    Context: \${context}
+                                    Question: \${question}
+                                    Instructions:
+                                    - Answer based ONLY on the provided context
+                                    - If not in context, say "I don't have that information"
+                                    - Return in \${format} format
+                                \`</span>;
+                            }
+
+                            <span class="comment">// Example usage</span>
+                            <span class="keyword">const</span> prompt = <span class="function">buildPrompt</span>({
+                                <span class="variable">context</span>: <span class="string">'MERN stands for MongoDB, Express, React, Node.js'</span>,
+                                <span class="variable">question</span>: <span class="string">'What does MERN stand for?'</span>,
+                                <span class="variable">format</span>: <span class="string">'bullet points'</span>
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-lightbulb"></i> Best Practices</h3>
+                        <div class="note-box success">
+                            <ul>
+                                <li>✅ Be specific and clear</li>
+                                <li>✅ Use examples (few-shot) for complex tasks</li>
+                                <li>✅ Request structured output (JSON) for parsing</li>
+                                <li>✅ Use system prompts to set the AI's role</li>
+                                <li>✅ Add constraints (length, format, style)</li>
+                                <li>✅ Test and iterate on your prompts</li>
+                                <li>✅ Use temperature 0 for deterministic outputs</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="note-box warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Common Mistake:</strong> Vague prompts like "Tell me about MongoDB" get vague responses. Be specific: "Explain MongoDB's document structure with an example."
+                    </div>
+                `
+        },
+
+        '7. Streaming AI Responses': {
+            priority: 'should',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-stream"></i> Why Streaming?</h3>
+                        <p><strong>Streaming</strong> sends AI responses in chunks as they're generated. This gives users <strong>real-time feedback</strong> instead of waiting for the full response.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Backend: Streaming API</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// services/aiService.js</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">streamAIResponse</span>(userMessage, res) {
+                                <span class="keyword">const</span> stream = <span class="keyword">await</span> openai.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({
+                                    <span class="variable">model</span>: <span class="string">'gpt-3.5-turbo'</span>,
+                                    <span class="variable">messages</span>: [
+                                        { <span class="variable">role</span>: <span class="string">'system'</span>, <span class="variable">content</span>: <span class="string">'You are a helpful assistant.'</span> },
+                                        { <span class="variable">role</span>: <span class="string">'user'</span>, <span class="variable">content</span>: userMessage }
+                                    ],
+                                    <span class="variable">stream</span>: <span class="keyword">true</span>
+                                });
+
+                                <span class="comment">// Send chunks as they arrive</span>
+                                <span class="keyword">for</span> <span class="keyword">await</span> (<span class="keyword">const</span> chunk <span class="keyword">of</span> stream) {
+                                    <span class="keyword">const</span> content = chunk.<span class="variable">choices</span>[0]?.<span class="variable">delta</span>?.<span class="variable">content</span> || <span class="string">''</span>;
+                                    res.<span class="function">write</span>(content);
+                                }
+                                res.<span class="function">end</span>();
+                            }
+
+                            <span class="comment">// routes/aiRoutes.js</span>
+                            router.<span class="function">post</span>(<span class="string">'/chat-stream'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">const</span> { message } = req.<span class="variable">body</span>;
+                                res.<span class="function">setHeader</span>(<span class="string">'Content-Type'</span>, <span class="string">'text/event-stream'</span>);
+                                res.<span class="function">setHeader</span>(<span class="string">'Cache-Control'</span>, <span class="string">'no-cache'</span>);
+                                res.<span class="function">setHeader</span>(<span class="string">'Connection'</span>, <span class="string">'keep-alive'</span>);
+                                <span class="keyword">await</span> <span class="function">streamAIResponse</span>(message, res);
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Frontend: Handling Stream</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// components/StreamingChat.jsx</span>
+                            <span class="keyword">const</span> sendMessage = <span class="keyword">async</span> () => {
+                                <span class="keyword">if</span> (!input.<span class="function">trim</span>()) <span class="keyword">return</span>;
+
+                                <span class="function">setMessages</span>(prev => [...prev, { <span class="variable">role</span>: <span class="string">'user'</span>, <span class="variable">content</span>: input }]);
+                                <span class="function">setInput</span>(<span class="string">''</span>);
+                                <span class="function">setLoading</span>(<span class="keyword">true</span>);
+
+                                <span class="comment">// Create a placeholder for AI response</span>
+                                <span class="keyword">const</span> aiMessageIndex = messages.<span class="variable">length</span> + 1;
+                                <span class="function">setMessages</span>(prev => [...prev, { <span class="variable">role</span>: <span class="string">'assistant'</span>, <span class="variable">content</span>: <span class="string">''</span> }]);
+
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/ai/chat-stream'</span>, {
+                                        <span class="variable">method</span>: <span class="string">'POST'</span>,
+                                        <span class="variable">headers</span>: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+                                        <span class="variable">body</span>: <span class="keyword">JSON</span>.<span class="function">stringify</span>({ <span class="variable">message</span>: input })
+                                    });
+
+                                    <span class="keyword">const</span> reader = response.<span class="variable">body</span>.<span class="function">getReader</span>();
+                                    <span class="keyword">const</span> decoder = <span class="keyword">new</span> <span class="function">TextDecoder</span>();
+
+                                    <span class="keyword">while</span> (<span class="keyword">true</span>) {
+                                        <span class="keyword">const</span> { done, value } = <span class="keyword">await</span> reader.<span class="function">read</span>();
+                                        <span class="keyword">if</span> (done) <span class="keyword">break</span>;
+
+                                        <span class="keyword">const</span> chunk = decoder.<span class="function">decode</span>(value);
+                                        <span class="function">setMessages</span>(prev => {
+                                            <span class="keyword">const</span> updated = [...prev];
+                                            updated[aiMessageIndex] = {
+                                                ...updated[aiMessageIndex],
+                                                <span class="variable">content</span>: updated[aiMessageIndex].<span class="variable">content</span> + chunk
+                                            };
+                                            <span class="keyword">return</span> updated;
+                                        });
+                                    }
+                                } <span class="keyword">catch</span> (error) {
+                                    <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Stream error:'</span>, error);
+                                } <span class="keyword">finally</span> {
+                                    <span class="function">setLoading</span>(<span class="keyword">false</span>);
+                                }
+                            };
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Streaming makes your app feel <strong>much faster</strong> even if the AI takes 10 seconds to respond.
+                    </div>
+                `
+        },
+
+        '8. Chatbot with Memory (Full Stack)': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-comment-dots"></i> Building a Chatbot with Memory</h3>
+                        <p>This is the <strong>most common AI feature</strong>. Users can chat with AI, and it remembers the conversation.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Backend: Save Conversation</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// models/Conversation.js</span>
+                            <span class="keyword">const</span> conversationSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                                <span class="variable">userId</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">ObjectId</span>, <span class="variable">ref</span>: <span class="string">'User'</span> },
+                                <span class="variable">sessionId</span>: { <span class="variable">type</span>: String, <span class="variable">required</span>: <span class="keyword">true</span> },
+                                <span class="variable">messages</span>: [{
+                                    <span class="variable">role</span>: { <span class="variable">type</span>: String, <span class="variable">enum</span>: [<span class="string">'user'</span>, <span class="string">'assistant'</span>] },
+                                    <span class="variable">content</span>: { <span class="variable">type</span>: String },
+                                    <span class="variable">timestamp</span>: { <span class="variable">type</span>: Date, <span class="variable">default</span>: Date.<span class="function">now</span> }
+                                }]
+                            });
+
+                            <span class="comment">// routes/chatRoutes.js</span>
+                            router.<span class="function">post</span>(<span class="string">'/send'</span>, <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">const</span> { message, sessionId } = req.<span class="variable">body</span>;
+                                <span class="keyword">const</span> userId = req.<span class="variable">user</span>?.<span class="variable">_id</span>;
+
+                                <span class="comment">// Get or create conversation</span>
+                                <span class="keyword">let</span> conversation = <span class="keyword">await</span> Conversation.<span class="function">findOne</span>({ sessionId, userId });
+
+                                <span class="keyword">if</span> (!conversation) {
+                                    conversation = <span class="keyword">new</span> <span class="function">Conversation</span>({ userId, sessionId, messages: [] });
+                                }
+
+                                <span class="comment">// Add user message</span>
+                                conversation.<span class="variable">messages</span>.<span class="function">push</span>({ <span class="variable">role</span>: <span class="string">'user'</span>, <span class="variable">content</span>: message });
+
+                                <span class="comment">// Build messages for AI (include history)</span>
+                                <span class="keyword">const</span> aiMessages = [
+                                    { <span class="variable">role</span>: <span class="string">'system'</span>, <span class="variable">content</span>: <span class="string">'You are a helpful assistant.'</span> },
+                                    ...conversation.<span class="variable">messages</span>.<span class="function">map</span>(m => ({
+                                        <span class="variable">role</span>: m.<span class="variable">role</span>,
+                                        <span class="variable">content</span>: m.<span class="variable">content</span>
+                                    }))
+                                ];
+
+                                <span class="comment">// Get AI response</span>
+                                <span class="keyword">const</span> response = <span class="keyword">await</span> openai.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({
+                                    <span class="variable">model</span>: <span class="string">'gpt-3.5-turbo'</span>,
+                                    <span class="variable">messages</span>: aiMessages
+                                });
+
+                                <span class="keyword">const</span> aiResponse = response.<span class="variable">choices</span>[0].<span class="variable">message</span>.<span class="variable">content</span>;
+
+                                <span class="comment">// Save AI response</span>
+                                conversation.<span class="variable">messages</span>.<span class="function">push</span>({ <span class="variable">role</span>: <span class="string">'assistant'</span>, <span class="variable">content</span>: aiResponse });
+                                <span class="keyword">await</span> conversation.<span class="function">save</span>();
+
+                                res.<span class="function">json</span>({
+                                    success: <span class="keyword">true</span>,
+                                    message: aiResponse,
+                                    history: conversation.<span class="variable">messages</span>
+                                });
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Frontend: Chat UI</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// components/ChatInterface.jsx</span>
+                            <span class="keyword">function</span> <span class="function">ChatInterface</span>() {
+                                <span class="keyword">const</span> [messages, setMessages] = <span class="function">useState</span>([]);
+                                <span class="keyword">const</span> [input, setInput] = <span class="function">useState</span>(<span class="string">''</span>);
+                                <span class="keyword">const</span> [loading, setLoading] = <span class="function">useState</span>(<span class="keyword">false</span>);
+                                <span class="keyword">const</span> [sessionId] = <span class="function">useState</span>(() => <span class="keyword">Date</span>.<span class="function">now</span>().<span class="function">toString</span>());
+                                <span class="keyword">const</span> messagesEndRef = <span class="function">useRef</span>(<span class="keyword">null</span>);
+
+                                <span class="function">useEffect</span>(() => {
+                                    messagesEndRef.<span class="variable">current</span>?.<span class="function">scrollIntoView</span>({ <span class="variable">behavior</span>: <span class="string">'smooth'</span> });
+                                }, [messages]);
+
+                                <span class="keyword">const</span> sendMessage = <span class="keyword">async</span> () => {
+                                    <span class="keyword">if</span> (!input.<span class="function">trim</span>() || loading) <span class="keyword">return</span>;
+
+                                    <span class="function">setMessages</span>(prev => [...prev, { <span class="variable">role</span>: <span class="string">'user'</span>, <span class="variable">content</span>: input }]);
+                                    <span class="function">setInput</span>(<span class="string">''</span>);
+                                    <span class="function">setLoading</span>(<span class="keyword">true</span>);
+
+                                    <span class="keyword">try</span> {
+                                        <span class="keyword">const</span> response = <span class="keyword">await</span> axios.<span class="function">post</span>(<span class="string">'/api/chat/send'</span>, {
+                                            <span class="variable">message</span>: input,
+                                            <span class="variable">sessionId</span>
+                                        });
+
+                                        <span class="function">setMessages</span>(prev => [...prev, {
+                                            <span class="variable">role</span>: <span class="string">'assistant'</span>,
+                                            <span class="variable">content</span>: response.<span class="variable">data</span>.<span class="variable">message</span>
+                                        }]);
+                                    } <span class="keyword">catch</span> (error) {
+                                        <span class="function">console</span>.<span class="function">error</span>(error);
+                                        <span class="function">setMessages</span>(prev => [...prev, {
+                                            <span class="variable">role</span>: <span class="string">'assistant'</span>,
+                                            <span class="variable">content</span>: <span class="string">'Sorry, something went wrong.'</span>
+                                        }]);
+                                    } <span class="keyword">finally</span> {
+                                        <span class="function">setLoading</span>(<span class="keyword">false</span>);
+                                    }
+                                };
+
+                                <span class="keyword">return</span> (
+                                    <span class="tag">&lt;div</span> <span class="variable">className</span>=<span class="string">"chat-interface"</span><span class="tag">&gt;</span>
+                                        <span class="tag">&lt;div</span> <span class="variable">className</span>=<span class="string">"messages"</span><span class="tag">&gt;</span>
+                                            {messages.<span class="function">map</span>((msg, i) => (
+                                                <span class="tag">&lt;div</span> <span class="variable">key</span>={i} <span class="variable">className</span>=<span class="string">\`message \${msg.role}\`</span><span class="tag">&gt;</span>
+                                                    <span class="tag">&lt;strong&gt;</span>{msg.role === <span class="string">'user'</span> ? <span class="string">'You'</span> : <span class="string">'AI'</span>}:<span class="tag">&lt;/strong&gt;</span>
+                                                    {msg.content}
+                                                <span class="tag">&lt;/div&gt;</span>
+                                            ))}
+                                            {loading && <span class="tag">&lt;div</span> <span class="variable">className</span>=<span class="string">"typing"</span><span class="tag">&gt;</span>AI is typing...<span class="tag">&lt;/div&gt;</span>}
+                                            <span class="tag">&lt;div</span> <span class="variable">ref</span>={messagesEndRef} <span class="tag">/&gt;</span>
+                                        <span class="tag">&lt;/div&gt;</span>
+                                        <span class="tag">&lt;div</span> <span class="variable">className</span>=<span class="string">"input-area"</span><span class="tag">&gt;</span>
+                                            <span class="tag">&lt;input</span>
+                                                <span class="variable">value</span>={input}
+                                                <span class="variable">onChange</span>={(e) => <span class="function">setInput</span>(e.<span class="variable">target</span>.<span class="variable">value</span>)}
+                                                <span class="variable">onKeyPress</span>={(e) => e.<span class="variable">key</span> === <span class="string">'Enter'</span> && <span class="function">sendMessage</span>()}
+                                                <span class="variable">placeholder</span>=<span class="string">"Type your message..."</span>
+                                                <span class="variable">disabled</span>={loading}
+                                            <span class="tag">/&gt;</span>
+                                            <span class="tag">&lt;button</span> <span class="variable">onClick</span>={sendMessage} <span class="variable">disabled</span>={loading}<span class="tag">&gt;</span>
+                                                {loading ? <span class="string">'...'</span> : <span class="string">'Send'</span>}
+                                            <span class="tag">&lt;/button&gt;</span>
+                                        <span class="tag">&lt;/div&gt;</span>
+                                    <span class="tag">&lt;/div&gt;</span>
+                                );
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Start with a simple chatbot like this. It's the foundation for almost every AI feature you'll build.
+                    </div>
+                `
+        },
+
+        // ============================================================
+        // PHASE 3: RAG & VECTOR SEARCH (Should Learn)
+        // ============================================================
+
+        '9. RAG (Document Q&A)': {
+            priority: 'should',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-book-open"></i> What is RAG?</h3>
+                        <p><strong>RAG (Retrieval-Augmented Generation)</strong> lets AI answer questions based on <strong>your own documents</strong>. Instead of generic AI responses, you get answers specific to your data.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> How RAG Works</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Flow</span>
+                            1. User asks a question
+                            2. Convert question to embedding (vector)
+                            3. Search for similar documents in vector database
+                            4. Retrieve relevant documents
+                            5. Send documents + question to AI
+                            6. AI answers based on documents
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Implementation</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// services/ragService.js</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">ragQuery</span>(question, userId) {
+                                <span class="comment">// 1. Generate embedding for question</span>
+                                <span class="keyword">const</span> questionEmbedding = <span class="keyword">await</span> <span class="function">generateEmbedding</span>(question);
+
+                                <span class="comment">// 2. Search similar documents</span>
+                                <span class="keyword">const</span> documents = <span class="keyword">await</span> db.<span class="variable">collection</span>(<span class="string">'documents'</span>).<span class="function">aggregate</span>([
+                                    {
+                                        <span class="variable">$vectorSearch</span>: {
+                                            <span class="variable">index</span>: <span class="string">'vector_index'</span>,
+                                            <span class="variable">path</span>: <span class="string">'embedding'</span>,
+                                            <span class="variable">queryVector</span>: questionEmbedding,
+                                            <span class="variable">numCandidates</span>: 50,
+                                            <span class="variable">limit</span>: 5
+                                        }
+                                    },
+                                    { <span class="variable">$match</span>: { <span class="variable">userId</span>: userId } }
+                                ]).<span class="function">toArray</span>();
+
+                                <span class="comment">// 3. Build context from documents</span>
+                                <span class="keyword">const</span> context = documents
+                                    .<span class="function">map</span>(doc => doc.<span class="variable">content</span>)
+                                    .<span class="function">join</span>(<span class="string">'\\n\\n'</span>);
+
+                                <span class="comment">// 4. Ask AI with context</span>
+                                <span class="keyword">const</span> prompt = <span class="string">\`
+                                    Context information:
+                                    \${context}
+
+                                    Question: \${question}
+
+                                    Instructions:
+                                    - Answer based ONLY on the provided context
+                                    - If the answer is not in context, say "I don't have that information"
+                                    - Be concise and helpful
+                                \`</span>;
+
+                                <span class="keyword">return</span> <span class="keyword">await</span> <span class="function">getAIResponse</span>(prompt);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> MongoDB Atlas Vector Search Setup</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">MongoDB Atlas</span>
+                            <span class="comment">// 1. Go to Atlas → Search → Create Index</span>
+                            <span class="comment">// 2. Choose "Vector Search"</span>
+                            <span class="comment">// 3. Configure:</span>
+
+                            {
+                                "fields": [
+                                    {
+                                        "type": "vector",
+                                        "path": "embedding",
+                                        "numDimensions": 1536,
+                                        "similarity": "cosine"
+                                    }
+                                ]
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> RAG is the most practical AI feature. Build a "Chat with PDF" app — it's impressive for your portfolio!
+                    </div>
+                `
+        },
+
+        '10. Vector Search Setup (MongoDB Atlas)': {
+            priority: 'should',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-database"></i> Vector Search Setup Guide</h3>
+                        <p><strong>Vector search</strong> is the technology that powers RAG. It finds documents that are semantically similar to a query.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 1: Enable Atlas Vector Search</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">MongoDB Atlas</span>
+                            <span class="comment">// 1. Go to MongoDB Atlas Dashboard</span>
+                            <span class="comment">// 2. Select your cluster</span>
+                            <span class="comment">// 3. Click "Search" tab</span>
+                            <span class="comment">// 4. Click "Create Search Index"</span>
+                            <span class="comment">// 5. Choose "Vector Search"</span>
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 2: Create Vector Index</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JSON</span>
+                            {
+                                "name": "vector_index",
+                                "type": "vectorSearch",
+                                "fields": [
+                                    {
+                                        "type": "vector",
+                                        "path": "embedding",
+                                        "numDimensions": 1536,
+                                        "similarity": "cosine"
+                                    }
+                                ]
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 3: Store Documents with Embeddings</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// Store a document with embedding</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">storeDocument</span>(title, content, userId) {
+                                <span class="keyword">const</span> embedding = <span class="keyword">await</span> <span class="function">generateEmbedding</span>(content);
+
+                                <span class="keyword">return</span> <span class="keyword">await</span> db.<span class="variable">collection</span>(<span class="string">'documents'</span>).<span class="function">insertOne</span>({
+                                    <span class="variable">userId</span>: userId,
+                                    <span class="variable">title</span>: title,
+                                    <span class="variable">content</span>: content,
+                                    <span class="variable">embedding</span>: embedding,
+                                    <span class="variable">createdAt</span>: <span class="keyword">new</span> <span class="keyword">Date</span>()
+                                });
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Step 4: Perform Vector Search</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// Search for similar documents</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">searchSimilar</span>(query, userId) {
+                                <span class="keyword">const</span> queryEmbedding = <span class="keyword">await</span> <span class="function">generateEmbedding</span>(query);
+
+                                <span class="keyword">return</span> <span class="keyword">await</span> db.<span class="variable">collection</span>(<span class="string">'documents'</span>).<span class="function">aggregate</span>([
+                                    {
+                                        <span class="variable">$vectorSearch</span>: {
+                                            <span class="variable">index</span>: <span class="string">'vector_index'</span>,
+                                            <span class="variable">path</span>: <span class="string">'embedding'</span>,
+                                            <span class="variable">queryVector</span>: queryEmbedding,
+                                            <span class="variable">numCandidates</span>: 50,
+                                            <span class="variable">limit</span>: 5
+                                        }
+                                    },
+                                    { <span class="variable">$match</span>: { <span class="variable">userId</span>: userId } },
+                                    {
+                                        <span class="variable">$project</span>: {
+                                            <span class="variable">title</span>: 1,
+                                            <span class="variable">content</span>: 1,
+                                            <span class="variable">score</span>: { <span class="variable">$meta</span>: <span class="string">'vectorSearchScore'</span> }
+                                        }
+                                    }
+                                ]).<span class="function">toArray</span>();
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-box warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Important:</strong> Vector search indexes can take 5-10 minutes to build. Be patient!
+                    </div>
+                `
+        },
+
+        '11. File Upload & Processing': {
+            priority: 'should',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-file-upload"></i> Handling File Uploads for AI</h3>
+                        <p>To build RAG apps, you need to upload PDFs, Word docs, or text files and process them for AI.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Backend: File Upload</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            npm install multer pdf-parse mammoth
+
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// routes/uploadRoutes.js</span>
+                            <span class="keyword">const</span> multer = <span class="function">require</span>(<span class="string">'multer'</span>);
+                            <span class="keyword">const</span> pdfParse = <span class="function">require</span>(<span class="string">'pdf-parse'</span>);
+                            <span class="keyword">const</span> mammoth = <span class="function">require</span>(<span class="string">'mammoth'</span>);
+                            <span class="keyword">const</span> fs = <span class="function">require</span>(<span class="string">'fs'</span>);
+
+                            <span class="keyword">const</span> upload = <span class="function">multer</span>({ <span class="variable">dest</span>: <span class="string">'uploads/'</span> });
+
+                            router.<span class="function">post</span>(<span class="string">'/document'</span>, upload.<span class="function">single</span>(<span class="string">'file'</span>), <span class="keyword">async</span> (req, res) => {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">const</span> file = req.<span class="variable">file</span>;
+                                    <span class="keyword">let</span> text = <span class="string">''</span>;
+
+                                    <span class="comment">// Extract text based on file type</span>
+                                    <span class="keyword">if</span> (file.<span class="variable">mimetype</span> === <span class="string">'application/pdf'</span>) {
+                                        <span class="keyword">const</span> dataBuffer = <span class="keyword">await</span> fs.<span class="function">readFileSync</span>(file.<span class="variable">path</span>);
+                                        <span class="keyword">const</span> pdfData = <span class="keyword">await</span> <span class="function">pdfParse</span>(dataBuffer);
+                                        text = pdfData.<span class="variable">text</span>;
+                                    } <span class="keyword">else</span> <span class="keyword">if</span> (file.<span class="variable">mimetype</span> === <span class="string">'application/vnd.openxmlformats-officedocument.wordprocessingml.document'</span>) {
+                                        <span class="keyword">const</span> result = <span class="keyword">await</span> mammoth.<span class="function">extractRawText</span>({ <span class="variable">path</span>: file.<span class="variable">path</span> });
+                                        text = result.<span class="variable">value</span>;
+                                    } <span class="keyword">else</span> {
+                                        text = <span class="keyword">await</span> fs.<span class="function">readFileSync</span>(file.<span class="variable">path</span>, <span class="string">'utf8'</span>);
+                                    }
+
+                                    <span class="comment">// Clean up temp file</span>
+                                    <span class="keyword">await</span> fs.<span class="function">unlinkSync</span>(file.<span class="variable">path</span>);
+
+                                    <span class="comment">// Generate embedding and store</span>
+                                    <span class="keyword">const</span> embedding = <span class="keyword">await</span> <span class="function">generateEmbedding</span>(text);
+                                    <span class="keyword">const</span> doc = <span class="keyword">await</span> Document.<span class="function">create</span>({
+                                        <span class="variable">userId</span>: req.<span class="variable">user</span>.<span class="variable">_id</span>,
+                                        <span class="variable">title</span>: file.<span class="variable">originalname</span>,
+                                        <span class="variable">content</span>: text,
+                                        <span class="variable">embedding</span>: embedding
+                                    });
+
+                                    res.<span class="function">json</span>({
+                                        success: <span class="keyword">true</span>,
+                                        message: <span class="string">'Document processed and stored'</span>,
+                                        document: doc
+                                    });
+                                } <span class="keyword">catch</span> (error) {
+                                    res.<span class="function">status</span>(500).<span class="function">json</span>({ error: error.<span class="variable">message</span> });
+                                }
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Frontend: File Upload</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="keyword">function</span> <span class="function">FileUpload</span>() {
+                                <span class="keyword">const</span> [file, setFile] = <span class="function">useState</span>(<span class="keyword">null</span>);
+                                <span class="keyword">const</span> [uploading, setUploading] = <span class="function">useState</span>(<span class="keyword">false</span>);
+
+                                <span class="keyword">const</span> handleUpload = <span class="keyword">async</span> () => {
+                                    <span class="keyword">if</span> (!file) <span class="keyword">return</span>;
+                                    <span class="function">setUploading</span>(<span class="keyword">true</span>);
+
+                                    <span class="keyword">const</span> formData = <span class="keyword">new</span> <span class="function">FormData</span>();
+                                    formData.<span class="function">append</span>(<span class="string">'file'</span>, file);
+
+                                    <span class="keyword">try</span> {
+                                        <span class="keyword">const</span> response = <span class="keyword">await</span> axios.<span class="function">post</span>(<span class="string">'/api/upload/document'</span>, formData, {
+                                            <span class="variable">headers</span>: { <span class="string">'Content-Type'</span>: <span class="string">'multipart/form-data'</span> }
+                                        });
+                                        <span class="function">alert</span>(<span class="string">'Document uploaded successfully!'</span>);
+                                    } <span class="keyword">catch</span> (error) {
+                                        <span class="function">alert</span>(<span class="string">'Upload failed: '</span> + error.<span class="variable">message</span>);
+                                    } <span class="keyword">finally</span> {
+                                        <span class="function">setUploading</span>(<span class="keyword">false</span>);
+                                    }
+                                };
+
+                                <span class="keyword">return</span> (
+                                    <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+                                        <span class="tag">&lt;input</span>
+                                            <span class="variable">type</span>=<span class="string">"file"</span>
+                                            <span class="variable">onChange</span>={(e) => <span class="function">setFile</span>(e.<span class="variable">target</span>.<span class="variable">files</span>[0])}
+                                            <span class="variable">accept</span>=<span class="string">".pdf,.docx,.txt"</span>
+                                        <span class="tag">/&gt;</span>
+                                        <span class="tag">&lt;button</span> <span class="variable">onClick</span>={handleUpload} <span class="variable">disabled</span>={uploading}<span class="tag">&gt;</span>
+                                            {uploading ? <span class="string">'Uploading...'</span> : <span class="string">'Upload'</span>}
+                                        <span class="tag">&lt;/button&gt;</span>
+                                    <span class="tag">&lt;/div&gt;</span>
+                                );
+                            }
+                        </div>
+                    </div>
+                `
+        },
+
+        // ============================================================
+        // PHASE 4: ADVANCED AI (Nice to Have)
+        // ============================================================
+
+        '12. AI Agents with LangChain': {
+            priority: 'nice',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-robot"></i> What are AI Agents?</h3>
+                        <p><strong>AI Agents</strong> are AI systems that can take actions — like searching the web, sending emails, or updating databases. LangChain is the most popular framework.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> LangChain Setup</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            npm install langchain @langchain/openai @langchain/community
+
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="keyword">import</span> { ChatOpenAI } <span class="keyword">from</span> <span class="string">'@langchain/openai'</span>;
+                            <span class="keyword">import</span> { createReactAgent } <span class="keyword">from</span> <span class="string">'@langchain/langgraph/prebuilt'</span>;
+                            <span class="keyword">import</span> { TavilySearchResults } <span class="keyword">from</span> <span class="string">'@langchain/community/tools/tavily_search'</span>;
+
+                            <span class="keyword">const</span> model = <span class="keyword">new</span> <span class="function">ChatOpenAI</span>({
+                                <span class="variable">model</span>: <span class="string">'gpt-3.5-turbo'</span>,
+                                <span class="variable">temperature</span>: 0.7
+                            });
+
+                            <span class="keyword">const</span> tools = [
+                                <span class="keyword">new</span> <span class="function">TavilySearchResults</span>({ <span class="variable">maxResults</span>: 3 })
+                            ];
+
+                            <span class="keyword">const</span> agent = <span class="keyword">await</span> <span class="function">createReactAgent</span>({
+                                <span class="variable">llm</span>: model,
+                                <span class="variable">tools</span>: tools,
+                                <span class="variable">prompt</span>: <span class="string">'You are a helpful assistant that can search the web.'</span>
+                            });
+
+                            <span class="keyword">const</span> result = <span class="keyword">await</span> agent.<span class="function">invoke</span>({
+                                <span class="variable">input</span>: <span class="string">'What is the latest news about AI?'</span>
+                            });
+                        </div>
+                    </div>
+
+                    <div class="note-box warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Fresher Note:</strong> AI Agents are advanced. Build a simple chatbot first, then explore agents.
+                    </div>
+                `
+        },
+
+        '13. AI Security & Rate Limiting': {
+            priority: 'nice',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-shield-alt"></i> AI Security Basics</h3>
+                        <p>Protect your AI app from abuse and unexpected costs.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Rate Limiting</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            npm install rate-limiter-flexible
+
+                            <span class="keyword">const</span> { RateLimiterMemory } = <span class="function">require</span>(<span class="string">'rate-limiter-flexible'</span>);
+
+                            <span class="keyword">const</span> limiter = <span class="keyword">new</span> <span class="function">RateLimiterMemory</span>({
+                                <span class="variable">points</span>: 10, <span class="comment">// 10 requests</span>
+                                <span class="variable">duration</span>: 60 <span class="comment">// per minute</span>
+                            });
+
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">rateLimitMiddleware</span>(req, res, next) {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">await</span> limiter.<span class="function">consume</span>(req.<span class="variable">ip</span>);
+                                    <span class="function">next</span>();
+                                } <span class="keyword">catch</span> {
+                                    res.<span class="function">status</span>(429).<span class="function">json</span>({ error: <span class="string">'Too many requests'</span> });
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Prompt Injection Prevention</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="comment">// Sanitize user input</span>
+                            <span class="keyword">function</span> <span class="function">validateInput</span>(input) {
+                                <span class="keyword">const</span> dangerous = [
+                                    <span class="string">'ignore previous instructions'</span>,
+                                    <span class="string">'system:'</span>,
+                                    <span class="string">'forget'</span>,
+                                    <span class="string">'override'</span>
+                                ];
+
+                                <span class="keyword">if</span> (dangerous.<span class="function">some</span>(p => input.<span class="function">toLowerCase</span>().<span class="function">includes</span>(p))) {
+                                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Error</span>(<span class="string">'Invalid input detected'</span>);
+                                }
+                                <span class="keyword">return</span> input;
+                            }
+                        </div>
+                    </div>
+                `
+        },
+
+        '14. Error Handling & Retry Logic': {
+            priority: 'should',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-exclamation-circle"></i> Error Handling in AI Apps</h3>
+                        <p>AI APIs fail sometimes. Your app should handle failures gracefully.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Retry Logic with Exponential Backoff</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">callAIWithRetry</span>(message, retries = 3) {
+                                <span class="keyword">for</span> (<span class="keyword">let</span> i = 0; i < retries; i++) {
+                                    <span class="keyword">try</span> {
+                                        <span class="keyword">return</span> <span class="keyword">await</span> <span class="function">getAIResponse</span>(message);
+                                    } <span class="keyword">catch</span> (error) {
+                                        <span class="keyword">const</span> waitTime = <span class="keyword">Math</span>.<span class="function">pow</span>(2, i) * 1000;
+                                        <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`Retry \${i+1} after \${waitTime}ms\`</span>);
+                                        <span class="keyword">await</span> <span class="keyword">new</span> <span class="keyword">Promise</span>(resolve => <span class="function">setTimeout</span>(resolve, waitTime));
+                                    }
+                                }
+                                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Error</span>(<span class="string">'All retries failed'</span>);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Graceful Fallback</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">JavaScript</span>
+                            <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">safeAIResponse</span>(message) {
+                                <span class="keyword">try</span> {
+                                    <span class="keyword">return</span> <span class="keyword">await</span> <span class="function">callAIWithRetry</span>(message);
+                                } <span class="keyword">catch</span> {
+                                    <span class="keyword">return</span> <span class="string">'I\'m having trouble right now. Please try again later.'</span>;
+                                }
+                            }
+                        </div>
+                    </div>
+                `
+        },
+
+        '15. Deployment (Vercel/Railway)': {
+            priority: 'should',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> Deploying Your AI App</h3>
+                        <p>Put your MERN + AI app online so others can use it.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Deploy Backend to Railway</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            <span class="comment"># 1. Push code to GitHub</span>
+                            git add .
+                            git commit -m "Deploy ready"
+                            git push
+
+                            <span class="comment"># 2. Go to Railway.app</span>
+                            <span class="comment"># 3. Connect GitHub repository</span>
+                            <span class="comment"># 4. Add environment variables</span>
+                            <span class="comment"># 5. Deploy</span>
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Deploy Frontend to Vercel</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Terminal</span>
+                            npm install -g vercel
+                            vercel
+
+                            <span class="comment"># Or connect GitHub to Vercel for auto-deploy</span>
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Environment Variables</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">.env (Backend)</span>
+                            MONGODB_URI=your_mongodb_uri
+                            OPENAI_API_KEY=your_openai_key
+                            JWT_SECRET=your_jwt_secret
+
+                            <span class="lang-tag">.env (Frontend)</span>
+                            REACT_APP_API_URL=https://your-backend-url.com
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Tip:</strong> Railway and Vercel both have free tiers. You can deploy without spending money!
+                    </div>
+                `
+        },
+
+        // ============================================================
+        // PHASE 5: PROJECTS & ROADMAP (Must Learn)
+        // ============================================================
+
+        '16. Project Ideas & Roadmap': {
+            priority: 'must',
+            content: `
+                    <div class="note-section">
+                        <h3><i class="fas fa-lightbulb"></i> Projects to Build</h3>
+                        <p>Here are practical projects to build as a fresher. Start simple, then go advanced.</p>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Beginner Projects</h3>
+                        <ul>
+                            <li><strong>AI Chatbot</strong> — Basic chatbot with conversation history</li>
+                            <li><strong>AI Summarizer</strong> — Summarize long articles or blogs</li>
+                            <li><strong>AI Translator</strong> — Translate text between languages</li>
+                            <li><strong>AI Code Helper</strong> — Explain or debug code</li>
+                        </ul>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Intermediate Projects</h3>
+                        <ul>
+                            <li><strong>Chat with PDF</strong> — Upload PDFs and chat with them (RAG)</li>
+                            <li><strong>AI-Powered Search</strong> — Semantic search for products</li>
+                            <li><strong>AI Content Generator</strong> — Generate blog posts, descriptions</li>
+                            <li><strong>AI Tutor</strong> — Teach any subject with AI</li>
+                        </ul>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-code"></i> Advanced Projects</h3>
+                        <ul>
+                            <li><strong>AI Agent</strong> — AI that can search web, send emails</li>
+                            <li><strong>AI Copilot</strong> — Context-aware coding assistant</li>
+                            <li><strong>AI SaaS</strong> — Full product with user auth, billing, usage tracking</li>
+                        </ul>
+                    </div>
+
+                    <div class="note-section">
+                        <h3><i class="fas fa-road"></i> 8-Week Learning Roadmap</h3>
+                        <div class="code-block">
+                            <span class="lang-tag">Timeline</span>
+                            Week 1-2: MERN Basics + REST APIs
+                            Week 3: Authentication (JWT)
+                            Week 4: OpenAI Integration
+                            Week 5: Prompt Engineering + Chatbot
+                            Week 6: RAG + Vector Search
+                            Week 7: File Upload + Processing
+                            Week 8: Deployment + Portfolio
+                        </div>
+                    </div>
+
+                    <div class="note-box success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Fresher Advice:</strong> Build ONE complete project rather than ten half-finished ones. Quality > Quantity.
+                    </div>
+                `
+        }
+    };
+
+    // ================================================================
+    // RENDER ENGINE
+    // ================================================================
+
+    const topicNav = document.getElementById('topicNav');
+    const topicTitle = document.getElementById('topicTitle');
+    const topicBadge = document.getElementById('topicBadge');
+    const notesContent = document.getElementById('notesContent');
+    const progressFill = document.getElementById('progressFill');
+
+    const topicNames = Object.keys(NOTES);
+    let activeTopic = topicNames[0];
+
+    function renderNav() {
+        const label = topicNav.querySelector('.label');
+        topicNav.innerHTML = '';
+        topicNav.appendChild(label);
+
+        topicNames.forEach(name => {
+            const data = NOTES[name];
+            const btn = document.createElement('button');
+            btn.className = 'topic-btn';
+
+            // Add priority class
+            if (data.priority === 'must') btn.classList.add('priority-high');
+            else if (data.priority === 'should') btn.classList.add('priority-medium');
+
+            if (name === activeTopic) btn.classList.add('active');
+
+            let displayName = name;
+            if (name.length > 40) {
+                displayName = name.substring(0, 37) + '...';
+            }
+            btn.textContent = displayName;
+            btn.title = name;
+            btn.dataset.topic = name;
+
+            btn.addEventListener('click', () => {
+                activeTopic = name;
+                renderNav();
+                renderContent(name);
+            });
+
+            topicNav.appendChild(btn);
+        });
+    }
+
+    function renderContent(topicName) {
+        const data = NOTES[topicName];
+        if (!data) {
+            notesContent.innerHTML = '<p>Topic not found.</p>';
+            return;
+        }
+
+        topicTitle.textContent = topicName;
+
+        // Set badge with priority
+        let badgeText = 'Complete Notes';
+        let badgeClass = '';
+        if (data.priority === 'must') {
+            badgeText = '⭐ MUST LEARN';
+            badgeClass = 'required';
+        } else if (data.priority === 'should') {
+            badgeText = '📌 SHOULD LEARN';
+            badgeClass = 'important';
+        } else if (data.priority === 'nice') {
+            badgeText = '💡 NICE TO HAVE';
+            badgeClass = '';
+        }
+
+        topicBadge.textContent = badgeText;
+        topicBadge.className = 'badge ' + badgeClass;
+
+        notesContent.innerHTML = data.content;
+
+        // Update progress
+        const total = topicNames.length;
+        const current = topicNames.indexOf(topicName) + 1;
+        const progress = Math.round((current / total) * 100);
+        progressFill.style.width = progress + '%';
+        progressFill.title = progress + '% complete';
+    }
+
+    renderNav();
+    renderContent(activeTopic);
+</script>
+</body>
+</html>2

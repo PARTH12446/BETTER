@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linked List · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-panel: #0e1420;
+            --bg-card: #121927;
+            --bg-cell: #1a2333;
+            --border: #212c40;
+            --border-soft: #182236;
+            --text: #d8dee9;
+            --text-dim: #9aa9bb;
+            --text-faint: #5a6a7e;
+            --teal: #4fd8c4;
+            --teal-dim: rgba(79,216,196,0.14);
+            --amber: #f6ad55;
+            --amber-dim: rgba(246,173,85,0.14);
+            --violet: #b394f6;
+            --violet-dim: rgba(179,148,246,0.14);
+            --green: #4ade80;
+            --red: #f87171;
+            --pink: #f472b6;
+            --pink-dim: rgba(244,114,182,0.14);
+            --font-d: 'Space Grotesk', sans-serif;
+            --font-b: 'Inter', sans-serif;
+            --font-m: 'JetBrains Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(ellipse 900px 500px at 15% -10%, rgba(79,216,196,0.06), transparent),
+            radial-gradient(ellipse 700px 500px at 100% 20%, rgba(179,148,246,0.05), transparent),
+            var(--bg);
+            color: var(--text);
+            font-family: var(--font-b);
+            padding: 2.5rem 1.5rem 5rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1200px; margin: 0 auto; }
+        ::selection { background: var(--teal-dim); color: var(--teal); }
+
+        .hero {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border-soft);
+            margin-bottom: 2.5rem;
+        }
+        .eyebrow {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--teal); }
+        .hero h1 {
+            font-family: var(--font-d);
+            font-weight: 700;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+        .hero h1 span { color: var(--text-faint); }
+        .hero p.lede {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin-bottom: 1.6rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-panel);
+        }
+        .stat b { color: var(--text); font-weight: 600; }
+
+        .sec {
+            margin: 3.5rem 0 1.4rem;
+        }
+        .sec-num {
+            font-family: var(--font-m);
+            color: var(--text-faint);
+            font-size: 0.8rem;
+        }
+        .sec h2 {
+            font-family: var(--font-d);
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--text);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .sec .desc {
+            color: var(--text-dim);
+            margin-top: 0.4rem;
+            max-width: 680px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .callout {
+            margin-top: 1rem;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            background: var(--teal-dim);
+            border: 1px solid rgba(79,216,196,0.25);
+            font-size: 0.92rem;
+            color: var(--text);
+        }
+        .callout b { color: var(--teal); }
+
+        .code-snippet {
+            background: #0d1a28;
+            color: #c8dfff;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-family: var(--font-m);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            margin: 0.6rem 0;
+        }
+        .code-snippet .comment { color: #6a8faa; }
+        .code-snippet .keyword { color: var(--violet); }
+        .code-snippet .string { color: var(--green); }
+        .code-snippet .type { color: var(--teal); }
+
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem 1.2rem;
+            margin-top: 0.4rem;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--bg-panel);
+            padding: 0.4rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.92rem;
+            border: 1px solid var(--border-soft);
+        }
+        .benefit-item i { color: var(--teal); width: 1.3rem; }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .pattern-grid { grid-template-columns: 1fr; }
+        }
+
+        .pattern-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            border-top: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .pattern-card:hover { transform: translateY(-2px); }
+        .pattern-card.p1 { border-top-color: var(--teal); }
+        .pattern-card.p2 { border-top-color: var(--amber); }
+        .pattern-card.p3 { border-top-color: var(--violet); }
+        .pattern-card.p4 { border-top-color: var(--pink); }
+        .pattern-card.p5 { border-top-color: var(--green); }
+
+        .pattern-card .pname {
+            font-family: var(--font-d);
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+        .pattern-card .pname .tag {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            color: var(--text-dim);
+            margin-left: 0.5rem;
+        }
+        .pattern-card .pdesc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+        .pattern-card .pcode {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem;
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin: 0.4rem 0;
+            overflow-x: auto;
+        }
+        .pattern-card .puse {
+            font-size: 0.8rem;
+            color: var(--text-faint);
+            margin-top: 0.4rem;
+        }
+        .pattern-card .puse b { color: var(--text); }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+            margin-top: 1.5rem;
+        }
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: var(--teal); }
+        .problem-card.g2 { border-left-color: var(--amber); }
+        .problem-card.g3 { border-left-color: var(--violet); }
+        .problem-card.g4 { border-left-color: var(--pink); }
+
+        .problem-card .phead {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .problem-card .pnum {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .problem-card .pname {
+            font-family: var(--font-d);
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-top: 2px;
+        }
+        .problem-card .pnum-id {
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            margin: 0.7rem 0;
+        }
+        .problem-card .papproach {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: var(--text); }
+        .problem-card .papproach .pattern-tag {
+            display: inline-block;
+            background: var(--teal-dim);
+            color: var(--teal);
+            padding: 0.1rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: var(--font-m);
+            margin-bottom: 0.4rem;
+        }
+        .problem-card .ppitfall {
+            font-size: 0.82rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            padding: 0.6rem 0.85rem;
+            margin-bottom: 0.7rem;
+        }
+        .problem-card .ppitfall b { color: var(--red); }
+        .pfoot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .complexity {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .diff-easy {
+            color: var(--green);
+            background: rgba(74,222,128,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-medium {
+            color: var(--amber);
+            background: rgba(246,173,85,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-hard {
+            color: var(--red);
+            background: rgba(248,113,113,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 2.5rem 0 1.2rem;
+        }
+        .group-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .group-head h3 {
+            font-family: var(--font-d);
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+        .group-head .count {
+            font-family: var(--font-m);
+            font-size: 0.78rem;
+            color: var(--text-faint);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 720px) {
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+        .mistake {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid var(--red);
+        }
+        .mistake .mtitle {
+            font-family: var(--font-m);
+            font-weight: 600;
+            color: #f8b4ac;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .mistake p {
+            font-size: 0.87rem;
+            color: var(--text-dim);
+        }
+        .mistake .fix {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--green);
+        }
+        .mistake .fix b { font-family: var(--font-m); }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-panel);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--teal), var(--violet));
+            transition: width 0.3s ease;
+        }
+        .progress-label {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: var(--text-faint); }
+        .check-item.done {
+            border-color: rgba(74,222,128,0.35);
+            background: rgba(74,222,128,0.06);
+        }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid var(--text-faint);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--bg);
+        }
+        .check-item.done .check-box {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .check-item span.label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .check-item.done span.label {
+            color: var(--text);
+            text-decoration: line-through;
+            text-decoration-color: var(--text-faint);
+        }
+        .check-item .tier {
+            margin-left: auto;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-soft);
+            color: var(--text-dim);
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl {
+            font-family: var(--font-d);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3.5rem;
+            color: var(--text-faint);
+            font-size: 0.8rem;
+            font-family: var(--font-m);
+            border-top: 1px solid var(--border-soft);
+            padding-top: 2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+        .inline-tag {
+            background: var(--border);
+            border-radius: 30px;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+        .meta-chip {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+        .recog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 720px) {
+            .recog-grid { grid-template-columns: 1fr; }
+        }
+        .recog-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-panel);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+        }
+        .recog-item .hint { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .recog-item .reason { color: var(--text-dim); font-size: 0.85rem; }
+        .recog-item i { color: var(--teal); width: 1.5rem; text-align: center; }
+
+        .vs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .vs-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+        }
+        .vs-box .title { font-family: var(--font-d); color: var(--text); font-size: 1rem; margin-bottom: 0.5rem; }
+        .vs-box ul { list-style: none; color: var(--text-dim); font-size: 0.88rem; }
+        .vs-box ul li { padding: 0.3rem 0; border-bottom: 1px solid var(--border-soft); }
+        .vs-box ul li:last-child { border-bottom: none; }
+        .vs-box ul li i { width: 1.2rem; text-align: center; margin-right: 0.5rem; }
+        .vs-box.green .title { color: var(--green); }
+        .vs-box.amber .title { color: var(--amber); }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="eyebrow">Data Structures · Pointers & References</div>
+        <h1>Linked List <span>— from recognition to mastery</span></h1>
+        <p class="lede">Linked lists are all about managing references — the challenge is not losing track of nodes while manipulating pointers. Master the 5 core patterns and recognize which one to use in any problem.</p>
+        <div class="stat-row">
+            <div class="stat">⏱ <b>O(n)</b> access · <b>O(1)</b> insert/delete at head</div>
+            <div class="stat">💾 <b>Dynamic</b> size</div>
+            <div class="stat"><b>5</b> patterns</div>
+            <div class="stat"><b>15</b> problems</div>
+        </div>
+    </div>
+
+    <!-- 1. WHAT IS A LINKED LIST -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What is a Linked List?</h2>
+        <p class="desc">A Linked List is a linear data structure where each element (node) contains data and a reference (pointer) to the next node in the sequence. Unlike arrays, elements are not stored in contiguous memory locations.</p>
+    </div>
+    <div class="grid-2">
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-code" style="margin-right:6px;"></i> Basic Structure</span>
+            <div class="code-snippet"><span class="keyword">class</span> <span class="type">ListNode</span> {
+                <span class="type">int</span> val;
+                <span class="type">ListNode</span> next;
+                <span class="type">ListNode</span>(<span class="type">int</span> val) { <span class="keyword">this</span>.val = val; }
+                }</div>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.9rem;">
+                <i class="fas fa-check-circle" style="color:var(--green);"></i> Dynamic size
+                <span style="margin-left:1rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> O(1) insert at head</span>
+                <span style="margin-left:1rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> O(n) access</span>
+            </div>
+        </div>
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-list" style="margin-right:6px;"></i> Types of Linked Lists</span>
+            <ul style="margin-top:0.8rem; list-style:none; color:var(--text-dim);">
+                <li style="padding:0.3rem 0; border-bottom:1px solid var(--border-soft);"><i class="fas fa-arrow-right" style="color:var(--teal); width:1.5rem;"></i> <b>Singly</b> — Each node points to next only</li>
+                <li style="padding:0.3rem 0; border-bottom:1px solid var(--border-soft);"><i class="fas fa-arrows-left-right" style="color:var(--amber); width:1.5rem;"></i> <b>Doubly</b> — Points to next AND previous</li>
+                <li style="padding:0.3rem 0;"><i class="fas fa-rotate" style="color:var(--violet); width:1.5rem;"></i> <b>Circular</b> — Last node points back to head</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 2. WHEN TO USE VS ARRAY -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>Linked List vs Array — When to Use What?</h2>
+        <p class="desc">Understanding the trade-offs helps you choose the right data structure for the problem.</p>
+    </div>
+    <div class="vs-grid">
+        <div class="vs-box green">
+            <div class="title"><i class="fas fa-link" style="color:var(--green);"></i> Use Linked List When</div>
+            <ul>
+                <li><i class="fas fa-check-circle" style="color:var(--green);"></i> Frequent insertions/deletions at beginning</li>
+                <li><i class="fas fa-check-circle" style="color:var(--green);"></i> Size is unknown/dynamic</li>
+                <li><i class="fas fa-check-circle" style="color:var(--green);"></i> Memory is fragmented</li>
+                <li><i class="fas fa-check-circle" style="color:var(--green);"></i> No need for random access</li>
+                <li><i class="fas fa-check-circle" style="color:var(--green);"></i> Implementing stacks/queues</li>
+            </ul>
+        </div>
+        <div class="vs-box amber">
+            <div class="title"><i class="fas fa-th" style="color:var(--amber);"></i> Use Array When</div>
+            <ul>
+                <li><i class="fas fa-check-circle" style="color:var(--amber);"></i> Frequent random access (by index)</li>
+                <li><i class="fas fa-check-circle" style="color:var(--amber);"></i> Size is fixed/known</li>
+                <li><i class="fas fa-check-circle" style="color:var(--amber);"></i> Need cache-friendly access</li>
+                <li><i class="fas fa-check-circle" style="color:var(--amber);"></i> Need O(1) access by index</li>
+                <li><i class="fas fa-check-circle" style="color:var(--amber);"></i> Implementing dynamic arrays</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 3. THE 5 CORE PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>The 5 Core Patterns of Linked List</h2>
+        <p class="desc">Master these five patterns and you can solve 90% of linked list problems.</p>
+    </div>
+
+    <div class="pattern-grid">
+        <!-- Pattern 1: Fast & Slow -->
+        <div class="pattern-card p1">
+            <div class="pname">Fast & Slow <span class="tag">Two Pointers</span></div>
+            <div class="pdesc">Two pointers move at different speeds — one fast (2x), one slow (1x).</div>
+            <div class="pcode">ListNode slow = head, fast = head;
+                while (fast != null && fast.next != null) {
+                slow = slow.next;
+                fast = fast.next.next;
+                }
+                <span class="comment">// slow is at the middle</span></div>
+            <div class="puse"><b>Use for:</b> Finding middle, cycle detection, nth from end</div>
+        </div>
+
+        <!-- Pattern 2: Reverse -->
+        <div class="pattern-card p2">
+            <div class="pname">Reverse <span class="tag">Iterative</span></div>
+            <div class="pdesc">Reverse the links between nodes by tracking prev, curr, next.</div>
+            <div class="pcode">ListNode prev = null, curr = head;
+                while (curr != null) {
+                ListNode next = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = next;
+                }
+                <span class="comment">// prev is the new head</span></div>
+            <div class="puse"><b>Use for:</b> Reversing order, palindrome checking, reorder</div>
+        </div>
+
+        <!-- Pattern 3: Dummy Node -->
+        <div class="pattern-card p3">
+            <div class="pname">Dummy Node <span class="tag">Sentinel</span></div>
+            <div class="pdesc">A dummy node before head simplifies edge cases (deleting head).</div>
+            <div class="pcode">ListNode dummy = new ListNode(0);
+                dummy.next = head;
+                ListNode prev = dummy;
+                <span class="comment">// Now safely handle head operations</span></div>
+            <div class="puse"><b>Use for:</b> Merging, deleting, adding at head, edge cases</div>
+        </div>
+
+        <!-- Pattern 4: Floyd's Cycle Detection -->
+        <div class="pattern-card p4">
+            <div class="pname">Floyd's Cycle <span class="tag">Tortoise & Hare</span></div>
+            <div class="pdesc">Fast moves 2 steps, slow moves 1 step — they meet if there's a cycle.</div>
+            <div class="pcode">ListNode slow = head, fast = head;
+                while (fast != null && fast.next != null) {
+                slow = slow.next;
+                fast = fast.next.next;
+                if (slow == fast) <span class="keyword">return</span> <span class="keyword">true</span>;
+                }
+                <span class="keyword">return</span> <span class="keyword">false</span>;</div>
+            <div class="puse"><b>Use for:</b> Detecting cycles, finding cycle start</div>
+        </div>
+
+        <!-- Pattern 5: Merge -->
+        <div class="pattern-card p5">
+            <div class="pname">Merge <span class="tag">Two Sorted Lists</span></div>
+            <div class="pdesc">Compare heads, append smaller, move pointer forward.</div>
+            <div class="pcode">ListNode dummy = new ListNode(0), tail = dummy;
+                while (l1 != null && l2 != null) {
+                if (l1.val < l2.val) { tail.next = l1; l1 = l1.next; }
+                else { tail.next = l2; l2 = l2.next; }
+                tail = tail.next;
+                }
+                tail.next = (l1 != null) ? l1 : l2;</div>
+            <div class="puse"><b>Use for:</b> Combining sorted lists, merge sort on LL</div>
+        </div>
+    </div>
+
+    <!-- 4. HOW TO RECOGNIZE PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>How to Recognize Linked List Patterns</h2>
+        <p class="desc">These clues in problem statements should immediately make you think of a specific pattern.</p>
+    </div>
+    <div class="recog-grid">
+        <div class="recog-item"><i class="fas fa-bullseye"></i><span class="hint">"Find middle"</span><span class="reason">→ Fast & Slow pointers</span></div>
+        <div class="recog-item"><i class="fas fa-rotate"></i><span class="hint">"Detect cycle"</span><span class="reason">→ Floyd's cycle detection</span></div>
+        <div class="recog-item"><i class="fas fa-arrow-up"></i><span class="hint">"Reverse"</span><span class="reason">→ Iterative reversal with prev/curr</span></div>
+        <div class="recog-item"><i class="fas fa-minus"></i><span class="hint">"Remove nth from end"</span><span class="reason">→ Fast & Slow with distance n</span></div>
+        <div class="recog-item"><i class="fas fa-code-branch"></i><span class="hint">"Merge sorted lists"</span><span class="reason">→ Dummy node + two pointers</span></div>
+        <div class="recog-item"><i class="fas fa-palette"></i><span class="hint">"Palindrome"</span><span class="reason">→ Find middle + reverse half</span></div>
+        <div class="recog-item"><i class="fas fa-intersection"></i><span class="hint">"Intersection"</span><span class="reason">→ Two pointers with length adjustment</span></div>
+        <div class="recog-item"><i class="fas fa-eraser"></i><span class="hint">"Remove duplicates"</span><span class="reason">→ Single pass with prev and curr</span></div>
+    </div>
+
+    <!-- 5. COMPLEXITY CHEAT SHEET -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Complexity Cheat Sheet</h2>
+        <p class="desc">Know the time and space complexity of each operation.</p>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Operation</th><th>Singly Linked List</th><th>Doubly Linked List</th></tr></thead>
+            <tbody>
+            <tr><td class="lbl">Access by index</td><td>O(n)</td><td>O(n)</td></tr>
+            <tr><td class="lbl">Insert at head</td><td>O(1)</td><td>O(1)</td></tr>
+            <tr><td class="lbl">Insert at tail</td><td>O(n) or O(1) with tail</td><td>O(1)</td></tr>
+            <tr><td class="lbl">Delete at head</td><td>O(1)</td><td>O(1)</td></tr>
+            <tr><td class="lbl">Delete at tail</td><td>O(n)</td><td>O(1)</td></tr>
+            <tr><td class="lbl">Search</td><td>O(n)</td><td>O(n)</td></tr>
+            <tr><td class="lbl">Space</td><td>O(n)</td><td>O(n)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 6. COMMON MISTAKES -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Common Mistakes</h2>
+        <p class="desc">If your linked list solution is wrong, it's almost always one of these things.</p>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Losing reference to head</div>
+            <p>When you move a pointer, you lose the original head reference and can't return the list.</p>
+            <div class="fix">Fix: Always keep a <b>head</b> reference or use a dummy node.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Not handling null pointers</div>
+            <p>Accessing `node.next` when `node` is null causes a NullPointerException.</p>
+            <div class="fix">Fix: Check <b>node != null</b> before accessing `node.next`.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Infinite loops in reversal</div>
+            <p>Not storing `next` before changing `curr.next` causes you to lose the rest of the list.</p>
+            <div class="fix">Fix: Store <b>next = curr.next</b> before modifying `curr.next`.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Forgetting to update tail</div>
+            <p>When merging or adding, forgetting to move the tail pointer forward.</p>
+            <div class="fix">Fix: Always move the <b>tail</b> pointer after appending a node.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Cycle detection off-by-one</div>
+            <p>Checking only `fast.next != null` without checking `fast != null` can cause errors.</p>
+            <div class="fix">Fix: Check <b>fast != null && fast.next != null</b>.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Not handling empty list</div>
+            <p>Many solutions fail when `head == null`.</p>
+            <div class="fix">Fix: Always handle the <b>empty list</b> edge case first.</div>
+        </div>
+    </div>
+
+    <!-- 7. PROBLEMS WITH PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>All 15 Problems — Approach Patterns</h2>
+        <p class="desc">Each card shows the <b>approach pattern</b> (not the full solution) and the common pitfall for that exact problem.</p>
+    </div>
+
+    <!-- Group A: Fast & Slow -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--teal)"></div>
+        <h3>Group A — Fast & Slow Patterns</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <!-- Group B: Reverse & Palindrome -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--amber)"></div>
+        <h3>Group B — Reverse & Palindrome</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <!-- Group C: Dummy Node & Merge -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--violet)"></div>
+        <h3>Group C — Dummy Node & Merge</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-c"></div>
+
+    <!-- Group D: Advanced -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--pink)"></div>
+        <h3>Group D — Advanced Patterns</h3>
+        <span class="count">3 problems</span>
+    </div>
+    <div class="problem-grid" id="group-d"></div>
+
+    <!-- 8. MASTERY PATH -->
+    <div class="sec">
+        <div class="sec-num">08</div>
+        <h2>Suggested Practice Order</h2>
+        <p class="desc">Work top to bottom — each tier assumes you're comfortable with the one above it. Click a problem once you can solve it without looking at the approach.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 15 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <!-- 9. CHEAT SHEET -->
+    <div class="sec">
+        <div class="sec-num">09</div>
+        <h2>Pattern Quick Reference</h2>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Pattern</th><th>Use For</th><th>Key Idea</th></tr></thead>
+            <tbody>
+            <tr><td class="lbl" style="color:var(--teal);">Fast & Slow</td><td>Middle, cycle, nth from end</td><td>Two pointers at different speeds</td></tr>
+            <tr><td class="lbl" style="color:var(--amber);">Reverse</td><td>Palindrome, reorder, k-group</td><td>Iterative with prev/curr/next</td></tr>
+            <tr><td class="lbl" style="color:var(--violet);">Dummy Node</td><td>Merging, deleting, adding</td><td>Sentinel node before head</td></tr>
+            <tr><td class="lbl" style="color:var(--pink);">Floyd's Cycle</td><td>Cycle detection, finding start</td><td>Tortoise & Hare algorithm</td></tr>
+            <tr><td class="lbl" style="color:var(--green);">Merge</td><td>Combining sorted lists</td><td>Compare and append smaller</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 10. KEY INSIGHTS -->
+    <div class="sec">
+        <div class="sec-num">10</div>
+        <h2>Key Insights</h2>
+    </div>
+    <div class="card">
+        <div class="callout" style="margin-top:0;">
+            <b>💡 "Linked lists are about managing references — the challenge is not losing track of nodes while manipulating pointers."</b>
+        </div>
+        <div style="margin-top:1rem;">
+            <div style="font-family:var(--font-d); color:var(--text); font-size:1.1rem;">The Three Golden Rules:</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-top:0.8rem;">
+                <div style="background:var(--bg-panel); border-radius:10px; padding:0.8rem; border:1px solid var(--border-soft); text-align:center;">
+                    <div style="font-size:1.5rem; color:var(--teal);">1</div>
+                    <div style="color:var(--text-dim); font-size:0.85rem;">Always store <b>next</b> before modifying</div>
+                </div>
+                <div style="background:var(--bg-panel); border-radius:10px; padding:0.8rem; border:1px solid var(--border-soft); text-align:center;">
+                    <div style="font-size:1.5rem; color:var(--amber);">2</div>
+                    <div style="color:var(--text-dim); font-size:0.85rem;">Use <b>dummy nodes</b> for edge cases</div>
+                </div>
+                <div style="background:var(--bg-panel); border-radius:10px; padding:0.8rem; border:1px solid var(--border-soft); text-align:center;">
+                    <div style="font-size:1.5rem; color:var(--violet);">3</div>
+                    <div style="color:var(--text-dim); font-size:0.85rem;"><b>Draw it out</b> — visualize the pointers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>Linked List · Mastery Notes — master the patterns, solve any problem</footer>
+</div>
+
+<script>
+    // ============ PROBLEM DATA ============
+    const problems = {
+        a: [
+            {
+                num: "876",
+                name: "Middle of Linked List",
+                desc: "Find the middle node of a linked list.",
+                approach: "Use fast and slow pointers. Fast moves 2 steps, slow moves 1 step. When fast reaches end, slow is at middle.",
+                pattern: "Fast & Slow",
+                pitfall: "Not handling odd/even lengths correctly — the middle should be the second middle for even lengths.",
+                difficulty: "Easy"
+            },
+            {
+                num: "141",
+                name: "Linked List Cycle",
+                desc: "Detect if a linked list has a cycle.",
+                approach: "Use Floyd's cycle detection. Slow moves 1 step, fast moves 2 steps. If they meet → cycle exists.",
+                pattern: "Floyd's Cycle",
+                pitfall: "Checking only fast.next != null without checking fast != null first.",
+                difficulty: "Easy"
+            },
+            {
+                num: "19",
+                name: "Remove Nth Node From End",
+                desc: "Remove the nth node from the end of the list.",
+                approach: "Use fast and slow pointers with distance n. Move fast n steps ahead, then move both until fast reaches end.",
+                pattern: "Fast & Slow (Distance)",
+                pitfall: "When n equals the list length, you need to remove the head — handle this edge case.",
+                difficulty: "Medium"
+            },
+            {
+                num: "142",
+                name: "Linked List Cycle II",
+                desc: "Find the node where the cycle begins.",
+                approach: "Use Floyd's detection to find meeting point. Then move slow to head, move both at same speed until they meet.",
+                pattern: "Floyd's Cycle (Start)",
+                pitfall: "Forgetting that the distance from head to cycle start equals the distance from meeting point to cycle start.",
+                difficulty: "Medium"
+            }
+        ],
+        b: [
+            {
+                num: "206",
+                name: "Reverse Linked List",
+                desc: "Reverse a singly linked list.",
+                approach: "Iterative reversal: track prev, curr, next. While curr != null, reverse the link and move forward.",
+                pattern: "Reverse",
+                pitfall: "Not storing next before changing curr.next — you lose the rest of the list.",
+                difficulty: "Easy"
+            },
+            {
+                num: "234",
+                name: "Palindrome Linked List",
+                desc: "Check if a linked list is a palindrome.",
+                approach: "Find middle using fast & slow. Reverse the second half. Compare the two halves.",
+                pattern: "Fast & Slow + Reverse",
+                pitfall: "Not handling odd length correctly — the middle node can be ignored in comparison.",
+                difficulty: "Easy"
+            },
+            {
+                num: "143",
+                name: "Reorder List",
+                desc: "Reorder list as L0 → Ln → L1 → Ln-1 → L2 → ...",
+                approach: "Find middle with fast & slow. Reverse second half. Merge the two halves alternating.",
+                pattern: "Middle + Reverse + Merge",
+                pitfall: "Not breaking the connection between the two halves before reversing.",
+                difficulty: "Medium"
+            },
+            {
+                num: "25",
+                name: "Reverse Nodes in k-Group",
+                desc: "Reverse nodes in groups of k.",
+                approach: "Recursively reverse k nodes at a time. Check if k nodes remain, reverse them, and connect to the next group.",
+                pattern: "Recursive Reverse",
+                pitfall: "Not preserving the connection between groups — you must connect the reversed group to the next.",
+                difficulty: "Hard"
+            }
+        ],
+        c: [
+            {
+                num: "21",
+                name: "Merge Two Sorted Lists",
+                desc: "Merge two sorted linked lists into one sorted list.",
+                approach: "Use a dummy node as the head. Compare values, append smaller, move that pointer forward.",
+                pattern: "Dummy Node + Merge",
+                pitfall: "Forgetting to append the remaining nodes after one list is exhausted.",
+                difficulty: "Easy"
+            },
+            {
+                num: "83",
+                name: "Remove Duplicates from Sorted List",
+                desc: "Remove duplicates from a sorted linked list.",
+                approach: "Single pass with a pointer. If curr.val == curr.next.val, skip the duplicate by updating curr.next.",
+                pattern: "Single Pass",
+                pitfall: "Not handling consecutive duplicates properly — use a while loop to skip all duplicates.",
+                difficulty: "Easy"
+            },
+            {
+                num: "160",
+                name: "Intersection of Two Linked Lists",
+                desc: "Find the intersection node of two linked lists.",
+                approach: "Find the length of both lists. Advance the longer list by the difference. Then move both until they meet.",
+                pattern: "Two Pointers",
+                pitfall: "Not handling the case where there is no intersection — you'll reach null at the same time.",
+                difficulty: "Easy"
+            },
+            {
+                num: "2",
+                name: "Add Two Numbers",
+                desc: "Add two numbers represented as linked lists (digits stored in reverse order).",
+                approach: "Use a dummy node for result. Traverse both lists, add digits with carry, create new nodes.",
+                pattern: "Dummy Node + Carry",
+                pitfall: "Forgetting to add the final carry after both lists are exhausted.",
+                difficulty: "Medium"
+            }
+        ],
+        d: [
+            {
+                num: "61",
+                name: "Rotate List",
+                desc: "Rotate the list to the right by k places.",
+                approach: "Find the length of the list. Compute k = k % length. Find the new tail at (length - k - 1), break and reconnect.",
+                pattern: "Find Length + Rotate",
+                pitfall: "When k is 0 or a multiple of length, the list doesn't change — return the original head.",
+                difficulty: "Medium"
+            },
+            {
+                num: "148",
+                name: "Sort List",
+                desc: "Sort a linked list in O(n log n) time.",
+                approach: "Use merge sort on linked list. Find middle, sort left and right halves, merge them back.",
+                pattern: "Merge Sort on LL",
+                pitfall: "Not finding the middle correctly — use fast & slow but stop slow one step before the middle.",
+                difficulty: "Medium"
+            },
+            {
+                num: "24",
+                name: "Swap Nodes in Pairs",
+                desc: "Swap every two adjacent nodes in the list.",
+                approach: "Use dummy node and iterative approach. Swap the next two nodes, move the pointer forward.",
+                pattern: "Iterative Swap",
+                pitfall: "Not handling odd length properly — the last unpaired node should remain unchanged.",
+                difficulty: "Medium"
+            }
+        ]
+    };
+
+    // ============ RENDER PROBLEM CARDS ============
+    function renderProblems(groupId, cls, arr) {
+        const container = document.getElementById(groupId);
+        arr.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            const diffClass = p.difficulty === "Easy" ? "diff-easy" : p.difficulty === "Medium" ? "diff-medium" : "diff-hard";
+            card.innerHTML = `
+                <div class="phead">
+                    <div>
+                        <div class="pnum">LeetCode ${p.num}</div>
+                        <div class="pname">${p.name}</div>
+                    </div>
+                    <div class="pnum-id"><span class="${diffClass}">${p.difficulty}</span></div>
+                </div>
+                <div class="pdesc">${p.desc}</div>
+                <div class="papproach">
+                    <div class="pattern-tag">🔗 ${p.pattern}</div>
+                    <b>Approach —</b> ${p.approach}
+                </div>
+                <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+                <div class="pfoot">
+                    <span class="complexity"><i class="fas fa-link"></i> ${p.pattern}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    renderProblems("group-a", "g1", problems.a);
+    renderProblems("group-b", "g2", problems.b);
+    renderProblems("group-c", "g3", problems.c);
+    renderProblems("group-d", "g4", problems.d);
+
+    // ============ MASTERY CHECKLIST ============
+    const allProblems = [
+        { n: "206 · Reverse Linked List", tier: "start here" },
+        { n: "876 · Middle of Linked List", tier: "start here" },
+        { n: "141 · Linked List Cycle", tier: "start here" },
+        { n: "21 · Merge Two Sorted Lists", tier: "start here" },
+        { n: "234 · Palindrome Linked List", tier: "core" },
+        { n: "19 · Remove Nth Node From End", tier: "core" },
+        { n: "142 · Linked List Cycle II", tier: "core" },
+        { n: "143 · Reorder List", tier: "core" },
+        { n: "160 · Intersection of Two Lists", tier: "core" },
+        { n: "2 · Add Two Numbers", tier: "core" },
+        { n: "61 · Rotate List", tier: "stretch" },
+        { n: "24 · Swap Nodes in Pairs", tier: "stretch" },
+        { n: "83 · Remove Duplicates", tier: "stretch" },
+        { n: "148 · Sort List", tier: "stretch" },
+        { n: "25 · Reverse Nodes in k-Group", tier: "hard" }
+    ];
+
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress() {
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done / allProblems.length * 100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+
+    allProblems.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", () => { item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>

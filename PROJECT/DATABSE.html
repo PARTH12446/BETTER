@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL & MongoDB · Database Question Bank</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f9;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2332;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.25rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0b1e33;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i.fa-database {
+            color: #00758F;
+        }
+        .header h1 i.fa-leaf {
+            color: #47A248;
+        }
+
+        .subhead {
+            color: #475569;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+            border-left: 4px solid #2563eb;
+            padding-left: 1rem;
+            background: #eef2ff;
+            border-radius: 0 8px 8px 0;
+            padding: 0.75rem 1.25rem;
+            line-height: 1.5;
+        }
+
+        .topic-grid {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0.5rem 0.75rem;
+            margin-bottom: 2.5rem;
+            background: white;
+            padding: 0.9rem 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+        .topic-grid::-webkit-scrollbar { height: 4px; }
+        .topic-grid::-webkit-scrollbar-thumb { background: #b9c8e0; border-radius: 12px; }
+
+        .topic-grid span {
+            font-weight: 600;
+            color: #334155;
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .topic-btn {
+            background: transparent;
+            border: 1px solid #d1d9e6;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .topic-btn:hover {
+            background: #e6edf8;
+            border-color: #7c9bcf;
+            transform: translateY(-1px);
+        }
+
+        .topic-btn.active {
+            background: #1e3a6f;
+            border-color: #1e3a6f;
+            color: white;
+            box-shadow: 0 4px 8px rgba(30,58,111,0.2);
+        }
+
+        .topic-btn.sql-btn.active {
+            background: #00758F;
+            border-color: #00758F;
+        }
+
+        .topic-btn.mongo-btn.active {
+            background: #47A248;
+            border-color: #47A248;
+        }
+
+        .question-section {
+            background: white;
+            border-radius: 28px;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            margin-top: 0.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0b1e33;
+        }
+
+        .section-header .badge {
+            background: #dbeafe;
+            color: #1e4a7a;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.7rem 1rem 0.7rem 1.2rem;
+            background: #fafcff;
+            border-radius: 14px;
+            border-left: 4px solid transparent;
+            transition: 0.15s;
+            line-height: 1.5;
+        }
+
+        .question-item:hover {
+            background: #f1f6fe;
+            border-left-color: #2563eb;
+        }
+
+        .question-item.sql-item:hover {
+            border-left-color: #00758F;
+        }
+
+        .question-item.mongo-item:hover {
+            border-left-color: #47A248;
+        }
+
+        .q-number {
+            font-weight: 600;
+            color: #4b6a99;
+            min-width: 2rem;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .q-text {
+            color: #1e293b;
+            font-size: 0.98rem;
+        }
+
+        .q-text code {
+            background: #eef2f6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #1e3a5f;
+        }
+
+        .footer-note {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #dce2ec;
+            padding-top: 2rem;
+        }
+
+        .footer-note i {
+            color: #2563eb;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .tech-badge.sql {
+            background: #e1f0f5;
+            color: #00758F;
+        }
+
+        .tech-badge.mongo {
+            background: #e6f5e6;
+            color: #47A248;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .question-section { padding: 1.5rem; }
+            .topic-grid { padding: 0.75rem 1rem; }
+            .section-header h2 { font-size: 1.4rem; }
+            .question-item { padding: 0.5rem 0.7rem; }
+            .badge { display: none; }
+            .header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <i class="fas fa-database"></i>
+            <i class="fas fa-leaf"></i>
+            SQL &amp; MongoDB
+        </h1>
+    </div>
+    <div class="subhead">
+        <i class="fas fa-list-check" style="margin-right: 0.6rem;"></i>
+        20 SQL topics + 20 MongoDB topics · 400+ questions · master databases
+    </div>
+
+    <!-- TOPIC NAV -->
+    <div class="topic-grid" id="topicNav">
+        <span><i class="fas fa-tag"></i> Topics:</span>
+    </div>
+
+    <!-- QUESTION DISPLAY -->
+    <div class="question-section" id="questionSection">
+        <div class="section-header">
+            <h2 id="topicTitle">Loading…</h2>
+            <span class="badge" id="questionCount">0 questions</span>
+        </div>
+        <div class="question-list" id="questionList"></div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-brain"></i> Use as self-assessment · each topic contains 10 questions
+    </div>
+</div>
+
+<script>
+    // ----------------------------------------------------------------
+    // DATA: SQL (20 topics) + MONGODB (20 topics) · 10 questions each
+    // ----------------------------------------------------------------
+    const TOPICS = {
+
+        // ========== SQL ==========
+        'SQL: Basics & Fundamentals': [
+            "What is SQL and what are its main components?",
+            "What is the difference between SQL and NoSQL?",
+            "What are the different types of SQL statements (DDL, DML, DCL, TCL)?",
+            "What is a database schema and why is it important?",
+            "Explain the concept of a primary key.",
+            "What is a foreign key and how does it work?",
+            "What is the difference between CHAR and VARCHAR?",
+            "What are the different data types in SQL?",
+            "What is the purpose of the SELECT statement?",
+            "What is the difference between DELETE and TRUNCATE?"
+        ],
+        'SQL: SELECT Queries': [
+            "How do you write a basic SELECT query?",
+            "What is the difference between SELECT DISTINCT and SELECT ALL?",
+            "How do you use the WHERE clause in SQL?",
+            "What are the different operators used in the WHERE clause?",
+            "How do you use the ORDER BY clause to sort results?",
+            "What is the purpose of the LIMIT clause?",
+            "How do you use the BETWEEN operator?",
+            "What is the IN operator and when is it used?",
+            "How do you use the LIKE operator for pattern matching?",
+            "What is the difference between WHERE and HAVING?"
+        ],
+        'SQL: Joins & Relationships': [
+            "What is a JOIN in SQL and why is it used?",
+            "Explain the difference between INNER JOIN and OUTER JOIN.",
+            "What is the difference between LEFT JOIN and RIGHT JOIN?",
+            "What is a FULL OUTER JOIN and when is it used?",
+            "What is a CROSS JOIN and when would you use it?",
+            "What is a SELF JOIN and how does it work?",
+            "How do you join more than two tables in SQL?",
+            "What is the difference between JOIN and UNION?",
+            "What are the performance considerations for JOINs?",
+            "How do you optimize JOIN queries?"
+        ],
+        'SQL: Aggregation & Grouping': [
+            "What are aggregate functions in SQL?",
+            "What is the COUNT function and how is it used?",
+            "What is the difference between COUNT(*) and COUNT(column)?",
+            "How do you use the GROUP BY clause?",
+            "What is the purpose of the HAVING clause?",
+            "What is the difference between WHERE and HAVING?",
+            "What are the SUM, AVG, MIN, and MAX functions?",
+            "How do you use aggregate functions with GROUP BY?",
+            "What is the difference between GROUP BY and DISTINCT?",
+            "How do you use multiple aggregate functions in a single query?"
+        ],
+        'SQL: Subqueries & CTEs': [
+            "What is a subquery in SQL and when is it used?",
+            "What is the difference between a subquery and a JOIN?",
+            "What are correlated subqueries and how do they work?",
+            "What is a Common Table Expression (CTE)?",
+            "What is the difference between a CTE and a subquery?",
+            "How do you use the WITH clause for CTEs?",
+            "What are recursive CTEs and when are they used?",
+            "How do you use subqueries in the WHERE clause?",
+            "What are scalar subqueries and how are they used?",
+            "What are the performance considerations for subqueries?"
+        ],
+        'SQL: Data Manipulation (DML)': [
+            "What is the INSERT statement and how is it used?",
+            "How do you insert multiple rows in a single INSERT statement?",
+            "What is the UPDATE statement and how does it work?",
+            "What is the DELETE statement and how is it used?",
+            "What is the MERGE statement and when is it used?",
+            "What is the difference between DELETE and TRUNCATE?",
+            "What is the purpose of the RETURNING clause?",
+            "How do you use transactions with DML operations?",
+            "What are the best practices for data manipulation?",
+            "How do you handle errors during DML operations?"
+        ],
+        'SQL: Constraints & Validation': [
+            "What are constraints in SQL and why are they important?",
+            "What is a PRIMARY KEY constraint and how does it work?",
+            "What is a FOREIGN KEY constraint and when is it used?",
+            "What is the UNIQUE constraint and how does it differ from PRIMARY KEY?",
+            "What is the NOT NULL constraint?",
+            "What is the CHECK constraint and how is it used?",
+            "What is the DEFAULT constraint?",
+            "How do you add or drop constraints from a table?",
+            "What are the advantages of using constraints?",
+            "What happens when a constraint is violated?"
+        ],
+        'SQL: Indexes & Performance': [
+            "What are indexes in SQL and why are they used?",
+            "What is the difference between clustered and non-clustered indexes?",
+            "What are composite indexes and when are they useful?",
+            "How do you create and drop indexes?",
+            "What are the advantages and disadvantages of indexes?",
+            "What is a covering index and how does it improve performance?",
+            "How do you analyze query performance using EXPLAIN?",
+            "What are the best practices for index usage?",
+            "What is index fragmentation and how do you handle it?",
+            "How do you choose which columns to index?"
+        ],
+        'SQL: Views & Materialized Views': [
+            "What is a view in SQL and why is it used?",
+            "How do you create and drop views?",
+            "What is the difference between a view and a table?",
+            "What are the advantages of using views?",
+            "What is a materialized view and how does it differ from a view?",
+            "When would you use a materialized view?",
+            "What are the limitations of views?",
+            "How do you update data through a view?",
+            "What is the purpose of the WITH CHECK OPTION?",
+            "What are the performance implications of using views?"
+        ],
+        'SQL: Stored Procedures & Functions': [
+            "What is a stored procedure in SQL?",
+            "What is the difference between a stored procedure and a function?",
+            "How do you create and execute stored procedures?",
+            "What are the advantages of using stored procedures?",
+            "What are the different types of parameters in stored procedures?",
+            "What is a user-defined function (UDF) and how is it used?",
+            "What is the difference between scalar and table-valued functions?",
+            "How do you handle errors in stored procedures?",
+            "What are the security considerations for stored procedures?",
+            "What are the performance implications of using stored procedures?"
+        ],
+        'SQL: Transactions & ACID': [
+            "What are transactions in SQL and why are they important?",
+            "What are the ACID properties in database transactions?",
+            "Explain each of the ACID properties (Atomicity, Consistency, Isolation, Durability).",
+            "What is the purpose of the BEGIN, COMMIT, and ROLLBACK statements?",
+            "What are isolation levels in transactions?",
+            "What is the difference between READ COMMITTED and REPEATABLE READ?",
+            "What is a dirty read and how does isolation prevent it?",
+            "What is a deadlock and how do you handle it?",
+            "What is the difference between optimistic and pessimistic locking?",
+            "What are the best practices for transaction management?"
+        ],
+        'SQL: Normalization & Design': [
+            "What is normalization in database design?",
+            "What are the different normal forms (1NF, 2NF, 3NF, BCNF)?",
+            "Explain the First Normal Form (1NF) with an example.",
+            "What is the Second Normal Form (2NF) and when is it achieved?",
+            "Explain the Third Normal Form (3NF) and its importance.",
+            "What is denormalization and when is it used?",
+            "What are the advantages of normalization?",
+            "What are the disadvantages of over-normalization?",
+            "How do you design a database schema effectively?",
+            "What are the best practices for database design?"
+        ],
+        'SQL: Advanced Queries': [
+            "What are window functions in SQL?",
+            "How do you use the ROW_NUMBER function?",
+            "What is the difference between RANK and DENSE_RANK?",
+            "How do you use the LAG and LEAD functions?",
+            "What is the purpose of the NTILE function?",
+            "How do you use the CASE statement in SQL?",
+            "What is the COALESCE function and when is it used?",
+            "What are the string functions in SQL (CONCAT, SUBSTRING, etc.)?",
+            "What are the date functions in SQL?",
+            "How do you perform pivoting in SQL?"
+        ],
+        'SQL: Triggers & Events': [
+            "What is a trigger in SQL and when is it used?",
+            "What are the different types of triggers (BEFORE, AFTER, INSTEAD OF)?",
+            "How do you create and drop triggers?",
+            "What are the advantages and disadvantages of triggers?",
+            "What is the purpose of the NEW and OLD keywords in triggers?",
+            "What are statement-level and row-level triggers?",
+            "What is an event scheduler in SQL?",
+            "How do you create scheduled events?",
+            "What are the best practices for using triggers?",
+            "What are the security implications of triggers?"
+        ],
+        'SQL: Security & Authorization': [
+            "What are the security features in SQL databases?",
+            "What is the difference between authentication and authorization?",
+            "What are users and roles in SQL?",
+            "How do you grant and revoke permissions?",
+            "What is the GRANT statement and how is it used?",
+            "What is the REVOKE statement?",
+            "What is the purpose of the WITH GRANT OPTION?",
+            "What is SQL injection and how do you prevent it?",
+            "What are the best practices for database security?",
+            "How do you audit database access?"
+        ],
+        'SQL: Backup & Recovery': [
+            "What are the different backup strategies in SQL?",
+            "What is a full backup and when is it performed?",
+            "What is a differential backup and how does it differ from full?",
+            "What is a transaction log backup?",
+            "How do you perform a database restore?",
+            "What is point-in-time recovery and how does it work?",
+            "What are the best practices for database backup?",
+            "What is the difference between online and offline backups?",
+            "How do you test backup and recovery procedures?",
+            "What are the common backup tools in SQL?"
+        ],
+        'SQL: Performance Tuning': [
+            "What are the key metrics for database performance?",
+            "How do you identify slow queries in SQL?",
+            "What is query optimization and how does it work?",
+            "How do you use the EXPLAIN plan to optimize queries?",
+            "What are the common performance bottlenecks in SQL?",
+            "How do you optimize table structures for performance?",
+            "What is the role of statistics in query optimization?",
+            "How do you use the query cache for performance?",
+            "What are the best practices for database performance tuning?",
+            "How do you monitor database performance?"
+        ],
+        'SQL: NoSQL Comparison': [
+            "What is the difference between SQL and NoSQL databases?",
+            "What are the advantages of SQL over NoSQL?",
+            "What are the advantages of NoSQL over SQL?",
+            "When would you choose SQL over NoSQL?",
+            "When would you choose NoSQL over SQL?",
+            "What are the different types of NoSQL databases?",
+            "How does data modeling differ between SQL and NoSQL?",
+            "What is the CAP theorem and how does it relate to SQL vs NoSQL?",
+            "What are the use cases for SQL databases?",
+            "What are the use cases for NoSQL databases?"
+        ],
+        'SQL: Advanced Topics (PostgreSQL, MySQL)': [
+            "What are the differences between PostgreSQL and MySQL?",
+            "What are the advanced features of PostgreSQL?",
+            "What is the purpose of the JSON data type in PostgreSQL?",
+            "What are the storage engines in MySQL (InnoDB, MyISAM)?",
+            "What is the difference between MyISAM and InnoDB?",
+            "What are the advanced indexing features in PostgreSQL?",
+            "How do you use full-text search in PostgreSQL/MySQL?",
+            "What are the differences in transaction handling?",
+            "What are the replication options in PostgreSQL and MySQL?",
+            "How do you choose between PostgreSQL and MySQL?"
+        ],
+        'SQL: Data Warehousing & OLAP': [
+            "What is a data warehouse and how does it differ from OLTP?",
+            "What is the difference between OLTP and OLAP?",
+            "What is the star schema in data warehousing?",
+            "What is the snowflake schema and how does it differ?",
+            "What are the key concepts in data warehousing?",
+            "What is ETL and how does it work?",
+            "What are fact tables and dimension tables?",
+            "What is data mining and how is it used?",
+            "What are the best practices for data warehousing?",
+            "What are the popular data warehousing solutions?"
+        ],
+
+        // ========== MONGODB ==========
+        'MongoDB: Basics & Concepts': [
+            "What is MongoDB and what type of database is it?",
+            "What are the key features of MongoDB?",
+            "What is the difference between MongoDB and SQL databases?",
+            "What is the document model in MongoDB?",
+            "What are collections and documents in MongoDB?",
+            "What is the difference between a database, collection, and document?",
+            "What is the purpose of the _id field in MongoDB?",
+            "What are the data types supported in MongoDB?",
+            "What is BSON and how does it differ from JSON?",
+            "What is the role of the MongoDB shell?"
+        ],
+        'MongoDB: CRUD Operations': [
+            "How do you create a database and collection in MongoDB?",
+            "What is the insertOne and insertMany methods?",
+            "How do you find documents using the find() method?",
+            "What is the difference between find() and findOne()?",
+            "How do you update documents using updateOne and updateMany?",
+            "What is the difference between update and replace operations?",
+            "How do you delete documents using deleteOne and deleteMany?",
+            "What is the purpose of the upsert option?",
+            "How do you use the $set and $unset operators?",
+            "What are the best practices for CRUD operations?"
+        ],
+        'MongoDB: Query Operators': [
+            "What are the comparison operators in MongoDB ($eq, $ne, $gt, etc.)?",
+            "How do you use the $in and $nin operators?",
+            "What is the $regex operator and how is it used?",
+            "How do you use logical operators ($and, $or, $not, $nor)?",
+            "What are array operators ($all, $size, $elemMatch)?",
+            "How do you query nested documents in MongoDB?",
+            "What is the $exists operator and when is it used?",
+            "How do you use the $type operator?",
+            "What is the $where operator and when should you use it?",
+            "What are the performance considerations for query operators?"
+        ],
+        'MongoDB: Aggregation Pipeline': [
+            "What is the aggregation pipeline in MongoDB?",
+            "What are the stages in the aggregation pipeline?",
+            "What is the $match stage and how is it used?",
+            "What is the $group stage and how does it work?",
+            "What is the $project stage and when is it used?",
+            "What is the $sort stage and how does it affect performance?",
+            "What is the $limit and $skip stages?",
+            "What is the $unwind stage and why is it used?",
+            "What are the $lookup and $graphLookup stages?",
+            "What are the best practices for aggregation pipelines?"
+        ],
+        'MongoDB: Indexing': [
+            "What are indexes in MongoDB and why are they important?",
+            "What are the different types of indexes in MongoDB?",
+            "What is a single field index and when is it used?",
+            "What is a compound index and how does it work?",
+            "What is a multikey index and when is it used?",
+            "What is a text index and how is it used for text search?",
+            "What is a geospatial index and when is it used?",
+            "What is a hashed index and what are its use cases?",
+            "How do you create and drop indexes in MongoDB?",
+            "What are the best practices for indexing in MongoDB?"
+        ],
+        'MongoDB: Schema Design': [
+            "What are the principles of schema design in MongoDB?",
+            "What is the difference between embedding and referencing?",
+            "When should you embed documents vs reference them?",
+            "What are the trade-offs between denormalization and normalization?",
+            "How do you handle one-to-one relationships in MongoDB?",
+            "How do you handle one-to-many relationships in MongoDB?",
+            "How do you handle many-to-many relationships in MongoDB?",
+            "What are the best practices for MongoDB schema design?",
+            "What are the common schema design patterns?",
+            "How do you migrate schema changes in MongoDB?"
+        ],
+        'MongoDB: Aggregation Advanced': [
+            "What is the $facet stage and when is it used?",
+            "What is the $bucket stage and how does it work?",
+            "What is the $bucketAuto stage for automatic bucketing?",
+            "What is the $addFields stage and when is it used?",
+            "What is the $replaceRoot stage?",
+            "What is the $merge stage and how is it used?",
+            "What are the $push and $addToSet operators in aggregation?",
+            "What is the $first and $last operators?",
+            "How do you use $cond for conditional expressions?",
+            "What are the performance best practices for aggregation?"
+        ],
+        'MongoDB: Transactions': [
+            "What are transactions in MongoDB and when are they used?",
+            "What is the ACID compliance in MongoDB?",
+            "How do you implement multi-document transactions?",
+            "What are the limitations of transactions in MongoDB?",
+            "What is the session in MongoDB transactions?",
+            "How do you handle transaction failures?",
+            "What is the difference between single-document and multi-document transactions?",
+            "What are the performance implications of transactions?",
+            "What are the best practices for using transactions?",
+            "When should you avoid transactions in MongoDB?"
+        ],
+        'MongoDB: Sharding': [
+            "What is sharding in MongoDB and why is it used?",
+            "What are the components of a sharded cluster?",
+            "What is a shard key and how do you choose it?",
+            "What is the difference between hashed and range-based sharding?",
+            "What is a config server in MongoDB sharding?",
+            "What are the benefits of sharding?",
+            "What are the challenges of sharding?",
+            "How do you monitor a sharded cluster?",
+            "What are the best practices for sharding?",
+            "When should you consider sharding?"
+        ],
+        'MongoDB: Replication': [
+            "What is replication in MongoDB and why is it used?",
+            "What is a replica set and how does it work?",
+            "What are the roles in a replica set (primary, secondary, arbiter)?",
+            "What is the election process in MongoDB replication?",
+            "What is the oplog (operation log) and its purpose?",
+            "What are the read preferences in MongoDB?",
+            "What is the write concern in MongoDB?",
+            "What is the difference between replication and sharding?",
+            "How do you configure and manage replica sets?",
+            "What are the best practices for replication?"
+        ],
+        'MongoDB: Performance Optimization': [
+            "How do you optimize query performance in MongoDB?",
+            "What is the role of explain() in performance tuning?",
+            "How do you use indexes to improve performance?",
+            "What is the query optimizer in MongoDB?",
+            "How do you identify slow queries in MongoDB?",
+            "What are the common performance bottlenecks in MongoDB?",
+            "How do you optimize aggregation pipelines?",
+            "What is the role of the profiler in MongoDB?",
+            "What are the best practices for MongoDB performance?",
+            "How do you monitor MongoDB performance?"
+        ],
+        'MongoDB: Security': [
+            "What are the security features in MongoDB?",
+            "What is authentication in MongoDB and how does it work?",
+            "What is role-based access control (RBAC) in MongoDB?",
+            "What are the different authentication mechanisms in MongoDB?",
+            "What is the purpose of SSL/TLS in MongoDB?",
+            "How do you enable and configure encryption in MongoDB?",
+            "What is the difference between SCRAM and x.509 authentication?",
+            "How do you implement network security for MongoDB?",
+            "What are the best practices for MongoDB security?",
+            "How do you audit MongoDB security?"
+        ],
+        'MongoDB: Backup & Recovery': [
+            "What are the backup strategies for MongoDB?",
+            "What is mongodump and how is it used?",
+            "What is mongorestore and when is it used?",
+            "What are the differences between logical and physical backups?",
+            "What is the point-in-time recovery in MongoDB?",
+            "How do you perform a backup of a sharded cluster?",
+            "What are the best practices for backup and recovery?",
+            "How do you test backup and recovery procedures?",
+            "What are the tools available for MongoDB backup?",
+            "How do you recover from data corruption in MongoDB?"
+        ],
+        'MongoDB: Data Modeling Patterns': [
+            "What are the common data modeling patterns in MongoDB?",
+            "What is the attribute pattern and when is it used?",
+            "What is the extended reference pattern?",
+            "What is the computed pattern and how does it work?",
+            "What is the subset pattern and when is it used?",
+            "What is the bucket pattern in MongoDB?",
+            "What is the outlier pattern and how is it handled?",
+            "What is the polymorphic pattern?",
+            "What is the inheritance pattern in MongoDB?",
+            "How do you choose the right modeling pattern?"
+        ],
+        'MongoDB: Advanced Queries': [
+            "How do you use the $lookup stage for joins?",
+            "What is the $graphLookup and when is it used?",
+            "How do you perform text search in MongoDB?",
+            "What is the $search stage in MongoDB Atlas?",
+            "How do you use geospatial queries in MongoDB?",
+            "What are the $near and $geoWithin operators?",
+            "How do you perform date queries in MongoDB?",
+            "What are the $convert and $toString operators?",
+            "How do you use the $arrayToObject operator?",
+            "What are the best practices for complex queries?"
+        ],
+        'MongoDB: Change Streams': [
+            "What are change streams in MongoDB?",
+            "How do you implement change streams?",
+            "What are the use cases for change streams?",
+            "What is the resume token and how does it work?",
+            "What are the event types in change streams?",
+            "How do you handle errors in change streams?",
+            "What are the limitations of change streams?",
+            "How do you use change streams with the aggregation framework?",
+            "What are the performance implications of change streams?",
+            "What are the best practices for using change streams?"
+        ],
+        'MongoDB: Atlas & Cloud': [
+            "What is MongoDB Atlas and what are its features?",
+            "How do you deploy a MongoDB cluster in Atlas?",
+            "What are the benefits of using MongoDB Atlas?",
+            "What are the backup and restore options in Atlas?",
+            "How do you monitor performance in MongoDB Atlas?",
+            "What are the security features in Atlas?",
+            "What is the Atlas Data API and how is it used?",
+            "What are the connection options in Atlas?",
+            "What are the best practices for using MongoDB Atlas?",
+            "How do you optimize Atlas for performance?"
+        ],
+        'MongoDB: Driver & ORM Integration': [
+            "How do you connect to MongoDB from Node.js?",
+            "What is the Mongoose ODM and how is it used?",
+            "What is the difference between MongoDB driver and Mongoose?",
+            "How do you define schemas in Mongoose?",
+            "What are the advantages of using Mongoose?",
+            "How do you implement validation in Mongoose?",
+            "What are the hooks (pre/post) in Mongoose?",
+            "How do you manage relationships in Mongoose?",
+            "What are the best practices for using Mongoose?",
+            "How do you handle connection pooling in MongoDB?"
+        ],
+        'MongoDB: Comparison with SQL': [
+            "What are the key differences between MongoDB and SQL databases?",
+            "When should you use MongoDB vs SQL?",
+            "What are the advantages of MongoDB over SQL?",
+            "What are the disadvantages of MongoDB compared to SQL?",
+            "How does data modeling differ between MongoDB and SQL?",
+            "What is the query language difference between MongoDB and SQL?",
+            "How does transaction handling differ?",
+            "What are the scalability differences?",
+            "What are the use cases for MongoDB vs SQL?",
+            "How do you migrate from SQL to MongoDB?"
+        ],
+        'MongoDB: Monitoring & Management': [
+            "What are the key metrics to monitor in MongoDB?",
+            "What is the MongoDB Cloud Manager?",
+            "What is the MongoDB Ops Manager?",
+            "How do you use the mongostat tool?",
+            "What is the mongotop tool and how is it used?",
+            "How do you monitor replication lag?",
+            "What are the alerting strategies for MongoDB?",
+            "How do you manage database operations in production?",
+            "What are the best practices for MongoDB management?",
+            "How do you troubleshoot common MongoDB issues?"
+        ]
+    };
+
+    // ---------- RENDER ----------
+    const topicNav = document.getElementById('topicNav');
+    const topicTitle = document.getElementById('topicTitle');
+    const questionCount = document.getElementById('questionCount');
+    const questionList = document.getElementById('questionList');
+
+    const topicNames = Object.keys(TOPICS);
+    let activeTopic = topicNames[0];
+
+    function isSQLTopic(topicName) {
+        return topicName.startsWith('SQL:');
+    }
+
+    function isMongoTopic(topicName) {
+        return topicName.startsWith('MongoDB:');
+    }
+
+    function renderNav() {
+        const label = topicNav.querySelector('span');
+        topicNav.innerHTML = '';
+        topicNav.appendChild(label);
+        topicNames.forEach(name => {
+            const btn = document.createElement('button');
+            let className = 'topic-btn';
+            if (name === activeTopic) {
+                className += ' active';
+                if (isSQLTopic(name)) className += ' sql-btn';
+                if (isMongoTopic(name)) className += ' mongo-btn';
+            }
+            btn.className = className;
+            btn.textContent = name;
+            btn.dataset.topic = name;
+            btn.addEventListener('click', () => {
+                activeTopic = name;
+                renderNav();
+                renderQuestions(name);
+            });
+            topicNav.appendChild(btn);
+        });
+    }
+
+    function renderQuestions(topicName) {
+        const qs = TOPICS[topicName] || [];
+        topicTitle.textContent = topicName;
+        questionCount.textContent = qs.length + ' questions';
+
+        if (qs.length === 0) {
+            questionList.innerHTML = `<div style="padding:2rem;text-align:center;color:#64748b;">No questions for this topic.</div>`;
+            return;
+        }
+
+        let html = '';
+        const isSQL = isSQLTopic(topicName);
+        const isMongo = isMongoTopic(topicName);
+        let itemClass = 'question-item';
+        if (isSQL) itemClass += ' sql-item';
+        if (isMongo) itemClass += ' mongo-item';
+
+        qs.forEach((q, idx) => {
+            const num = idx + 1;
+            html += `
+                <div class="${itemClass}">
+                    <span class="q-number">${num}.</span>
+                    <span class="q-text">${q}</span>
+                </div>
+            `;
+        });
+        questionList.innerHTML = html;
+    }
+
+    // init
+    renderNav();
+    renderQuestions(activeTopic);
+</script>
+</body>
+</html>

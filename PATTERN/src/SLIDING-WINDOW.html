@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Window · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e17;
+            color: #e8edf6;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem 4rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1180px; margin: 0 auto; }
+        ::selection { background: rgba(79,216,196,0.25); color: #4fd8c4; }
+
+        /* ----- hero ----- */
+        .hero { padding: 1.5rem 0 2.5rem; border-bottom: 1px solid #182236; margin-bottom: 2.5rem; }
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #4fd8c4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 24px; height: 1px; background: #4fd8c4; }
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            letter-spacing: -0.02em;
+            color: #e8edf6;
+        }
+        .hero h1 span { color: #5a6579; }
+        .hero .lede {
+            font-size: 1.05rem;
+            color: #8f9bb0;
+            max-width: 680px;
+            margin: 0.8rem 0 1.5rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #8f9bb0;
+            border: 1px solid #212c40;
+            border-radius: 8px;
+            padding: 6px 14px;
+            background: #0e1420;
+        }
+        .stat b { color: #e8edf6; font-weight: 600; }
+
+        /* ----- cards & grid ----- */
+        .sec { margin: 3.5rem 0 1.2rem; }
+        .sec-num { font-family: 'JetBrains Mono', monospace; color: #5a6579; font-size: 0.8rem; }
+        .sec h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: #e8edf6;
+            margin-top: 0.2rem;
+        }
+        .sec .desc {
+            color: #8f9bb0;
+            margin-top: 0.5rem;
+            max-width: 700px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+            margin-top: 1.2rem;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .concept-text ul { margin: 0.8rem 0 0 1.2rem; color: #8f9bb0; }
+        .concept-text ul li { margin-bottom: 0.5rem; }
+        .concept-text ul li b { color: #e8edf6; }
+
+        .callout {
+            margin-top: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            background: rgba(79,216,196,0.08);
+            border: 1px solid rgba(79,216,196,0.2);
+            font-size: 0.92rem;
+            color: #e8edf6;
+        }
+        .callout b { color: #4fd8c4; }
+
+        .mini-array {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+        }
+
+        /* ----- decision tree ----- */
+        .tree { display: flex; flex-direction: column; gap: 0; margin-top: 1.5rem; }
+        .tree-q {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            background: #0e1420;
+            border: 1px solid #212c40;
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .tree-q .q { color: #e8edf6; }
+        .tree-q .a { color: #5a6579; font-size: 0.8rem; }
+        .tree-arrow {
+            text-align: center;
+            color: #5a6579;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            padding: 4px 0;
+        }
+        .tree-result {
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .tree-result.t1 { background: rgba(79,216,196,0.08); border-color: rgba(79,216,196,0.3); color: #4fd8c4; }
+        .tree-result.t2 { background: rgba(246,173,85,0.08); border-color: rgba(246,173,85,0.3); color: #f6ad55; }
+        .tree-result.t3 { background: rgba(179,148,246,0.08); border-color: rgba(179,148,246,0.3); color: #b394f6; }
+
+        /* ----- pattern cards ----- */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .pattern-card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .pattern-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .pattern-card.p1::before { background: #4fd8c4; }
+        .pattern-card.p2::before { background: #f6ad55; }
+        .pattern-card.p3::before { background: #b394f6; }
+        .pattern-card .ptag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .pattern-card.p1 .ptag { color: #4fd8c4; }
+        .pattern-card.p2 .ptag { color: #f6ad55; }
+        .pattern-card.p3 .ptag { color: #b394f6; }
+        .pattern-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin: 0.4rem 0 0.6rem;
+            color: #e8edf6;
+        }
+        .pattern-card p { color: #8f9bb0; font-size: 0.9rem; margin-bottom: 0.8rem; }
+        .pattern-card ul { list-style: none; }
+        .pattern-card ul li {
+            font-size: 0.85rem;
+            color: #8f9bb0;
+            padding: 4px 0;
+            border-top: 1px solid #182236;
+        }
+        .pattern-card ul li:first-child { border-top: none; }
+        .pattern-card ul li b { color: #e8edf6; font-weight: 500; }
+
+        /* ----- visualizer ----- */
+        .viz {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-top: 1.5rem;
+        }
+        .viz-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.6rem;
+        }
+        .viz-head .name { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: #e8edf6; }
+        .viz-head .sub { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #5a6579; margin-top: 2px; }
+        .viz-controls { display: flex; gap: 8px; }
+        .btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            border: 1px solid #212c40;
+            background: #0e1420;
+            color: #e8edf6;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+        .btn:hover { border-color: #4fd8c4; color: #4fd8c4; }
+        .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .btn:disabled:hover { border-color: #212c40; color: #e8edf6; }
+        .btn.primary {
+            background: #4fd8c4;
+            color: #08130f;
+            border-color: #4fd8c4;
+            font-weight: 600;
+        }
+        .btn.primary:hover { filter: brightness(1.1); }
+
+        .array-stage {
+            position: relative;
+            padding-top: 44px;
+            padding-bottom: 56px;
+            overflow-x: auto;
+        }
+        .array-inner { position: relative; display: inline-block; min-width: 100%; }
+        .array-row { display: flex; gap: 8px; position: relative; z-index: 2; }
+        .cell {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: #1a2333;
+            border: 1px solid #212c40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #5a6579;
+            transition: background .25s ease, border-color .25s ease, color .25s ease;
+        }
+        .idx-row { display: flex; gap: 8px; margin-top: 6px; }
+        .idx-row span { width: 56px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #5a6579; }
+        .pointer-marker {
+            position: absolute;
+            top: 0;
+            width: 56px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            transition: left .35s cubic-bezier(.4,0,.2,1);
+            z-index: 3;
+        }
+        .pointer-marker .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        .pointer-marker .stem { width: 1px; height: 12px; background: #5a6579; margin: 2px auto 0; }
+        .window-band {
+            position: absolute;
+            bottom: 0;
+            height: 6px;
+            border-radius: 4px;
+            transition: left .35s cubic-bezier(.4,0,.2,1), width .35s cubic-bezier(.4,0,.2,1);
+            z-index: 1;
+        }
+        .viz-log {
+            margin-top: 1.4rem;
+            padding: 1rem 1.2rem;
+            background: #0e1420;
+            border: 1px solid #182236;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #e8edf6;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .viz-log .step-count { color: #5a6579; font-size: 0.75rem; }
+        .viz-log .msg b { color: #4fd8c4; }
+        .viz-log.done { border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.06); }
+        .viz-log.done .msg b { color: #4ade80; }
+
+        /* ----- problem groups ----- */
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 3rem 0 1.2rem;
+        }
+        .group-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .group-head h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; color: #e8edf6; }
+        .group-head .count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #5a6579;
+            border: 1px solid #212c40;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+        }
+        .problem-card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid #212c40;
+            transition: border-color .2s ease, transform .2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: #4fd8c4; }
+        .problem-card.g2 { border-left-color: #f6ad55; }
+        .problem-card.g3 { border-left-color: #b394f6; }
+        .problem-card .phead { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+        .problem-card .pnum { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #5a6579; }
+        .problem-card .pname { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; color: #e8edf6; margin-top: 2px; }
+        .problem-card .plc {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            background: #0e1420;
+            border: 1px solid #212c40;
+            color: #8f9bb0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc { color: #8f9bb0; font-size: 0.85rem; margin: 0.6rem 0; }
+        .problem-card .papproach {
+            background: #0e1420;
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.82rem;
+            color: #8f9bb0;
+            border: 1px solid #182236;
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: #e8edf6; }
+        .problem-card .ppitfall {
+            font-size: 0.8rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.06);
+            border: 1px solid rgba(248,113,113,0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .ppitfall b { color: #f87171; }
+        .pfoot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+        .complexity { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #5a6579; }
+
+        /* ----- mistakes ----- */
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .mistake {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid #f87171;
+        }
+        .mistake .mtitle { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #f8b4ac; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .mistake p { font-size: 0.85rem; color: #8f9bb0; }
+        .mistake .fix { margin-top: 0.5rem; font-size: 0.83rem; color: #4ade80; }
+        .mistake .fix b { font-family: 'JetBrains Mono', monospace; }
+
+        /* ----- checklist ----- */
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #0e1420;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #212c40;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4fd8c4, #b394f6);
+            transition: width .3s ease;
+        }
+        .progress-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #8f9bb0; white-space: nowrap; }
+        .checklist { display: flex; flex-direction: column; gap: 0.5rem; }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: #5a6579; }
+        .check-item.done { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid #5a6579;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: #0a0e17;
+        }
+        .check-item.done .check-box { background: #4ade80; border-color: #4ade80; }
+        .check-item span.label { font-size: 0.88rem; color: #8f9bb0; }
+        .check-item.done span.label { color: #e8edf6; text-decoration: line-through; text-decoration-color: #5a6579; }
+        .check-item .tier { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #5a6579; }
+
+        /* ----- cheat table ----- */
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1.5rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #5a6579;
+            padding: 10px 14px;
+            border-bottom: 1px solid #212c40;
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #182236;
+            color: #8f9bb0;
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl { font-family: 'Space Grotesk', sans-serif; color: #e8edf6; font-weight: 600; }
+
+        footer { text-align: center; margin-top: 4rem; color: #5a6579; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+
+        @media (max-width: 960px) {
+            .concept-grid { grid-template-columns: 1fr; }
+            .pattern-grid { grid-template-columns: 1fr; }
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- ===== HERO ===== -->
+    <div class="hero">
+        <div class="eyebrow">Algorithm Notes · Arrays &amp; Strings</div>
+        <h1>Sliding Window <span>— from recognition to mastery</span></h1>
+        <p class="lede">The sliding window pattern is about maintaining a contiguous segment that moves through the data. The skill is knowing whether the window should be fixed-size or variable-size — this page shows both running, not just reading.</p>
+        <div class="stat-row">
+            <div class="stat">⏱ <b>O(n)</b> time, most cases</div>
+            <div class="stat">💾 <b>O(1)</b> or <b>O(k)</b> space</div>
+            <div class="stat"><b>2</b> window types</div>
+            <div class="stat"><b>15</b> problems</div>
+        </div>
+    </div>
+
+    <!-- ===== 1. CORE IDEA ===== -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What problem does this actually solve?</h2>
+        <p class="desc">A brute-force approach recomputes the property for every subarray from scratch — that's O(n²). Sliding window updates the result incrementally as the window moves, so each element is added and removed at most once.</p>
+    </div>
+
+    <div class="concept-grid">
+        <div class="card concept-text">
+            <p>The two variants differ in <b>how the window size changes</b>:</p>
+            <ul>
+                <li><b>Fixed-size window</b> — the window size is known in advance (e.g., k). You initialize the window, then slide it one step at a time: remove the leftmost, add the new rightmost.</li>
+                <li><b>Variable-size window</b> — the window grows and shrinks dynamically. The right pointer expands the window; the left pointer shrinks it when a constraint is violated.</li>
+            </ul>
+            <div class="callout"><b>The one question that decides everything:</b> is the window size fixed (given as k) or do you need to find the optimal size (longest/shortest that satisfies a condition)?</div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="mini-array" id="concept-array"></div>
+        </div>
+    </div>
+
+    <!-- ===== 2. DECISION TREE ===== -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>Identify the pattern before you write a line of code</h2>
+        <p class="desc">Ask these in order. The first "yes" tells you which variant to reach for.</p>
+    </div>
+    <div class="card">
+        <div class="tree">
+            <div class="tree-q"><span class="q">1. Is the window size fixed (e.g., find max sum of subarray of size k)?</span><span class="a">check first</span></div>
+            <div class="tree-arrow">yes ↓</div>
+            <div class="tree-result t1">→ Fixed-Size Window <span>initialize first k elements, then slide: remove left, add right</span></div>
+            <div class="tree-arrow">no ↓</div>
+            <div class="tree-q"><span class="q">2. Are you looking for the longest/shortest/count of subarrays that satisfy a dynamic condition (e.g., sum ≥ target, no duplicates, at most K distinct)?</span><span class="a">check second</span></div>
+            <div class="tree-arrow">yes ↓</div>
+            <div class="tree-result t2">→ Variable-Size Window <span>expand R, shrink L while constraint is broken</span></div>
+        </div>
+    </div>
+
+    <div class="pattern-grid">
+        <div class="pattern-card p1">
+            <div class="ptag">Type 01</div>
+            <h3>Fixed-Size Window</h3>
+            <p>Window size is known (k). Slide it one element at a time.</p>
+            <ul>
+                <li><b>Initialize:</b> compute result for first k elements</li>
+                <li><b>Slide:</b> remove nums[i], add nums[i+k]</li>
+                <li><b>Update:</b> track max/min/count for each position</li>
+                <li><b>Loop guard:</b> <code>for i in range(k, n)</code></li>
+            </ul>
+        </div>
+        <div class="pattern-card p2">
+            <div class="ptag">Type 02</div>
+            <h3>Variable-Size Window</h3>
+            <p>Window size changes dynamically based on a condition.</p>
+            <ul>
+                <li><b>Expand:</b> move R forward, add its element to window state</li>
+                <li><b>Shrink:</b> while constraint is violated, move L forward, remove its element</li>
+                <li><b>Record:</b> update answer once the window is valid</li>
+                <li><b>Loop guard:</b> outer <code>for R</code>, inner <code>while</code> for L</li>
+            </ul>
+        </div>
+        <div class="pattern-card p3">
+            <div class="ptag">Common pitfall</div>
+            <h3>Shrink with `while`, not `if`</h3>
+            <p>One new element can violate the constraint by more than one unit.</p>
+            <ul>
+                <li><b>Wrong:</b> <code>if condition: shrink once</code></li>
+                <li><b>Right:</b> <code>while condition: shrink repeatedly</code></li>
+                <li>Always shrink in a <code>while</code> loop until the constraint holds again</li>
+                <li>This is the single most common bug in variable-size sliding window</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 3. INTERACTIVE VISUALIZERS ===== -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>Watch each pattern run, one decision at a time</h2>
+        <p class="desc">Step through real traces. Each click is exactly one decision the algorithm makes — read the log line before you click again.</p>
+    </div>
+
+    <!-- Visualizer 1: Fixed-Size Window -->
+    <div class="viz">
+        <div class="viz-head">
+            <div>
+                <div class="name">643 · Maximum Average Subarray I — Fixed Size</div>
+                <div class="sub">nums = [1,12,-5,-6,50,3]  ·  k = 4</div>
+            </div>
+            <div class="viz-controls">
+                <button class="btn" id="v1-reset">Reset</button>
+                <button class="btn primary" id="v1-next">Next step →</button>
+            </div>
+        </div>
+        <div class="array-stage"><div class="array-inner" id="v1-stage"></div></div>
+        <div class="viz-log" id="v1-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v1-count">Step 0 / 4</span></div>
+    </div>
+
+    <!-- Visualizer 2: Variable-Size Window (Min Size Subarray Sum) -->
+    <div class="viz">
+        <div class="viz-head">
+            <div>
+                <div class="name">209 · Minimum Size Subarray Sum — Variable Size</div>
+                <div class="sub">nums = [2,3,1,2,4,3]  ·  target sum ≥ 7</div>
+            </div>
+            <div class="viz-controls">
+                <button class="btn" id="v2-reset">Reset</button>
+                <button class="btn primary" id="v2-next">Next step →</button>
+            </div>
+        </div>
+        <div class="array-stage"><div class="array-inner" id="v2-stage"></div></div>
+        <div class="viz-log" id="v2-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v2-count">Step 0 / 6</span></div>
+    </div>
+
+    <!-- ===== 4. PROBLEMS ===== -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>All 15 problems, with the pitfall that actually trips people up</h2>
+        <p class="desc">Each card includes the approach in plain terms and the one mistake that's most common on that exact problem — not a generic warning.</p>
+    </div>
+
+    <div class="group-head"><div class="group-dot" style="background:#4fd8c4"></div><h3>Fixed-Size Window</h3><span class="count">7 problems</span></div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <div class="group-head"><div class="group-dot" style="background:#f6ad55"></div><h3>Variable-Size Window</h3><span class="count">8 problems</span></div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <!-- ===== 5. COMMON MISTAKES ===== -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Mistakes that show up across almost every problem</h2>
+        <p class="desc">If your sliding window solution is wrong, it's very likely one of these three things, in roughly this order of likelihood.</p>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Shrinking with `if` instead of `while`</div>
+            <p>In variable-size window, a single <code>if</code> only shrinks once per expansion. If one new element can violate the constraint by more than one unit, the window stays invalid.</p>
+            <div class="fix">Fix: shrink inside a <b>while</b> loop that keeps running until the constraint holds again.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Forgetting to update the answer after shrinking</div>
+            <p>In variable-size problems, the window may become valid only after shrinking. If you update the answer before the inner while loop, you might record an invalid window.</p>
+            <div class="fix">Fix: update the answer <b>after</b> the inner while loop, when the window is guaranteed to be valid.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Wrong initialization in fixed-size window</div>
+            <p>When sliding, you need to remove the element that's leaving the window before adding the new one, or add before remove — the order matters for the running sum/product.</p>
+            <div class="fix">Fix: consistent order — either <b>remove then add</b> or <b>add then remove</b>, but don't mix them.</div>
+        </div>
+    </div>
+
+    <!-- ===== 6. MASTERY PATH ===== -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Suggested practice order</h2>
+        <p class="desc">Work top to bottom — each tier assumes you're comfortable with the one above it. Click a problem once you can solve it without looking at the approach note.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 15 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <!-- ===== 7. CHEAT SHEET ===== -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>Cheat sheet</h2>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Window type</th><th>Pointers</th><th>Move rule</th><th>Problems</th></tr></thead>
+            <tbody>
+            <tr>
+                <td class="lbl" style="color:#4fd8c4">Fixed-Size</td>
+                <td>L = 0, R = k-1</td>
+                <td>Slide: remove nums[L], add nums[R+1], L++, R++</td>
+                <td>643, 1343, 1456, 1876, 1052, 438, 567</td>
+            </tr>
+            <tr>
+                <td class="lbl" style="color:#f6ad55">Variable-Size</td>
+                <td>L = 0, R = 0</td>
+                <td>Expand R every iteration; shrink L in a while loop while constraint is broken</td>
+                <td>209, 713, 3, 904, 1004, 1248, 30, 76</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>Sliding Window · Mastery Notes — all problems from LeetCode</footer>
+</div>
+
+<script>
+    /* ============================================================
+       Concept mini-array
+       ============================================================ */
+    (function(){
+        const el = document.getElementById("concept-array");
+        const vals = [2, 1, 5, 1, 3, 2];
+        vals.forEach((v, idx) => {
+            const c = document.createElement("div");
+            c.style.width = "44px";
+            c.style.height = "44px";
+            c.style.borderRadius = "8px";
+            c.style.display = "flex";
+            c.style.alignItems = "center";
+            c.style.justifyContent = "center";
+            c.style.fontFamily = "'JetBrains Mono', monospace";
+            c.style.fontWeight = "600";
+            c.style.fontSize = "0.9rem";
+            if (idx >= 2 && idx <= 4) {
+                c.style.background = "rgba(79,216,196,0.15)";
+                c.style.border = "1px solid #4fd8c4";
+                c.style.color = "#4fd8c4";
+            } else {
+                c.style.background = "#1a2333";
+                c.style.border = "1px solid #212c40";
+                c.style.color = "#5a6579";
+            }
+            c.textContent = v;
+            el.appendChild(c);
+        });
+    })();
+
+    /* ============================================================
+       Visualizer 1 — Fixed-Size (643)
+       ============================================================ */
+    (function(){
+        const nums = [1, 12, -5, -6, 50, 3];
+        const k = 4;
+        const stage = document.getElementById("v1-stage");
+        const buildArray = (container, vals) => {
+            container.innerHTML = "";
+            const row = document.createElement("div");
+            row.className = "array-row";
+            row.id = container.id + "-row";
+            vals.forEach(v => {
+                const c = document.createElement("div");
+                c.className = "cell";
+                c.textContent = v;
+                row.appendChild(c);
+            });
+            const idxRow = document.createElement("div");
+            idxRow.className = "idx-row";
+            vals.forEach((_, i) => {
+                const s = document.createElement("span");
+                s.textContent = i;
+                idxRow.appendChild(s);
+            });
+            container.appendChild(row);
+            container.appendChild(idxRow);
+        };
+        const setCellStates = (container, states) => {
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            [...row.children].forEach((cell, i) => {
+                const st = states[i] || null;
+                cell.style.background = "#1a2333";
+                cell.style.borderColor = "#212c40";
+                cell.style.color = "#5a6579";
+                if (st === 'active') {
+                    cell.style.background = "rgba(79,216,196,0.15)";
+                    cell.style.borderColor = "#4fd8c4";
+                    cell.style.color = "#4fd8c4";
+                }
+                if (st === 'highlight') {
+                    cell.style.background = "rgba(246,173,85,0.15)";
+                    cell.style.borderColor = "#f6ad55";
+                    cell.style.color = "#f6ad55";
+                }
+                if (st === 'green') {
+                    cell.style.background = "rgba(74,222,128,0.12)";
+                    cell.style.borderColor = "#4ade80";
+                    cell.style.color = "#4ade80";
+                }
+            });
+        };
+        const placePointers = (container, pointers) => {
+            container.querySelectorAll(".pointer-marker").forEach(el => el.remove());
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            const cells = [...row.children];
+            pointers.forEach(p => {
+                if (p.index < 0 || p.index >= cells.length) return;
+                const m = document.createElement("div");
+                m.className = "pointer-marker";
+                m.style.left = (p.index * 64) + "px";
+                m.innerHTML = `<span class="tag" style="background:rgba(79,216,196,0.1);color:#4fd8c4;border:1px solid #4fd8c4">${p.label}</span><div class="stem" style="background:#4fd8c4"></div>`;
+                container.appendChild(m);
+            });
+        };
+        const placeWindow = (container, from, to, color) => {
+            container.querySelectorAll(".window-band").forEach(el => el.remove());
+            if (from === null || to === null) return;
+            const band = document.createElement("div");
+            band.className = "window-band";
+            band.style.left = (from * 64) + "px";
+            band.style.width = ((to - from + 1) * 64 - 8) + "px";
+            band.style.background = `rgba(79,216,196,0.4)`;
+            container.appendChild(band);
+        };
+
+        buildArray(stage, nums);
+        const steps = [
+            { L: 0, R: 3, states: ['active','active','active','active',null,null], msg: "Window [0..3] → sum = 2, max = 2" },
+            { L: 1, R: 4, states: [null,'active','active','active','active',null], msg: "Slide → remove index 0 (1), add index 4 (50) → sum = 51, max = 51" },
+            { L: 2, R: 5, states: [null,null,'active','active','active','active'], msg: "Slide → remove index 1 (12), add index 5 (3) → sum = 42, max stays 51" },
+            { L: 0, R: 5, states: ['green','green','green','green','green','green'], msg: "Done! Maximum sum = 51 → average = 12.75", done: true },
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v1-next");
+        const resetBtn = document.getElementById("v1-reset");
+        const log = document.getElementById("v1-log");
+        const count = document.getElementById("v1-count");
+
+        function render() {
+            if (i < 0) {
+                setCellStates(stage, [null,null,null,null,null,null]);
+                placePointers(stage, []);
+                placeWindow(stage, null, null);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            setCellStates(stage, s.states);
+            placePointers(stage, [{ index: s.L, label: 'L' }]);
+            placeWindow(stage, s.L, s.R);
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if (s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", () => { if (i < steps.length - 1) { i++; render(); } });
+        resetBtn.addEventListener("click", () => { i = -1; render(); });
+        render();
+    })();
+
+    /* ============================================================
+       Visualizer 2 — Variable-Size (209)
+       ============================================================ */
+    (function(){
+        const nums = [2, 3, 1, 2, 4, 3];
+        const target = 7;
+        const stage = document.getElementById("v2-stage");
+        const buildArray = (container, vals) => {
+            container.innerHTML = "";
+            const row = document.createElement("div");
+            row.className = "array-row";
+            row.id = container.id + "-row";
+            vals.forEach(v => {
+                const c = document.createElement("div");
+                c.className = "cell";
+                c.textContent = v;
+                row.appendChild(c);
+            });
+            const idxRow = document.createElement("div");
+            idxRow.className = "idx-row";
+            vals.forEach((_, i) => {
+                const s = document.createElement("span");
+                s.textContent = i;
+                idxRow.appendChild(s);
+            });
+            container.appendChild(row);
+            container.appendChild(idxRow);
+        };
+        const setCellStates = (container, states) => {
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            [...row.children].forEach((cell, i) => {
+                const st = states[i] || null;
+                cell.style.background = "#1a2333";
+                cell.style.borderColor = "#212c40";
+                cell.style.color = "#5a6579";
+                if (st === 'window') {
+                    cell.style.background = "rgba(179,148,246,0.15)";
+                    cell.style.borderColor = "#b394f6";
+                    cell.style.color = "#b394f6";
+                }
+                if (st === 'green') {
+                    cell.style.background = "rgba(74,222,128,0.12)";
+                    cell.style.borderColor = "#4ade80";
+                    cell.style.color = "#4ade80";
+                }
+            });
+        };
+        const placePointers = (container, pointers) => {
+            container.querySelectorAll(".pointer-marker").forEach(el => el.remove());
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            const cells = [...row.children];
+            pointers.forEach(p => {
+                if (p.index < 0 || p.index >= cells.length) return;
+                const m = document.createElement("div");
+                m.className = "pointer-marker";
+                m.style.left = (p.index * 64) + "px";
+                const color = p.color === 'L' ? '#4fd8c4' : '#f6ad55';
+                const bg = p.color === 'L' ? 'rgba(79,216,196,0.1)' : 'rgba(246,173,85,0.1)';
+                m.innerHTML = `<span class="tag" style="background:${bg};color:${color};border:1px solid ${color}">${p.label}</span><div class="stem" style="background:${color}"></div>`;
+                container.appendChild(m);
+            });
+        };
+        const placeWindow = (container, from, to, color) => {
+            container.querySelectorAll(".window-band").forEach(el => el.remove());
+            if (from === null || to === null) return;
+            const band = document.createElement("div");
+            band.className = "window-band";
+            band.style.left = (from * 64) + "px";
+            band.style.width = ((to - from + 1) * 64 - 8) + "px";
+            band.style.background = `rgba(179,148,246,0.3)`;
+            container.appendChild(band);
+        };
+
+        buildArray(stage, nums);
+        const steps = [
+            { L: 0, R: 0, states: ['window',null,null,null,null,null], sum: 2, msg: "R=0 → sum=2 < 7, expand" },
+            { L: 0, R: 1, states: ['window','window',null,null,null,null], sum: 5, msg: "R=1 → sum=5 < 7, expand" },
+            { L: 0, R: 2, states: ['window','window','window',null,null,null], sum: 6, msg: "R=2 → sum=6 < 7, expand" },
+            { L: 0, R: 3, states: ['window','window','window','window',null,null], sum: 8, msg: "R=3 → sum=8 ≥ 7, shrink L: L=1, sum=6" },
+            { L: 1, R: 4, states: [null,'window','window','window','window',null], sum: 10, msg: "R=4 → sum=10 ≥ 7, shrink L: L=2, sum=7 → L=3, sum=6" },
+            { L: 3, R: 5, states: [null,null,null,'window','window','window'], sum: 9, msg: "R=5 → sum=9 ≥ 7, shrink L: L=4, sum=7 → L=5, sum=3", done: true, final: true },
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v2-next");
+        const resetBtn = document.getElementById("v2-reset");
+        const log = document.getElementById("v2-log");
+        const count = document.getElementById("v2-count");
+
+        function render() {
+            if (i < 0) {
+                setCellStates(stage, [null,null,null,null,null,null]);
+                placePointers(stage, []);
+                placeWindow(stage, null, null);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            setCellStates(stage, s.states);
+            const pts = [];
+            if (s.L !== undefined) pts.push({ index: s.L, label: 'L', color: 'L' });
+            if (s.R !== undefined && s.R !== s.L) pts.push({ index: s.R, label: 'R', color: 'R' });
+            placePointers(stage, pts);
+            placeWindow(stage, s.L, s.R);
+            const msg = s.done ? `✅ ${s.msg} → answer = 2` : s.msg;
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = `<span class="msg">${msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if (s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", () => { if (i < steps.length - 1) { i++; render(); } });
+        resetBtn.addEventListener("click", () => { i = -1; render(); });
+        render();
+    })();
+
+    /* ============================================================
+       Problem data
+       ============================================================ */
+    const problems = {
+        a: [
+            { num: "643", name: "Maximum Average Subarray I", tag: "fixed", desc: "Find the contiguous subarray of size k with the maximum average value.", approach: "Initialize sum for first k elements. Slide the window by subtracting the leftmost and adding the next element. Track the maximum sum.", pitfall: "Using floating point division at every step instead of comparing sums and dividing once at the end — this introduces rounding errors.", complexity: "O(n) · O(1)" },
+            { num: "1343", name: "Number of Sub-arrays of Size K and Avg ≥ Threshold", tag: "fixed", desc: "Count subarrays of size k whose average is at least a given threshold.", approach: "Use fixed-size window to compute sum for each window. If sum >= threshold * k, increment count.", pitfall: "Comparing sum to threshold * k without thinking about integer overflow — use long long in languages with fixed-size ints.", complexity: "O(n) · O(1)" },
+            { num: "1456", name: "Maximum Number of Vowels in a Substring of Given Length", tag: "fixed", desc: "Find the maximum number of vowels in any substring of length k.", approach: "Count vowels in first k chars. Slide: decrement if leaving char is vowel, increment if entering char is vowel.", pitfall: "Forgetting that vowels are only 'a', 'e', 'i', 'o', 'u' — 'y' is not a vowel in this context.", complexity: "O(n) · O(1)" },
+            { num: "1876", name: "Substrings of Size Three with Distinct Characters", tag: "fixed", desc: "Count substrings of length 3 with all distinct characters.", approach: "Check each window of size 3. Since k=3, just compare s[i], s[i+1], s[i+2] for distinctness.", pitfall: "Using a set for each window instead of simple comparison — overcomplicating the problem.", complexity: "O(n) · O(1)" },
+            { num: "1052", name: "Grumpy Bookstore Owner", tag: "fixed", desc: "Given an array of customers and grumpy states, maximize satisfied customers by using a technique for k minutes.", approach: "Compute base satisfaction (where grumpy=0). Use fixed window to find max additional satisfaction from grumpy minutes.", pitfall: "Forgetting that the technique only works when grumpy=1 — you can't 'un-grump' a already happy minute.", complexity: "O(n) · O(1)" },
+            { num: "438", name: "Find All Anagrams in a String", tag: "fixed", desc: "Find all start indices of p's anagrams in s.", approach: "Use a frequency map for p and a window of size len(p). Slide the window and compare frequency maps.", pitfall: "Using a full map comparison for every window instead of maintaining a count of matches incrementally.", complexity: "O(n) · O(1) space (26 letters)" },
+            { num: "567", name: "Permutation in String", tag: "fixed", desc: "Check if one string's permutation is a substring of another.", approach: "Same as 438 — use fixed window of size len(s1) and compare character counts.", pitfall: "Returning true as soon as any window matches, but forgetting to check all windows if the first one doesn't match.", complexity: "O(n) · O(1)" },
+        ],
+        b: [
+            { num: "209", name: "Minimum Size Subarray Sum", tag: "variable", desc: "Find the minimal length of a contiguous subarray with sum ≥ target.", approach: "Expand R, add to sum. While sum ≥ target, record length and shrink L.", pitfall: "Using `if` instead of `while` to shrink — after one shrink the window might still satisfy the constraint.", complexity: "O(n) · O(1)" },
+            { num: "713", name: "Subarray Product Less Than K", tag: "variable", desc: "Count contiguous subarrays where the product is strictly less than K.", approach: "Expand R, multiply product. While product ≥ K, divide out nums[L] and advance L. Add (R−L+1) to answer each step.", pitfall: "Forgetting the K ≤ 1 edge case — if K is 0 or 1, no subarray of positive ints can have product < K.", complexity: "O(n) · O(1)" },
+            { num: "3", name: "Longest Substring Without Repeating Characters", tag: "variable", desc: "Find the length of the longest substring without repeating characters.", approach: "Use a set (or hashmap) to track window chars. Expand R; if s[R] is in the window, shrink L until the duplicate is removed.", pitfall: "Using a hashmap of last-seen index but forgetting that index might be stale (outside the current window).", complexity: "O(n) · O(min(n, charset))" },
+            { num: "904", name: "Fruit Into Baskets", tag: "variable", desc: "Find the maximum length of a subarray with at most two distinct values.", approach: "Use a hashmap to count frequencies. Expand R; while map size > 2, decrement nums[L] and remove if zero, then L++.", pitfall: "Forgetting that the basket count is at most 2 — any more than 2 distinct fruits in the window is invalid.", complexity: "O(n) · O(1)" },
+            { num: "1004", name: "Max Consecutive Ones III", tag: "variable", desc: "Find the longest subarray with at most K zeros (you can flip K zeros to ones).", approach: "Track zero count. Expand R; if zero count > K, shrink L until zero count ≤ K. Track max length.", pitfall: "Shrinking one by one instead of using a while loop — you might need to shrink multiple times to get back under K.", complexity: "O(n) · O(1)" },
+            { num: "1248", name: "Count Number of Nice Subarrays", tag: "variable", desc: "Count subarrays with exactly k odd numbers.", approach: "Use a helper to count subarrays with at most k odd numbers, then return atMost(k) - atMost(k-1).", pitfall: "Trying to use a single sliding window with an exact condition — it's much easier to use the atMost trick.", complexity: "O(n) · O(1)" },
+            { num: "30", name: "Substring with Concatenation of All Words", tag: "variable", desc: "Find all starting indices of substrings that are a concatenation of all words in a list.", approach: "Use a sliding window of size words.length * wordLen with a hashmap. This is a harder version of the anagram problem.", pitfall: "Not handling the case where the window crosses word boundaries — you need to slide by wordLen, not by 1.", complexity: "O(n · wordLen) · O(m)" },
+            { num: "76", name: "Minimum Window Substring", tag: "variable", desc: "Find the minimum window in s that contains all characters of t.", approach: "Use a frequency map for t. Expand R; when all chars are found, shrink L while maintaining the condition, tracking the minimum window.", pitfall: "Forgetting to update the answer after shrinking — the smallest window is often found during the shrink phase, not after expansion.", complexity: "O(n) · O(1)" },
+        ]
+    };
+
+    function renderProblems(groupId, cls, arr) {
+        const container = document.getElementById(groupId);
+        arr.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            card.innerHTML = `
+                <div class="phead">
+                    <div><div class="pnum">LeetCode ${p.num}</div><div class="pname">${p.name}</div></div>
+                    <div class="plc">${p.tag}</div>
+                </div>
+                <div class="pdesc">${p.desc}</div>
+                <div class="papproach"><b>Approach —</b> ${p.approach}</div>
+                <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+                <div class="pfoot"><span class="complexity">${p.complexity}</span></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+    renderProblems("group-a", "g1", problems.a);
+    renderProblems("group-b", "g2", problems.b);
+
+    /* ============================================================
+       Mastery checklist
+       ============================================================ */
+    const allProblems = [
+        { n: "643 Maximum Average Subarray I", tier: "start here" },
+        { n: "1343 Subarrays with Avg ≥ Threshold", tier: "start here" },
+        { n: "1456 Max Vowels in Substring", tier: "start here" },
+        { n: "209 Minimum Size Subarray Sum", tier: "core" },
+        { n: "3 Longest Substring w/o Repeating", tier: "core" },
+        { n: "713 Subarray Product Less Than K", tier: "core" },
+        { n: "567 Permutation in String", tier: "core" },
+        { n: "438 Find All Anagrams", tier: "core" },
+        { n: "1004 Max Consecutive Ones III", tier: "stretch" },
+        { n: "904 Fruit Into Baskets", tier: "stretch" },
+        { n: "1248 Count Number of Nice Subarrays", tier: "stretch" },
+        { n: "1052 Grumpy Bookstore Owner", tier: "stretch" },
+        { n: "30 Substring with Concatenation", tier: "hard" },
+        { n: "76 Minimum Window Substring", tier: "hard" },
+        { n: "1876 Substrings of Size Three", tier: "easy" },
+    ];
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress() {
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done / allProblems.length * 100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+
+    allProblems.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", () => { item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>

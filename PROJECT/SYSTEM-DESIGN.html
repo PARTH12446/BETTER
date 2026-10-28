@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>System Design Mastery · 50 Topics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #f6f8fc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --primary-dark: #1d4ed8;
+            --success: #22c55e;
+            --success-light: #f0fdf4;
+            --warning: #eab308;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --purple: #8b5cf6;
+            --purple-light: #ede9fe;
+            --pink: #ec4899;
+            --pink-light: #fce7f3;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+        }
+        body.dark {
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #1e293b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #1e293b;
+            --primary: #3b82f6;
+            --primary-light: #1e3a5f;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+        .app { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 380px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.2rem 1rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            flex-shrink: 0;
+            transition: background 0.3s, border 0.3s;
+            z-index: 10;
+        }
+        .sidebar-brand {
+            font-weight: 800;
+            font-size: 1.3rem;
+            padding: 0 0.5rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+        .sidebar-brand i { font-size: 1.4rem; }
+        .sidebar-stats {
+            display: flex;
+            gap: 8px;
+            padding: 0 0.5rem 1rem;
+            flex-wrap: wrap;
+        }
+        .sidebar-stats .stat {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        body.dark .sidebar-stats .stat { background: #1e3a5f; color: #93c5fd; }
+        .sidebar-search {
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+            position: relative;
+        }
+        .sidebar-search input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.2s;
+            color: var(--text);
+        }
+        .sidebar-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        .sidebar-search .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .topic-list {
+            list-style: none;
+            padding: 0 0.2rem;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+        .topic-list li {
+            padding: 5px 10px;
+            margin: 1px 0;
+            border-radius: 30px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+        .topic-list li:hover { background: var(--border-light); }
+        .topic-list li.active {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+        body.dark .topic-list li.active { background: var(--primary); }
+        .topic-list li .badge {
+            margin-left: auto;
+            font-size: 0.5rem;
+            padding: 1px 8px;
+            border-radius: 30px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .topic-list li .badge.theory { background: var(--primary-light); color: var(--primary); }
+        .topic-list li .badge.design { background: var(--warning-light); color: #92400e; }
+        body.dark .topic-list li .badge.theory { background: #1e3a5f; color: #93c5fd; }
+        body.dark .topic-list li .badge.design { background: #2d1f0a; color: #fbbf24; }
+        .topic-list li .badge.done { background: var(--success-light); color: #166534; }
+        body.dark .topic-list li .badge.done { background: #0f2a1a; color: #4ade80; }
+        .topic-list li .num { opacity: 0.4; font-size: 0.6rem; min-width: 22px; }
+
+        .progress-track {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .progress-track .bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .progress-track .bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            padding: 2rem 2.5rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-width: 0;
+            width: 100%;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .top-bar .breadcrumb {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .top-bar .breadcrumb span { color: var(--text-secondary); }
+        .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .top-actions button {
+            background: var(--border-light);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            transition: 0.2s;
+        }
+        .top-actions button:hover { background: var(--border); }
+        body.dark .top-actions button { background: #334155; color: #e2e8f0; }
+        .top-actions button.primary { background: var(--primary); color: #fff; }
+        .top-actions button.primary:hover { background: var(--primary-dark); }
+
+        .topic-detail {
+            background: var(--bg-card);
+            padding: 2rem 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: background 0.3s, border 0.3s;
+        }
+        .topic-detail h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .topic-detail .sub {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .topic-detail .sub .tag {
+            font-size: 0.65rem;
+            padding: 2px 12px;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .topic-detail .section {
+            margin: 1.8rem 0 0.8rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topic-detail p, .topic-detail li { line-height: 1.8; color: var(--text-secondary); }
+        .topic-detail ul, .topic-detail .ascii-box {
+            background: var(--border-light);
+            padding: 1.2rem 1.8rem;
+            border-radius: var(--radius-sm);
+            margin: 0.8rem 0;
+        }
+        .topic-detail ul li { margin: 4px 0; }
+        .ascii-box {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem 1.5rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+        .box {
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+        .box.tip { background: var(--primary-light); border-color: var(--primary); }
+        .box.mistake { background: var(--danger-light); border-color: var(--danger); }
+        .box.success { background: var(--success-light); border-color: var(--success); }
+        .box.warning { background: var(--warning-light); border-color: var(--warning); }
+        .box.purple { background: var(--purple-light); border-color: var(--purple); }
+        .box.pink { background: var(--pink-light); border-color: var(--pink); }
+        body.dark .box.tip { background: #1e2a4a; border-color: #60a5fa; }
+        body.dark .box.mistake { background: #2d1a1a; border-color: #f87171; }
+        body.dark .box.success { background: #0f2a1a; border-color: #4ade80; }
+        body.dark .box.warning { background: #2a1f0a; border-color: #fbbf24; }
+        body.dark .box.purple { background: #1a1a2a; border-color: #a78bfa; }
+        body.dark .box.pink { background: #2a0a1a; border-color: #f472b6; }
+        .box strong { color: var(--text); }
+
+        .keypoints { display: flex; flex-wrap: wrap; gap: 8px; margin: 0.8rem 0; }
+        .keypoints span {
+            background: var(--border-light);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        body.dark .keypoints span { background: #334155; }
+
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.82rem; }
+        table th, table td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+        table th { background: var(--border-light); font-weight: 600; color: var(--text); }
+        body.dark table th { background: #0f172a; }
+
+        .related-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0.8rem 0;
+        }
+        .related-topics span {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            background: var(--border-light);
+            cursor: pointer;
+            transition: 0.15s;
+            color: var(--text-secondary);
+        }
+        .related-topics span:hover { background: var(--primary); color: #fff; }
+        body.dark .related-topics span:hover { background: var(--primary); }
+
+        @media (max-width: 820px) {
+            .app { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .topic-list { max-height: 250px; }
+            .main { padding: 1.2rem; }
+            .topic-detail { padding: 1.5rem; }
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--border-light); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        body.dark ::-webkit-scrollbar-track { background: #1e293b; }
+        body.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><i class="fas fa-server"></i> SysDesign</div>
+        <div class="sidebar-stats">
+            <span class="stat" id="statTotal">📚 50 Topics</span>
+            <span class="stat" id="statDone">✅ 0 Done</span>
+            <span class="stat" id="statTheory">📖 40 Theory</span>
+            <span class="stat" id="statDesign">🛠 10 Design</span>
+        </div>
+        <div class="sidebar-search">
+            <span class="search-icon"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" placeholder="Search topics..." />
+        </div>
+        <ul class="topic-list" id="topicList"></ul>
+        <div class="progress-track" id="progressTrack">
+            📌 0 / 50 mastered
+            <div class="bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+    </aside>
+    <main class="main">
+        <div class="top-bar">
+            <div class="breadcrumb"><i class="fas fa-home"></i> / <span id="breadcrumbTopic">System Design</span></div>
+            <div class="top-actions">
+                <button id="markDoneBtn"><i class="fas fa-check-circle"></i> Mark Done</button>
+                <button id="cheatSheetToggle"><i class="fas fa-list-check"></i> Cheat Sheet</button>
+                <button id="themeToggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+        <div class="topic-detail" id="topicDetail"></div>
+    </main>
+</div>
+<script>
+    // ---- TOPICS ----
+    const topics = [
+        // Theory (0-39)
+        "Monolith vs Microservices",
+        "Monolith → Microservices Migration",
+        "API Gateway vs Load Balancer",
+        "Load Balancer Types & Algorithms",
+        "Proxy vs Reverse Proxy",
+        "Service Discovery & Registry",
+        "Circuit Breaker Pattern",
+        "Health Checks & Failover",
+        "Networking Protocols",
+        "SSL/TLS — How SSL Works",
+        "HTTP/HTTPS Deep Dive",
+        "REST vs GraphQL vs gRPC",
+        "WebSockets vs SSE vs Long Polling",
+        "Scaling — Vertical & Horizontal",
+        "Scale from 0 to 1M Users",
+        "Distributed Systems Fundamentals",
+        "CAP Theorem Explained",
+        "Consistency Models",
+        "SQL vs NoSQL — Trade-offs",
+        "Database Indexing",
+        "ACID Properties & Transactions",
+        "Isolation Levels",
+        "Connection Pooling",
+        "Read Replicas",
+        "Database Replication",
+        "Partitioning Strategies",
+        "Database Sharding",
+        "Consistent Hashing",
+        "Caching Strategies",
+        "Cache Patterns (Aside, Through, Back)",
+        "Cache Invalidation",
+        "Cache Eviction Policies",
+        "Redis & Multi-Level Caching",
+        "Message Queues (Kafka, RabbitMQ)",
+        "Event-Driven Architecture & Pub/Sub",
+        "Idempotency & Retry Mechanisms",
+        "Rate Limiting Algorithms",
+        "CDN — Content Delivery Network",
+        "API Security (OAuth, JWT, CORS)",
+        "SPOF & High Availability",
+        // Design Problems (40-49)
+        "URL Shortener (TinyURL)",
+        "Chat System (WhatsApp)",
+        "Notification System",
+        "Instagram Feed",
+        "Twitter Timeline",
+        "YouTube/Netflix Streaming",
+        "Uber/Ola Ride Matching",
+        "E-commerce (Amazon)",
+        "Payment Gateway",
+        "Search Autocomplete"
+    ];
+
+    // ---- DATA ----
+    const theoryData = {
+        0: { desc: "Monolith ek single codebase hai jismein saare features ek saath deploy hote hain. Microservices mein application ko small, independent services mein tod diya jata hai.",
+            example: "Amazon ne monolith se microservices mein migrate kiya.",
+            diagram: `MONOLITH: Single codebase, Single DB\nMICROSERVICES: Multiple services, Multiple DBs`,
+            adv: "✅ Simple development\n✅ Easy deployment\n✅ No network calls",
+            dis: "❌ Codebase grows huge\n❌ Scaling difficult\n❌ New tech adoption hard",
+            use: "Startup → Monolith\nLarge scale → Microservices",
+            interview: "Q: Monolith vs Microservices?\nA: Start monolith, split when needed.",
+            cheat: "• Monolith: Single unit\n• Microservices: Independent services",
+            keypoints: ["Single codebase", "Independent deploy", "Team autonomy"],
+            related: [1, 2, 14] },
+        1: { desc: "Monolith ko microservices mein convert karne ke liye Strangler Fig pattern use karte hain.",
+            example: "Netflix ne 2008 mein migrate kiya, 7 years lage.",
+            diagram: `Phase 1: Monolith\n↓\nPhase 2: Extract 1 service\n↓\nPhase 3: API Gateway routes\n↓\nPhase 4: Gradually kill monolith`,
+            adv: "✅ Zero downtime\n✅ Risk kam\n✅ Team learns gradually",
+            dis: "❌ Bahut time lagta hai\n❌ Complex distributed system",
+            use: "Large monolith with 10+ teams",
+            interview: "Q: Migration strategy?\nA: Strangler Fig pattern — gradual replacement.",
+            cheat: "• Strangler Fig: Gradual replacement\n• Start with easy services",
+            keypoints: ["Strangler Fig", "Gradual", "API Gateway"],
+            related: [0, 2, 14] },
+        2: { desc: "API Gateway single entry point hai. Load Balancer traffic ko distribute karta hai.",
+            example: "Amazon API Gateway + AWS ELB",
+            diagram: `API Gateway: Auth, Rate Limit, Routing\nLoad Balancer: Traffic distribution`,
+            adv: "Gateway: Auth, Routing\nLB: Traffic distribution",
+            dis: "Gateway: SPOF\nLB: No auth",
+            use: "Gateway: Microservices\nLB: Any distributed system",
+            interview: "Q: API Gateway vs Load Balancer?\nA: Gateway = Layer 7, LB = Traffic distribution.",
+            cheat: "• Gateway: Auth, routing\n• LB: Traffic distribution",
+            keypoints: ["Entry point", "Auth", "Rate limiting"],
+            related: [3, 4, 38] },
+        3: { desc: "Load Balancer traffic ko distribute karta hai using different algorithms.",
+            example: "AWS ELB uses Round Robin, Least Connections, IP Hash.",
+            diagram: `1. ROUND ROBIN: Even distribution\n2. LEAST CONNECTIONS: Smart\n3. IP HASH: Sticky sessions`,
+            adv: "Round Robin: Simple\nLeast Connections: Dynamic\nIP Hash: Session persistence",
+            dis: "Round Robin: No load consideration\nLeast Connections: Tracking needed",
+            use: "Web servers, Application servers",
+            interview: "Q: Load Balancer algorithms?\nA: Round Robin, Least Connections, IP Hash.",
+            cheat: "• Round Robin: Simple\n• Least Connections: Smart\n• IP Hash: Sticky",
+            keypoints: ["Round Robin", "Least Connections", "IP Hash"],
+            related: [2, 4, 13] },
+        4: { desc: "Proxy client side, Reverse Proxy server side.",
+            example: "Forward Proxy: Office network. Reverse Proxy: Nginx.",
+            diagram: `Forward: Client → Proxy → Internet\nReverse: Internet → Proxy → Server`,
+            adv: "Forward: Anonymity\nReverse: Load balancing, SSL",
+            dis: "Both: SPOF",
+            use: "Forward: Corporate\nReverse: Production",
+            interview: "Q: Proxy vs Reverse Proxy?\nA: Proxy = Client-side, Reverse = Server-side.",
+            cheat: "• Proxy: Client → Internet\n• Reverse Proxy: Internet → Server",
+            keypoints: ["Client-side", "Server-side", "SSL termination"],
+            related: [2, 3, 38] },
+        5: { desc: "Service Discovery dynamically locates services. Registry stores all services.",
+            example: "Netflix Eureka, Consul, Zookeeper.",
+            diagram: `Service Registry: List of services\nService A ←→ Service B`,
+            adv: "✅ Dynamic scaling\n✅ No hardcoded IPs\n✅ Health checks",
+            dis: "❌ Extra infrastructure\n❌ Network calls",
+            use: "Microservices, Kubernetes",
+            interview: "Q: Service Discovery kyu?\nA: Microservices dynamic IPs have. Registry maintains list.",
+            cheat: "• Registry: Database of services\n• Tools: Eureka, Consul",
+            keypoints: ["Registry", "Discovery", "Health checks"],
+            related: [6, 7, 15] },
+        6: { desc: "Circuit Breaker cascading failures ko rokta hai.",
+            example: "Netflix Hystrix",
+            diagram: `CLOSED: Normal\nOPEN: Failing → Fallback\nHALF-OPEN: Testing recovery`,
+            adv: "✅ Prevents cascading failures\n✅ Fast fallback\n✅ Graceful degradation",
+            dis: "❌ Complex implementation\n❌ Can hide real issues",
+            use: "Distributed systems, Microservices",
+            interview: "Q: Circuit Breaker kyu?\nA: Prevent cascading failures. Falls back when service fails.",
+            cheat: "• CLOSED: Normal\n• OPEN: Failing\n• HALF-OPEN: Testing",
+            keypoints: ["Cascading failure", "Fallback", "Recovery"],
+            related: [5, 7, 35] },
+        7: { desc: "Health Checks monitor system health. Failover automatic recovery.",
+            example: "Kubernetes liveness probe",
+            diagram: `Liveness: Is app alive?\nReadiness: Can handle traffic?\nStartup: Is app starting?`,
+            adv: "✅ Automatic detection\n✅ Zero downtime\n✅ Self-healing",
+            dis: "❌ Extra overhead\n❌ False positives",
+            use: "Load balancers, Kubernetes",
+            interview: "Q: Health Checks?\nA: Liveness (alive), Readiness (traffic), Startup.",
+            cheat: "• Liveness: Alive\n• Readiness: Traffic ready\n• Startup: Starting",
+            keypoints: ["Liveness", "Readiness", "Startup"],
+            related: [5, 6, 39] },
+        8: { desc: "Networking protocols define communication. TCP reliable, UDP fast.",
+            example: "HTTP, HTTPS, TCP, UDP, WebSocket",
+            diagram: `TCP: Reliable, Ordered, Slow\nUDP: Fast, Unreliable, Fast`,
+            adv: "TCP: Reliable\nUDP: Fast",
+            dis: "TCP: Overhead\nUDP: Unreliable",
+            use: "TCP: HTTP, Email\nUDP: Video, Gaming",
+            interview: "Q: TCP vs UDP?\nA: TCP → Reliable. UDP → Fast.",
+            cheat: "• TCP: Reliable, ordered\n• UDP: Fast, unordered",
+            keypoints: ["TCP", "UDP", "Reliability"],
+            related: [9, 10, 12] },
+        9: { desc: "SSL/TLS provides secure communication. HTTPS = HTTP + SSL/TLS.",
+            example: "Bank website uses TLS.",
+            diagram: `Handshake: Client Hello → Server Cert → Key Exchange → Secure Connection`,
+            adv: "✅ Encryption\n✅ Authentication\n✅ Integrity",
+            dis: "❌ Latency\n❌ Certificate management",
+            use: "Banking, Login, APIs",
+            interview: "Q: SSL/TLS kaise?\nA: Handshake → certificate → secure connection.",
+            cheat: "• SSL: Older\n• TLS: Newer\n• HTTPS: HTTP + TLS",
+            keypoints: ["Encryption", "Authentication", "Handshake"],
+            related: [8, 10, 38] },
+        10: { desc: "HTTP Hypertext Transfer Protocol. HTTPS is secure version.",
+            example: "HTTP: unsecured, HTTPS: secured",
+            diagram: `Methods: GET, POST, PUT, DELETE\nStatus: 200 OK, 404 Not Found, 500 Error`,
+            adv: "✅ Simple, stateless\n✅ Human-readable\n✅ Widely supported",
+            dis: "❌ Stateless\n❌ Verbose",
+            use: "Web apps, REST APIs",
+            interview: "Q: HTTP methods and status codes?\nA: GET, POST, PUT, DELETE. 200 OK, 404 Not Found.",
+            cheat: "• GET: Read\n• POST: Create\n• PUT: Update\n• DELETE: Delete",
+            keypoints: ["Methods", "Status codes", "Stateless"],
+            related: [8, 9, 11] },
+        11: { desc: "REST resource-based, GraphQL flexible, gRPC fast.",
+            example: "REST: GET /users/123\nGraphQL: query { user { name } }\ngRPC: GetUser(req)",
+            diagram: `REST: Multiple endpoints\nGraphQL: Single endpoint\ngRPC: Binary, fast`,
+            adv: "REST: Simple\nGraphQL: Efficient\ngRPC: Fast, streaming",
+            dis: "REST: Over-fetching\nGraphQL: Complex caching\ngRPC: Harder debug",
+            use: "REST: Public APIs\nGraphQL: Mobile\ngRPC: Internal",
+            interview: "Q: REST vs GraphQL vs gRPC?\nA: REST → Simple. GraphQL → Flexible. gRPC → Fast.",
+            cheat: "• REST: Resource-based\n• GraphQL: Query-based\n• gRPC: RPC-based",
+            keypoints: ["REST", "GraphQL", "gRPC"],
+            related: [10, 12, 38] },
+        12: { desc: "WebSocket full-duplex, SSE server-to-client, Long Polling.",
+            example: "WhatsApp → WebSocket, Twitter → SSE",
+            diagram: `WebSocket: Bidirectional\nSSE: Server → Client\nLong Polling: Poll with timeout`,
+            adv: "WebSocket: Low latency\nSSE: Simple\nLong Polling: Works everywhere",
+            dis: "WebSocket: Complex\nSSE: One-way\nLong Polling: Overhead",
+            use: "WebSocket: Chat, Gaming\nSSE: Notifications",
+            interview: "Q: Real-time communication?\nA: WebSocket → Bidirectional. SSE → One-way.",
+            cheat: "• WebSocket: Bi-directional\n• SSE: One-way\n• Long Polling: Legacy",
+            keypoints: ["WebSocket", "SSE", "Long Polling"],
+            related: [10, 11, 34] },
+        13: { desc: "Vertical Scaling (more power). Horizontal Scaling (more machines).",
+            example: "Vertical: t2.micro → t2.large\nHorizontal: 1 → 10 servers",
+            diagram: `Vertical: More CPU/RAM\nHorizontal: More servers`,
+            adv: "Vertical: Simple\nHorizontal: Unlimited, Fault tolerant",
+            dis: "Vertical: Expensive, Limited\nHorizontal: Complex",
+            use: "Vertical: Small apps\nHorizontal: Large apps",
+            interview: "Q: Vertical vs Horizontal?\nA: Vertical → Quick. Horizontal → Long-term.",
+            cheat: "• Vertical: Scale up\n• Horizontal: Scale out",
+            keypoints: ["Vertical", "Horizontal", "Cloud native"],
+            related: [14, 15, 26] },
+        14: { desc: "Scale from 0 to 1 Million users — step by step.",
+            example: "Instagram grew to 1M in 2 months.",
+            diagram: `0-100: 1 server\n100-1K: Separate DB\n1K-10K: Load balancer\n10K-100K: Sharding\n100K-1M: Microservices`,
+            adv: "✅ Cost-effective\n✅ No premature optimization",
+            dis: "❌ Technical debt\n❌ Migration challenges",
+            use: "Startups, Growing apps",
+            interview: "Q: 0 to 1M users?\nA: Start simple → Cache → LB → Sharding → Microservices.",
+            cheat: "• 100: 1 server\n• 1K: 3 servers\n• 10K: LB + Redis\n• 100K: Sharding\n• 1M: Microservices",
+            keypoints: ["Growth stages", "Caching", "Sharding"],
+            related: [13, 15, 26] },
+        15: { desc: "Distributed Systems — multiple computers work together.",
+            example: "Google Search uses 1000+ servers.",
+            diagram: `Nodes: Node1 ←→ Node2 ←→ Node3\nChallenges: Network failures, Consistency`,
+            adv: "✅ Scalable\n✅ Fault tolerant\n✅ Performance",
+            dis: "❌ Complex\n❌ Network issues\n❌ Consistency challenges",
+            use: "Google, AWS, Netflix, Uber",
+            interview: "Q: Distributed systems challenges?\nA: Network failures, consistency, coordination.",
+            cheat: "• Nodes: Individual computers\n• Cluster: Group of nodes",
+            keypoints: ["Nodes", "Cluster", "Replication"],
+            related: [13, 16, 17] },
+        16: { desc: "CAP Theorem — choose 2 of 3: Consistency, Availability, Partition.",
+            example: "DynamoDB → AP. MongoDB → CP.",
+            diagram: `C: Consistency\nA: Availability\nP: Partition Tolerance\nChoose 2 of 3`,
+            adv: "✅ Helps choose database\n✅ Understand trade-offs",
+            dis: "❌ Too simplistic\n❌ PACELC more detailed",
+            use: "Database selection, Design decisions",
+            interview: "Q: CAP Theorem?\nA: Distributed system mein sirf 2 choose kar sakte hain.",
+            cheat: "• CP: MongoDB, HBase\n• AP: DynamoDB, Cassandra",
+            keypoints: ["Consistency", "Availability", "Partition"],
+            related: [15, 17, 18] },
+        17: { desc: "Consistency Models define data visibility expectations.",
+            example: "Strong: Banking. Eventual: Social media.",
+            diagram: `Strong: Always latest\nEventual: Eventually consistent\nCausal: Related writes ordered`,
+            adv: "Strong: Predictable\nEventual: High availability",
+            dis: "Strong: Slow\nEventual: Stale data",
+            use: "Strong: Banking\nEventual: Social media",
+            interview: "Q: Consistency models?\nA: Strong → Banking. Eventual → Social media.",
+            cheat: "• Strong: Always latest\n• Eventual: Eventually consistent",
+            keypoints: ["Strong", "Eventual", "Causal"],
+            related: [16, 18, 20] },
+        18: { desc: "SQL structured, ACID. NoSQL flexible, BASE.",
+            example: "SQL: Banking. NoSQL: Product catalog.",
+            diagram: `SQL: ACID, Vertical scale\nNoSQL: BASE, Horizontal scale`,
+            adv: "SQL: ACID, Joins\nNoSQL: Scalable, Flexible",
+            dis: "SQL: Hard to scale\nNoSQL: No ACID",
+            use: "SQL: Transactions\nNoSQL: Social media",
+            interview: "Q: SQL vs NoSQL?\nA: SQL → Transactions. NoSQL → Scale.",
+            cheat: "• SQL: ACID, vertical\n• NoSQL: BASE, horizontal",
+            keypoints: ["SQL", "NoSQL", "ACID vs BASE"],
+            related: [16, 19, 20] },
+        19: { desc: "Database Index speeds up queries.",
+            example: "1M rows: without index 2-3 sec, with index 0.01 sec.",
+            diagram: `B-TREE: Range queries\nHASH: Exact matches\nCOMPOSITE: Multiple columns`,
+            adv: "✅ Fast queries (100x+)\n✅ Reduces I/O",
+            dis: "❌ Slower writes\n❌ Storage space",
+            use: "Primary key, Foreign keys, Frequent queries",
+            interview: "Q: Database Indexing?\nA: Index is like book index. Speeds reads, slows writes.",
+            cheat: "• B-Tree: Default\n• Hash: Exact matches\n• Composite: Multiple columns",
+            keypoints: ["B-Tree", "Hash", "Composite"],
+            related: [18, 20, 21] },
+        20: { desc: "ACID — Atomicity, Consistency, Isolation, Durability.",
+            example: "Bank transfer — both happen or none.",
+            diagram: `A: All or nothing\nC: Valid state\nI: No interference\nD: Persistent after commit`,
+            adv: "✅ Data integrity\n✅ Error recovery\n✅ Concurrency control",
+            dis: "❌ Overhead\n❌ Performance impact",
+            use: "Banking, Orders, Inventory",
+            interview: "Q: ACID properties?\nA: Atomicity, Consistency, Isolation, Durability.",
+            cheat: "• Atomicity: All or nothing\n• Consistency: Valid state\n• Isolation: No interference\n• Durability: Persistent",
+            keypoints: ["Atomicity", "Consistency", "Isolation", "Durability"],
+            related: [18, 19, 21] },
+        21: { desc: "Isolation Levels — how transactions interact.",
+            example: "Read Uncommitted → Serializable.",
+            diagram: `1. READ UNCOMMITTED: Dirty reads\n2. READ COMMITTED: No dirty reads\n3. REPEATABLE READ: No non-repeatable reads\n4. SERIALIZABLE: Highest isolation`,
+            adv: "Higher = More consistency\nLower = Better performance",
+            dis: "Higher = Slower\nLower = Anomalies",
+            use: "Serializable: Banking\nRepeatable Read: E-commerce",
+            interview: "Q: Isolation Levels?\nA: Serializable → Banking. Repeatable Read → E-commerce.",
+            cheat: "• Read Uncommitted: Dirty reads\n• Serializable: Highest isolation",
+            keypoints: ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"],
+            related: [19, 20, 22] },
+        22: { desc: "Connection Pool — reuse database connections.",
+            example: "1000 users → 20 connections reuse.",
+            diagram: `Without Pool: Open → Use → Close (slow)\nWith Pool: Get → Use → Return (fast)`,
+            adv: "✅ Fast\n✅ Resource efficient\n✅ Prevents exhaustion",
+            dis: "❌ Pool size config\n❌ Connection leaks",
+            use: "Web apps, Microservices",
+            interview: "Q: Connection Pooling kyu?\nA: Opening/closing expensive. Pool reuses.",
+            cheat: "• Pool Size: (CPU cores * 2) + 1\n• Timeout: 30s",
+            keypoints: ["Reuse", "Performance", "Resource management"],
+            related: [20, 21, 24] },
+        23: { desc: "Read Replicas — read-only copies of database.",
+            example: "Instagram — master for writes, replicas for reads.",
+            diagram: `Master (Write) → Replica1 (Read) → Replica2 (Read)`,
+            adv: "✅ Read scalability\n✅ High availability\n✅ Analytics offload",
+            dis: "❌ Replication lag\n❌ Consistency issues",
+            use: "Read-heavy apps, Analytics",
+            interview: "Q: Read Replicas kyu?\nA: Scale reads without scaling master.",
+            cheat: "• Master: Writes only\n• Replicas: Reads only",
+            keypoints: ["Master", "Replicas", "Replication lag"],
+            related: [22, 24, 25] },
+        24: { desc: "Database Replication — copy data from master to replica.",
+            example: "MySQL Replication.",
+            diagram: `Master-Slave: Master → Binary Log → Slave\nMaster-Master: Master1 ←→ Master2`,
+            adv: "✅ High availability\n✅ Read scaling\n✅ Disaster recovery",
+            dis: "❌ Replication lag\n❌ Conflict resolution",
+            use: "Production systems, HA",
+            interview: "Q: Replication types?\nA: Master-Slave → Reads. Master-Master → Both write.",
+            cheat: "• Master-Slave: One master\n• Master-Master: Both write",
+            keypoints: ["Master-Slave", "Master-Master", "Sync vs Async"],
+            related: [23, 25, 26] },
+        25: { desc: "Partitioning — large table ko small pieces mein todna.",
+            example: "orders_2020, orders_2021, orders_2022.",
+            diagram: `1. RANGE: By value range\n2. LIST: By explicit list\n3. HASH: By hash function`,
+            adv: "✅ Faster queries\n✅ Easier maintenance\n✅ Better availability",
+            dis: "❌ Complex cross-partition queries\n❌ Rebalancing",
+            use: "Large tables, Time-series data",
+            interview: "Q: Partitioning vs Sharding?\nA: Partitioning = same DB. Sharding = different DBs.",
+            cheat: "• Range: By value\n• List: By explicit list\n• Hash: By hash",
+            keypoints: ["Range", "List", "Hash"],
+            related: [24, 26, 27] },
+        26: { desc: "Sharding — data ko multiple databases mein distribute.",
+            example: "Instagram shards by user_id.",
+            diagram: `Shard1 (1-1000) | Shard2 (1001-2000) | Shard3 (2001-3000)`,
+            adv: "✅ Horizontal scale\n✅ Unlimited data\n✅ Performance",
+            dis: "❌ Complex cross-shard queries\n❌ Rebalancing hard",
+            use: "Large-scale apps, Social media",
+            interview: "Q: Sharding kaise?\nA: Choose shard key. Consistent hashing helps.",
+            cheat: "• Sharding: Split data across DBs\n• Consistent Hashing: Dynamic",
+            keypoints: ["Shard key", "Consistent hashing", "Rebalancing"],
+            related: [25, 27, 14] },
+        27: { desc: "Consistent Hashing — minimizes rebalancing.",
+            example: "DynamoDB, Cassandra use consistent hashing.",
+            diagram: `Hash Ring: 0 to 2^32-1\nNodes on ring → nearest node\nVirtual Nodes: Even distribution`,
+            adv: "✅ Minimal rebalancing\n✅ Even distribution\n✅ Scalable",
+            dis: "❌ Complexity\n❌ Hotspots possible",
+            use: "Distributed caches, Databases",
+            interview: "Q: Consistent Hashing kyu?\nA: Minimizes data movement when nodes change.",
+            cheat: "• Hash Ring: Circular\n• Virtual Nodes: Even distribution",
+            keypoints: ["Hash Ring", "Virtual Nodes", "Minimal rebalancing"],
+            related: [26, 28, 33] },
+        28: { desc: "Caching — fast-access temporary storage.",
+            example: "Amazon product page — Redis cache.",
+            diagram: `Without Cache: App → DB (slow)\nWith Cache: App → Cache (fast) → Miss → DB`,
+            adv: "✅ Fast (10-100x)\n✅ Reduces DB load\n✅ Scalability",
+            dis: "❌ Stale data\n❌ Invalidation complex",
+            use: "Product catalogs, Sessions, API responses",
+            interview: "Q: Caching kab?\nA: Frequently accessed, read-heavy data.",
+            cheat: "• Cache: Fast storage\n• Types: Client, CDN, App, DB",
+            keypoints: ["Redis", "CDN", "In-memory"],
+            related: [27, 29, 30] },
+        29: { desc: "Cache Patterns — Cache Aside, Read Through, Write Through, Write Back.",
+            example: "Redis + MySQL.",
+            diagram: `Cache Aside: App → Cache → Miss → DB\nRead Through: Cache reads from DB\nWrite Through: Cache+DB\nWrite Back: Cache first → Async DB`,
+            adv: "Cache Aside: Simple\nWrite Through: Consistency\nWrite Back: Fast writes",
+            dis: "Cache Aside: Miss penalty\nWrite Back: Data loss risk",
+            use: "Cache Aside: Most apps\nWrite Through: Banking",
+            interview: "Q: Cache patterns?\nA: Cache Aside → Most apps. Write Through → Consistency critical.",
+            cheat: "• Cache Aside: App manages\n• Write Through: Cache+DB\n• Write Back: Cache first",
+            keypoints: ["Cache Aside", "Write Through", "Write Back"],
+            related: [28, 30, 31] },
+        30: { desc: "Cache Invalidation — sabse difficult problem.",
+            example: "User profile update → cache stale.",
+            diagram: `1. TTL: Auto expiry\n2. Write Through: Update on writes\n3. Explicit: Delete entry`,
+            adv: "✅ Stale data prevented\n✅ Fresh data\n✅ Reliable",
+            dis: "❌ Complex\n❌ Performance overhead",
+            use: "User profiles, Product inventory",
+            interview: "Q: Cache Invalidation?\nA: Use TTL, invalidate on updates.",
+            cheat: "• TTL: Auto expiry\n• Write Through: Update on writes\n• Explicit: Delete entry",
+            keypoints: ["TTL", "Write Through", "Explicit"],
+            related: [28, 29, 31] },
+        31: { desc: "Cache Eviction Policies — cache full ho jaye toh kya.",
+            example: "Redis default is LRU.",
+            diagram: `LRU: Least recently used\nLFU: Least frequently used\nFIFO: Oldest\nTTL: Time-based`,
+            adv: "LRU: Effective\nLFU: Good for popular\nTTL: Time-controlled",
+            dis: "LRU: Extra overhead\nLFU: Can be outdated",
+            use: "LRU: Most caches\nLFU: Analytics",
+            interview: "Q: Cache Eviction?\nA: LRU most common. LFU for popular.",
+            cheat: "• LRU: Least recently used\n• LFU: Least frequent\n• TTL: Expire after time",
+            keypoints: ["LRU", "LFU", "TTL"],
+            related: [28, 29, 32] },
+        32: { desc: "Redis in-memory store. Multi-Level Caching.",
+            example: "Redis used by Twitter, GitHub.",
+            diagram: `Redis: In-memory, Data structures, Persistence\nMulti-Level: L1 (App) → L2 (Redis) → L3 (DB)`,
+            adv: "Redis: Fast, Data structures\nMulti-Level: Best performance",
+            dis: "Redis: Memory cost\nMulti-Level: Complexity",
+            use: "Redis: Caching, Sessions\nMulti-Level: Large-scale",
+            interview: "Q: Redis vs Memcached?\nA: Redis has data structures, persistence.",
+            cheat: "• Redis: Data structures, persistence\n• Memcached: Simple key-value",
+            keypoints: ["Redis", "Multi-Level", "Persistence"],
+            related: [28, 31, 33] },
+        33: { desc: "Message Queues — Kafka (volume), RabbitMQ (routing).",
+            example: "Order → Queue → Payment (async).",
+            diagram: `Kafka: Distributed log, High throughput\nRabbitMQ: Broker, Flexible routing`,
+            adv: "Kafka: High throughput, Persistent\nRabbitMQ: Flexible routing",
+            dis: "Kafka: Complex\nRabbitMQ: Lower throughput",
+            use: "Kafka: Logging, Events\nRabbitMQ: Task queues",
+            interview: "Q: Kafka vs RabbitMQ?\nA: Kafka → High volume. RabbitMQ → Routing.",
+            cheat: "• Kafka: High throughput\n• RabbitMQ: Flexible routing",
+            keypoints: ["Kafka", "RabbitMQ", "Async processing"],
+            related: [32, 34, 35] },
+        34: { desc: "Event-Driven Architecture — systems react to events.",
+            example: "Order placed → event → notification, inventory.",
+            diagram: `Event → Broker → Subscribers (Payment, Inventory, Notification)`,
+            adv: "✅ Loose coupling\n✅ Scalable\n✅ Asynchronous",
+            dis: "❌ Complex\n❌ Event ordering issues\n❌ Debugging hard",
+            use: "Microservices, CQRS, IoT",
+            interview: "Q: Event-Driven Architecture?\nA: Decouples services. Events trigger actions.",
+            cheat: "• Event: Something happened\n• Pub/Sub: Publisher → Topic → Subscribers",
+            keypoints: ["Event", "Pub/Sub", "Broker"],
+            related: [33, 35, 36] },
+        35: { desc: "Idempotency — same operation gives same result. Retry — handle failures.",
+            example: "Payment retries should not charge twice.",
+            diagram: `Idempotent: Same result on retry\nRetry: Exponential backoff (1s, 2s, 4s)`,
+            adv: "Idempotency: Safe retries\nRetry: Fault tolerance",
+            dis: "Idempotency: Extra storage\nRetry: Increased latency",
+            use: "Payments, Orders, Critical ops",
+            interview: "Q: Idempotency kyu?\nA: Payment, orders mein retry safe karta hai.",
+            cheat: "• Idempotent: Same result on retry\n• Retry: Exponential backoff",
+            keypoints: ["Idempotency", "Retry", "Backoff"],
+            related: [33, 34, 36] },
+        36: { desc: "Rate Limiting — control requests, protect system.",
+            example: "Twitter API — 100 requests/minute.",
+            diagram: `1. Token Bucket: Burst support\n2. Leaky Bucket: Queue\n3. Sliding Window: Most accurate\n4. Fixed Window: Simple`,
+            adv: "✅ Protects system\n✅ Prevents abuse\n✅ Fair usage",
+            dis: "❌ Added latency\n❌ Complexity",
+            use: "APIs, Login attempts, DDoS",
+            interview: "Q: Rate Limiting?\nA: Token Bucket → Burst support. Sliding Window → Accurate.",
+            cheat: "• Token Bucket: Burst support\n• Sliding Window: Most accurate",
+            keypoints: ["Token Bucket", "Sliding Window", "DDoS"],
+            related: [34, 35, 38] },
+        37: { desc: "CDN — geographically distributed servers.",
+            example: "YouTube videos from nearest CDN.",
+            diagram: `Origin Server → CDN → Edge Servers\nUser → Nearest Edge → Cached`,
+            adv: "✅ Fast\n✅ Reduced bandwidth\n✅ Global reach",
+            dis: "❌ Cost\n❌ Cache invalidation",
+            use: "Websites, Videos, Images, APIs",
+            interview: "Q: CDN kaise?\nA: Content cached at edge servers near users.",
+            cheat: "• CDN: Global edge servers\n• Benefits: Faster, lower latency",
+            keypoints: ["Edge servers", "Caching", "Global"],
+            related: [28, 32, 38] },
+        38: { desc: "API Security — OAuth, JWT, CORS, CSRF.",
+            example: "Google uses OAuth 2.0.",
+            diagram: `OAuth 2.0: Auth Server → Access Token\nJWT: Header + Payload + Signature`,
+            adv: "✅ Standardized\n✅ Stateless (JWT)\n✅ Delegated access",
+            dis: "❌ Complex\n❌ Token management",
+            use: "Authentication, Third-party access",
+            interview: "Q: API Security?\nA: Authentication (JWT/OAuth), CORS, CSRF.",
+            cheat: "• OAuth: Delegation\n• JWT: Stateless tokens\n• CORS: Cross-origin",
+            keypoints: ["OAuth", "JWT", "CORS"],
+            related: [2, 4, 36] },
+        39: { desc: "SPOF — single point of failure. High Availability — always available.",
+            example: "Server failure → Load balancer routes to others.",
+            diagram: `SPOF: App → DB (if DB fails → down)\nHA: LB → App1/App2/App3 → DB Master-Slave`,
+            adv: "✅ Reliable\n✅ No downtime\n✅ User trust",
+            dis: "❌ Cost\n❌ Complexity\n❌ Maintenance",
+            use: "Production systems, Mission-critical apps",
+            interview: "Q: SPOF kaise avoid?\nA: Redundancy, failover, load balancers.",
+            cheat: "• SPOF: Single point → system down\n• HA: 99.9%+ uptime",
+            keypoints: ["Redundancy", "Failover", "High Availability"],
+            related: [5, 7, 13] }
+    };
+
+    const problemData = {
+        40: { desc: "URL Shortener — long URLs ko short, unique URLs mein convert karna.",
+            example: "bit.ly/abc123 → https://example.com/very/long/url",
+            diagram: `Client → API → Service → Cache (Redis) → DB (PostgreSQL)\nCapacity: 100M new/day, 1B requests/day`,
+            adv: "✅ Simple\n✅ Scalable\n✅ Fast redirects",
+            dis: "❌ Short code collisions\n❌ Rate limiting needed",
+            use: "URL shortening services, Link tracking",
+            interview: "Q: URL Shortener design?\nA: Base62 encoding. Redis cache for reads.",
+            cheat: "• Base62: 62^6 = 56B combinations\n• Redis: TTL 24 hours\n• 301 redirect: SEO friendly",
+            keypoints: ["Base62", "Redis", "301 redirect"],
+            related: [14, 28, 36],
+            steps: "1. Requirements: Shorten, Redirect, Analytics\n2. Estimation: 100M/day\n3. API: POST /shorten, GET /{code}\n4. DB: PostgreSQL\n5. Cache: Redis\n6. Scaling: Consistent hashing" },
+        41: { desc: "Chat System — real-time messaging, presence, media sharing.",
+            example: "WhatsApp — 2B+ users, 100B+ messages/day",
+            diagram: `Client → WebSocket → Service → Kafka → Cassandra\nCapacity: 100B msg/day, 2B users`,
+            adv: "✅ Real-time\n✅ Scalable\n✅ Reliable",
+            dis: "❌ Complex\n❌ Media storage\n❌ Delivery guarantees",
+            use: "Messaging apps, Customer support",
+            interview: "Q: Chat System design?\nA: WebSocket for real-time. Kafka for delivery. Cassandra for messages.",
+            cheat: "• WebSocket: Real-time\n• Kafka: Delivery queue\n• Cassandra: Time-series",
+            keypoints: ["WebSocket", "Kafka", "Cassandra"],
+            related: [12, 33, 34],
+            steps: "1. Requirements: 1:1, Group, Media\n2. Estimation: 100B/day\n3. API: WebSocket, REST\n4. DB: Cassandra\n5. Cache: Redis\n6. Scaling: Sharding by user_id" },
+        42: { desc: "Notification System — Email, SMS, Push notifications.",
+            example: "Amazon order confirmation, shipping notifications.",
+            diagram: `Service → Queue → Workers → Email/SMS/Push Services\nCapacity: 1B notifications/day`,
+            adv: "✅ Reliable\n✅ Scalable\n✅ Multi-channel",
+            dis: "❌ Queue failures\n❌ Third-party dependencies",
+            use: "E-commerce, Social media, OTP",
+            interview: "Q: Notification System design?\nA: Queue per channel. Workers process async. Retry with backoff.",
+            cheat: "• Queue: Per channel\n• Retry: Exponential backoff\n• DLQ: Dead letter queue",
+            keypoints: ["Queue", "Retry", "DLQ"],
+            related: [33, 34, 35],
+            steps: "1. Requirements: Email, SMS, Push\n2. Estimation: 1B/day\n3. API: POST /notify\n4. DB: MongoDB\n5. Queue: RabbitMQ\n6. Scaling: Workers per channel" },
+        43: { desc: "Instagram Feed — User timeline generation, ranking, caching.",
+            example: "Instagram — 1B+ users, 100M+ posts/day",
+            diagram: `Client → API → Feed Service → Redis → PostgreSQL\nFeed Generation: Pre-compute, Real-time, Hybrid`,
+            adv: "✅ Fast\n✅ Personalized\n✅ Scalable",
+            dis: "❌ Cache invalidation\n❌ Ranking complexity\n❌ Storage",
+            use: "Social media, News feeds",
+            interview: "Q: Instagram Feed design?\nA: Fan-out on write for popular users. Pull model for others.",
+            cheat: "• Fan-out: Push to followers\n• Pull: Generate on demand\n• Hybrid: Popular → Push",
+            keypoints: ["Fan-out", "Pull", "Hybrid"],
+            related: [14, 28, 44],
+            steps: "1. Requirements: Feed, Ranking\n2. Estimation: 100M DAU\n3. API: GET /feed\n4. DB: PostgreSQL, Cassandra\n5. Cache: Redis\n6. Scaling: Sharding by user_id" },
+        44: { desc: "Twitter Timeline — Tweets, retweets, likes, follows.",
+            example: "Twitter — 500M+ tweets/day, 330M+ users",
+            diagram: `Client → API → Timeline Service → Cache → DB\nTimeline Types: Home, User, Trending`,
+            adv: "✅ Real-time\n✅ Scalable\n✅ Searchable",
+            dis: "❌ Fan-out overhead\n❌ Trending complexity",
+            use: "Social media, News platforms",
+            interview: "Q: Twitter Timeline design?\nA: Fan-out on write for tweets. Pre-compute home timeline in cache.",
+            cheat: "• Fan-out: Write to followers' cache\n• Home timeline: Pre-computed in Redis\n• Trending: Sliding window",
+            keypoints: ["Fan-out", "Pre-computed", "Trending"],
+            related: [14, 28, 43],
+            steps: "1. Requirements: Tweet, Timeline\n2. Estimation: 500M/day\n3. API: POST /tweet, GET /timeline\n4. DB: Cassandra\n5. Cache: Redis\n6. Scaling: Sharding by user_id" },
+        45: { desc: "YouTube/Netflix — Video upload, transcoding, streaming, CDN.",
+            example: "YouTube — 500+ hours uploaded/minute",
+            diagram: `Upload → Queue → Transcode → S3 → CDN → Client\nCapacity: 500 hours/minute, 5B views/day`,
+            adv: "✅ Global delivery\n✅ Adaptive streaming\n✅ Scalable",
+            dis: "❌ Transcoding cost\n❌ CDN cost\n❌ Storage",
+            use: "Video platforms, Streaming services",
+            interview: "Q: Video Streaming design?\nA: Upload to S3, queue for transcoding. HLS/DASH for adaptive streaming.",
+            cheat: "• Transcoding: Multiple formats\n• CDN: Global delivery\n• HLS/DASH: Adaptive streaming",
+            keypoints: ["Transcoding", "CDN", "HLS/DASH"],
+            related: [28, 32, 37],
+            steps: "1. Requirements: Upload, Stream\n2. Estimation: 500h/min\n3. API: POST /upload, GET /watch\n4. DB: PostgreSQL\n5. Storage: S3\n6. CDN: CloudFront" },
+        46: { desc: "Uber/Ola — Ride matching, driver allocation, pricing, tracking.",
+            example: "Uber — 100M+ users, 20M+ rides/day",
+            diagram: `Rider → API → Matching Service → Driver (WebSocket) → DB\nMatching: Geohash, Notify top 5, First to accept`,
+            adv: "✅ Real-time\n✅ Efficient matching\n✅ Dynamic pricing",
+            dis: "❌ Geolocation accuracy\n❌ Network issues\n❌ Fraud",
+            use: "Ride sharing, Food delivery, Logistics",
+            interview: "Q: Uber design?\nA: Geohash for location indexing. Redis for real-time driver positions.",
+            cheat: "• Geohash: Location indexing\n• Redis: Real-time locations\n• Matching: Nearest N drivers",
+            keypoints: ["Geohash", "Redis", "Real-time"],
+            related: [5, 12, 14],
+            steps: "1. Requirements: Ride matching\n2. Estimation: 20M/day\n3. API: POST /request\n4. DB: PostgreSQL\n5. Cache: Redis\n6. Scaling: Sharding by city" },
+        47: { desc: "E-commerce (Amazon) — Product catalog, inventory, orders, payments.",
+            example: "Amazon — 300M+ products, 2B+ users",
+            diagram: `Client → API → Services (Catalog, Orders, Inventory, Payments)\nSchema: product_id, name, price, stock`,
+            adv: "✅ Complete system\n✅ Scalable\n✅ Reliable",
+            dis: "❌ Complex\n❌ Inventory consistency\n❌ Payment failures",
+            use: "E-commerce, Online retail",
+            interview: "Q: E-commerce design?\nA: Microservices for catalog, orders, inventory, payments.",
+            cheat: "• Catalog: MongoDB\n• Orders: PostgreSQL\n• Search: Elasticsearch",
+            keypoints: ["Microservices", "Inventory", "Payments"],
+            related: [0, 18, 48],
+            steps: "1. Requirements: Browse, Order, Payment\n2. Estimation: 100M products\n3. API: GET /products, POST /order\n4. DB: PostgreSQL, MongoDB\n5. Cache: Redis\n6. Search: Elasticsearch" },
+        48: { desc: "Payment Gateway — Process payments, idempotency, fraud detection.",
+            example: "Stripe — 100M+ API requests/day",
+            diagram: `Client → API → Fraud Detection → Bank API → DB\nSchema: payment_id, amount, status, idempotency_key`,
+            adv: "✅ Secure\n✅ Idempotent\n✅ Reliable",
+            dis: "❌ Fraud risks\n❌ Third-party dependencies\n❌ Compliance",
+            use: "Payment processing, Subscription billing",
+            interview: "Q: Payment Gateway design?\nA: Idempotency key for duplicate prevention. Queue for async.",
+            cheat: "• Idempotency: UUID key\n• Fraud Detection: ML-based\n• Webhooks: Retry with backoff",
+            keypoints: ["Idempotency", "Fraud Detection", "Webhooks"],
+            related: [35, 36, 47],
+            steps: "1. Requirements: Process payments\n2. Estimation: 100M/day\n3. API: POST /payments\n4. DB: PostgreSQL\n5. Cache: Redis\n6. Queue: Async processing" },
+        49: { desc: "Search Autocomplete — Typeahead search with trie, caching, ranking.",
+            example: "Google Search — 3.5B searches/day",
+            diagram: `Client → API → Trie Cache → DB\nImplementation: Trie (prefix tree), Frequency counts, Rank by popularity`,
+            adv: "✅ Fast\n✅ Real-time\n✅ Accurate",
+            dis: "❌ Memory for trie\n❌ Frequent updates\n❌ Cache invalidation",
+            use: "Search engines, E-commerce, Content platforms",
+            interview: "Q: Search Autocomplete design?\nA: Trie for prefix search. Frequency counts for ranking.",
+            cheat: "• Trie: O(L) search\n• Redis: Cache top results\n• Frequency: Count searches",
+            keypoints: ["Trie", "Frequency", "Redis"],
+            related: [28, 32, 36],
+            steps: "1. Requirements: Real-time suggestions\n2. Estimation: 1B/day\n3. API: GET /autocomplete\n4. DB: MongoDB\n5. Cache: Redis\n6. Scaling: Sharded trie" }
+    };
+
+    // ---- HELPERS ----
+    function getData(idx) {
+        if (idx < 40) return theoryData[idx] || theoryData[0];
+        return problemData[idx] || problemData[40];
+    }
+
+    // ---- STATE ----
+    let currentIndex = 0;
+    let showCheatSheet = false;
+    let doneSet = new Set();
+    let filteredIndices = [];
+
+    // ---- DOM ----
+    const listEl = document.getElementById('topicList');
+    const detailEl = document.getElementById('topicDetail');
+    const searchInput = document.getElementById('searchInput');
+    const themeToggle = document.getElementById('themeToggle');
+    const cheatSheetToggle = document.getElementById('cheatSheetToggle');
+    const markDoneBtn = document.getElementById('markDoneBtn');
+    const progressTrack = document.getElementById('progressTrack');
+    const progressFill = document.getElementById('progressFill');
+    const breadcrumbTopic = document.getElementById('breadcrumbTopic');
+
+    // ---- RENDER ----
+    function renderList(filter = '') {
+        const q = filter.toLowerCase().trim();
+        let html = '';
+        filteredIndices = [];
+        topics.forEach((t, i) => {
+            const match = t.toLowerCase().includes(q);
+            if (!match && q) return;
+            filteredIndices.push(i);
+            const active = i === currentIndex ? 'active' : '';
+            const isProblem = i >= 40;
+            const isDone = doneSet.has(i);
+            const badgeClass = isProblem ? 'design' : 'theory';
+            const badgeText = isProblem ? 'Design' : 'Theory';
+            const doneBadge = isDone ? ' <span class="badge done">✓</span>' : '';
+            html += `<li class="${active}" data-index="${i}">
+                <span class="num">${i+1}</span>
+                <span>${t}</span>
+                <span class="badge ${badgeClass}">${badgeText}</span>
+                ${isDone ? '<span class="badge done">✓</span>' : ''}
+            </li>`;
+        });
+        listEl.innerHTML = html || '<li class="empty-state">No topics found</li>';
+        listEl.querySelectorAll('li[data-index]').forEach(li => {
+            li.addEventListener('click', function() {
+                const idx = parseInt(this.dataset.index);
+                if (!isNaN(idx)) {
+                    currentIndex = idx;
+                    showCheatSheet = false;
+                    cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+                    renderDetail(idx);
+                    renderList(searchInput.value);
+                    updateProgress();
+                }
+            });
+        });
+    }
+
+    function renderDetail(idx) {
+        const data = getData(idx);
+        const title = topics[idx];
+        const num = idx + 1;
+        const isProblem = idx >= 40;
+        const type = isProblem ? 'Design Problem' : 'Theory';
+        const isDone = doneSet.has(idx);
+
+        if (showCheatSheet) {
+            detailEl.innerHTML = `
+                <h1><i class="fas fa-list-check"></i> Quick Cheat Sheet</h1>
+                <div class="sub">📌 All 50 topics · Quick revision</div>
+                <div class="box purple">
+                    <i class="fas fa-rocket"></i> <strong>System Design Cheat Sheet</strong>
+                    <ul style="margin-top:8px;list-style:none;padding-left:0;">
+                        <li><strong>🏛 Monolith vs Microservices:</strong> Start monolith, split when needed</li>
+                        <li><strong>🚪 API Gateway:</strong> Auth, Rate Limiting, Routing</li>
+                        <li><strong>⚖️ Load Balancer:</strong> Round Robin, Least Connections, IP Hash</li>
+                        <li><strong>🗄 Database:</strong> SQL (ACID) vs NoSQL (BASE)</li>
+                        <li><strong>⚡ Caching:</strong> Cache Aside (most common), Redis</li>
+                        <li><strong>📈 Scaling:</strong> Vertical (power) vs Horizontal (machines)</li>
+                        <li><strong>🎯 CAP Theorem:</strong> Choose 2 of 3 (Consistency, Availability, Partition)</li>
+                        <li><strong>📨 Message Queues:</strong> Kafka (volume), RabbitMQ (routing)</li>
+                        <li><strong>🚦 Rate Limiting:</strong> Token Bucket (burst support)</li>
+                        <li><strong>🔒 Security:</strong> JWT, OAuth 2.0, CORS, CSRF</li>
+                        <li><strong>💪 High Availability:</strong> Redundancy, Failover, Health checks</li>
+                    </ul>
+                </div>
+                <div class="box success">📝 <strong>Key Reminders:</strong> Always discuss trade-offs. Start simple, scale gradually. Handle failures gracefully.</div>
+                <p style="margin-top:12px; opacity:0.6;"><i class="fas fa-arrow-right"></i> Click any topic for detailed notes</p>
+            `;
+            return;
+        }
+
+        let extraHtml = '';
+        if (isProblem) {
+            extraHtml = `
+                <div class="box warning"><i class="fas fa-pen"></i> <strong>Design Steps</strong><br>${(data.steps || '').replace(/\n/g, '<br>')}</div>
+                <div class="box tip"><i class="fas fa-calculator"></i> <strong>Trade-offs</strong><br>${(data.adv || 'See advantages/disadvantages').replace(/\n/g, '<br>')}</div>
+                <div class="box success"><i class="fas fa-comments"></i> <strong>Interview Approach</strong><br>${(data.interview || '').replace(/\n/g, '<br>')}</div>
+                <div class="box pink"><i class="fas fa-list-check"></i> <strong>Cheat Sheet</strong><br>${(data.cheat || '').replace(/\n/g, '<br>')}</div>
+            `;
+        } else {
+            extraHtml = `
+                <div class="section"><i class="fas fa-check-circle"></i> Advantages</div>
+                <ul>${(data.adv || '').split('\n').filter(a => a.trim()).map(a => `<li>${a}</li>`).join('')}</ul>
+                <div class="section"><i class="fas fa-times-circle"></i> Disadvantages</div>
+                <ul>${(data.dis || '').split('\n').filter(d => d.trim()).map(d => `<li>${d}</li>`).join('')}</ul>
+                <div class="section"><i class="fas fa-rocket"></i> Use Cases</div>
+                <ul>${(data.use || '').split('\n').filter(u => u.trim()).map(u => `<li>${u}</li>`).join('')}</ul>
+                <div class="box success"><i class="fas fa-comments"></i> <strong>Interview Q&A</strong><br>${(data.interview || '').replace(/\n/g, '<br>')}</div>
+                <div class="box pink"><i class="fas fa-list-check"></i> <strong>Cheat Sheet</strong><br>${(data.cheat || '').replace(/\n/g, '<br>')}</div>
+            `;
+        }
+
+        const keypointsHtml = (data.keypoints || []).map(k => `<span>${k}</span>`).join('');
+
+        detailEl.innerHTML = `
+            <h1>
+                <i class="fas ${isProblem ? 'fa-puzzle-piece' : 'fa-code'}"></i>
+                Topic ${num}: ${title}
+                ${isDone ? ' <span style="font-size:0.8rem;color:#22c55e;">✅ Done</span>' : ''}
+            </h1>
+            <div class="sub">
+                📌 ${type} · ${num}/50
+                <span class="tag">${isProblem ? 'Design' : 'Theory'}</span>
+            </div>
+
+            <div class="section"><i class="fas fa-question-circle"></i> ${isProblem ? 'Problem Statement' : 'Concept'}</div>
+            <p>${data.desc || 'Detailed explanation'}</p>
+
+            <div class="section"><i class="fas fa-globe"></i> ${isProblem ? 'Real-World Example' : 'Example'}</div>
+            <p>${data.example || 'Real-world example'}</p>
+
+            <div class="section"><i class="fas fa-project-diagram"></i> ${isProblem ? 'Architecture' : 'Visual Diagram'}</div>
+            <div class="ascii-box">${data.diagram || 'Diagram here'}</div>
+
+            ${data.keypoints ? `<div class="keypoints">${keypointsHtml}</div>` : ''}
+
+            ${extraHtml}
+
+            ${data.related ? `
+                <div class="section"><i class="fas fa-link"></i> Related Topics</div>
+                <div class="related-topics">
+                    ${data.related.map(r => `<span data-index="${r}">${r+1}. ${topics[r]}</span>`).join('')}
+                </div>
+            ` : ''}
+
+            <div class="box tip">💡 <strong>Interview Tip:</strong> Always discuss trade-offs. Interviewers want to see you think about pros and cons.</div>
+            <div class="box mistake">⚠️ <strong>Common Mistake:</strong> Not considering trade-offs. Every design decision has implications.</div>
+            <div class="box success">📝 <strong>Ek Line Mein Summary:</strong> ${title} — ${(data.desc || '').substring(0, 100)}...</div>
+            <p style="margin-top:12px; opacity:0.6;"><i class="fas fa-arrow-right"></i> Navigate via sidebar · ${50 - num} topics remaining</p>
+        `;
+
+        // Related topics click
+        detailEl.querySelectorAll('.related-topics span').forEach(el => {
+            el.addEventListener('click', function() {
+                const idx = parseInt(this.dataset.index);
+                if (!isNaN(idx)) {
+                    currentIndex = idx;
+                    showCheatSheet = false;
+                    cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+                    renderDetail(idx);
+                    renderList(searchInput.value);
+                    updateProgress();
+                }
+            });
+        });
+
+        breadcrumbTopic.textContent = title;
+        detailEl.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+
+    function updateProgress() {
+        const count = doneSet.size;
+        const pct = (count / 50 * 100);
+        progressTrack.innerHTML = `
+            📌 ${count} / 50 mastered
+            <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+        `;
+        progressFill.style.width = pct + '%';
+        document.getElementById('statDone').textContent = `✅ ${count} Done`;
+        // Update list to show done badges
+        renderList(searchInput.value);
+    }
+
+    // ---- EVENTS ----
+    searchInput.addEventListener('input', function(e) { renderList(e.target.value); });
+
+    themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark');
+        this.innerHTML = document.body.classList.contains('dark')
+            ? '<i class="fas fa-sun"></i>'
+            : '<i class="fas fa-moon"></i>';
+    });
+
+    cheatSheetToggle.addEventListener('click', function() {
+        showCheatSheet = !showCheatSheet;
+        this.innerHTML = showCheatSheet
+            ? '<i class="fas fa-book"></i> Back to Notes'
+            : '<i class="fas fa-list-check"></i> Cheat Sheet';
+        renderDetail(currentIndex);
+    });
+
+    markDoneBtn.addEventListener('click', function() {
+        if (doneSet.has(currentIndex)) {
+            doneSet.delete(currentIndex);
+        } else {
+            doneSet.add(currentIndex);
+        }
+        updateProgress();
+        renderDetail(currentIndex);
+        renderList(searchInput.value);
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            const idx = filteredIndices.indexOf(currentIndex);
+            if (idx < filteredIndices.length - 1) {
+                currentIndex = filteredIndices[idx + 1];
+                renderDetail(currentIndex);
+                renderList(searchInput.value);
+                e.preventDefault();
+            }
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            const idx = filteredIndices.indexOf(currentIndex);
+            if (idx > 0) {
+                currentIndex = filteredIndices[idx - 1];
+                renderDetail(currentIndex);
+                renderList(searchInput.value);
+                e.preventDefault();
+            }
+        } else if (e.key === 'd' || e.key === 'D') {
+            markDoneBtn.click();
+        } else if (e.key === 'c' || e.key === 'C') {
+            cheatSheetToggle.click();
+        }
+    });
+
+    // ---- INIT ----thet
+    renderList();
+    renderDetail(0);
+    doneSet.add(0);
+    updateProgress();
+
+    // Hash navigation
+    window.addEventListener('hashchange', function() {
+        const hash = parseInt(window.location.hash.slice(1));
+        if (!isNaN(hash) && hash >= 0 && hash < topics.length) {
+            currentIndex = hash;
+            showCheatSheet = false;
+            cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+            renderDetail(currentIndex);
+            renderList(searchInput.value);
+            updateProgress();
+        }
+    });
+    if (!window.location.hash) window.location.hash = '0';
+
+    console.log('🎯 System Design Mastery loaded!');
+    console.log('⌨️ Keyboard shortcuts: ← → navigate, d = mark done, c = cheat sheet');
+</script>
+</body>
+</html>
+spring data source.pass

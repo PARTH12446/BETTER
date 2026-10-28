@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HashMap · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-panel: #0e1420;
+            --bg-card: #121927;
+            --bg-cell: #1a2333;
+            --border: #212c40;
+            --border-soft: #182236;
+            --text: #d8dee9;
+            --text-dim: #9aa9bb;
+            --text-faint: #5a6a7e;
+            --teal: #4fd8c4;
+            --teal-dim: rgba(79,216,196,0.14);
+            --amber: #f6ad55;
+            --amber-dim: rgba(246,173,85,0.14);
+            --violet: #b394f6;
+            --violet-dim: rgba(179,148,246,0.14);
+            --green: #4ade80;
+            --red: #f87171;
+            --pink: #f472b6;
+            --pink-dim: rgba(244,114,182,0.14);
+            --font-d: 'Space Grotesk', sans-serif;
+            --font-b: 'Inter', sans-serif;
+            --font-m: 'JetBrains Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(ellipse 900px 500px at 15% -10%, rgba(79,216,196,0.06), transparent),
+            radial-gradient(ellipse 700px 500px at 100% 20%, rgba(179,148,246,0.05), transparent),
+            var(--bg);
+            color: var(--text);
+            font-family: var(--font-b);
+            padding: 2.5rem 1.5rem 5rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1200px; margin: 0 auto; }
+        ::selection { background: var(--teal-dim); color: var(--teal); }
+
+        .hero {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border-soft);
+            margin-bottom: 2.5rem;
+        }
+        .eyebrow {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--teal); }
+        .hero h1 {
+            font-family: var(--font-d);
+            font-weight: 700;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+        .hero h1 span { color: var(--text-faint); }
+        .hero p.lede {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin-bottom: 1.6rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-panel);
+        }
+        .stat b { color: var(--text); font-weight: 600; }
+
+        .sec {
+            margin: 3.5rem 0 1.4rem;
+        }
+        .sec-num {
+            font-family: var(--font-m);
+            color: var(--text-faint);
+            font-size: 0.8rem;
+        }
+        .sec h2 {
+            font-family: var(--font-d);
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--text);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .sec .desc {
+            color: var(--text-dim);
+            margin-top: 0.4rem;
+            max-width: 680px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .callout {
+            margin-top: 1rem;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            background: var(--teal-dim);
+            border: 1px solid rgba(79,216,196,0.25);
+            font-size: 0.92rem;
+            color: var(--text);
+        }
+        .callout b { color: var(--teal); }
+
+        .code-snippet {
+            background: #0d1a28;
+            color: #c8dfff;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-family: var(--font-m);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            margin: 0.6rem 0;
+        }
+        .code-snippet .comment { color: #6a8faa; }
+        .code-snippet .keyword { color: var(--violet); }
+        .code-snippet .string { color: var(--green); }
+        .code-snippet .type { color: var(--teal); }
+
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem 1.2rem;
+            margin-top: 0.4rem;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--bg-panel);
+            padding: 0.4rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.92rem;
+            border: 1px solid var(--border-soft);
+        }
+        .benefit-item i { color: var(--teal); width: 1.3rem; }
+
+        .internal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 720px) {
+            .internal-grid { grid-template-columns: 1fr; }
+        }
+        .internal-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+        }
+        .internal-box .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin: 0.6rem 0;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .internal-box .step:last-child { border-bottom: none; }
+        .internal-box .step .num {
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            background: var(--teal-dim);
+            color: var(--teal);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .internal-box .step .desc { color: var(--text-dim); font-size: 0.9rem; }
+        .internal-box .step .desc b { color: var(--text); }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+            margin-top: 1.5rem;
+        }
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: var(--teal); }
+        .problem-card.g2 { border-left-color: var(--amber); }
+        .problem-card.g3 { border-left-color: var(--violet); }
+        .problem-card.g4 { border-left-color: var(--pink); }
+
+        .problem-card .phead {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .problem-card .pnum {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .problem-card .pname {
+            font-family: var(--font-d);
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-top: 2px;
+        }
+        .problem-card .pnum-id {
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            margin: 0.7rem 0;
+        }
+        .problem-card .papproach {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: var(--text); }
+        .problem-card .papproach .pattern-tag {
+            display: inline-block;
+            background: var(--teal-dim);
+            color: var(--teal);
+            padding: 0.1rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: var(--font-m);
+            margin-bottom: 0.4rem;
+        }
+        .problem-card .ppitfall {
+            font-size: 0.82rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            padding: 0.6rem 0.85rem;
+            margin-bottom: 0.7rem;
+        }
+        .problem-card .ppitfall b { color: var(--red); }
+        .pfoot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .complexity {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .diff-easy {
+            color: var(--green);
+            background: rgba(74,222,128,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-medium {
+            color: var(--amber);
+            background: rgba(246,173,85,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-hard {
+            color: var(--red);
+            background: rgba(248,113,113,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 2.5rem 0 1.2rem;
+        }
+        .group-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .group-head h3 {
+            font-family: var(--font-d);
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+        .group-head .count {
+            font-family: var(--font-m);
+            font-size: 0.78rem;
+            color: var(--text-faint);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 720px) {
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+        .mistake {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid var(--red);
+        }
+        .mistake .mtitle {
+            font-family: var(--font-m);
+            font-weight: 600;
+            color: #f8b4ac;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .mistake p {
+            font-size: 0.87rem;
+            color: var(--text-dim);
+        }
+        .mistake .fix {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--green);
+        }
+        .mistake .fix b { font-family: var(--font-m); }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-panel);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--teal), var(--violet));
+            transition: width 0.3s ease;
+        }
+        .progress-label {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: var(--text-faint); }
+        .check-item.done {
+            border-color: rgba(74,222,128,0.35);
+            background: rgba(74,222,128,0.06);
+        }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid var(--text-faint);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--bg);
+        }
+        .check-item.done .check-box {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .check-item span.label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .check-item.done span.label {
+            color: var(--text);
+            text-decoration: line-through;
+            text-decoration-color: var(--text-faint);
+        }
+        .check-item .tier {
+            margin-left: auto;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-soft);
+            color: var(--text-dim);
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl {
+            font-family: var(--font-d);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3.5rem;
+            color: var(--text-faint);
+            font-size: 0.8rem;
+            font-family: var(--font-m);
+            border-top: 1px solid var(--border-soft);
+            padding-top: 2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+        .inline-tag {
+            background: var(--border);
+            border-radius: 30px;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+        .meta-chip {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+        .recog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 720px) {
+            .recog-grid { grid-template-columns: 1fr; }
+        }
+        .recog-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-panel);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+        }
+        .recog-item .hint { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .recog-item .reason { color: var(--text-dim); font-size: 0.85rem; }
+        .recog-item i { color: var(--teal); width: 1.5rem; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="eyebrow">Data Structures · Key-Value Storage</div>
+        <h1>HashMap <span>— from recognition to mastery</span></h1>
+        <p class="lede">HashMap is the Swiss Army knife of data structures — if you need fast lookups, it's probably the answer. Master the internal workings, recognize the patterns, and know exactly when to use it.</p>
+        <div class="stat-row">
+            <div class="stat">⏱ <b>O(1)</b> average lookup</div>
+            <div class="stat">💾 <b>Key-Value</b> storage</div>
+            <div class="stat"><b>15</b> problems</div>
+            <div class="stat"><b>Null</b> key · null values</div>
+        </div>
+    </div>
+
+    <!-- 1. WHAT IS A HASHMAP -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What is a HashMap?</h2>
+        <p class="desc">A HashMap is a data structure that stores data in <b>key-value pairs</b>. It uses a hashing technique to compute the index of the bucket where the value will be stored.</p>
+    </div>
+    <div class="grid-2">
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-code" style="margin-right:6px;"></i> Java</span>
+            <div class="code-snippet"><span class="keyword">import</span> java.util.HashMap;
+
+                HashMap&lt;<span class="type">KeyType</span>, <span class="type">ValueType</span>&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</div>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.9rem;">
+                <i class="fas fa-check-circle" style="color:var(--green);"></i> O(1) avg get/put
+                <span style="margin-left:1rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> 1 null key</span>
+                <span style="margin-left:1rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> Many null values</span>
+            </div>
+        </div>
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-list-check" style="margin-right:6px;"></i> Key Characteristics</span>
+            <ul style="margin-top:0.8rem; list-style:none; color:var(--text-dim);">
+                <li style="padding:0.3rem 0; border-bottom:1px solid var(--border-soft);"><i class="fas fa-bolt" style="color:var(--teal); width:1.5rem;"></i> O(1) average time for get/put</li>
+                <li style="padding:0.3rem 0; border-bottom:1px solid var(--border-soft);"><i class="fas fa-key" style="color:var(--teal); width:1.5rem;"></i> Stores key-value pairs</li>
+                <li style="padding:0.3rem 0; border-bottom:1px solid var(--border-soft);"><i class="fas fa-arrows-spin" style="color:var(--teal); width:1.5rem;"></i> Not thread-safe (use ConcurrentHashMap)</li>
+                <li style="padding:0.3rem 0;"><i class="fas fa-sort" style="color:var(--teal); width:1.5rem;"></i> No guaranteed order (use LinkedHashMap)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 2. INTERNAL WORKING -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>Internal Working of HashMap</h2>
+        <p class="desc">Understanding the internals helps you write better code and debug performance issues.</p>
+    </div>
+
+    <div class="internal-grid">
+        <div class="internal-box">
+            <div style="font-family:var(--font-d); font-size:1.1rem; color:var(--text); margin-bottom:0.8rem;">
+                <i class="fas fa-gear" style="color:var(--teal);"></i> High-Level Overview
+            </div>
+            <div class="step">
+                <div class="num">1</div>
+                <div class="desc"><b>Key → Hash</b> — Key is passed to a hash function which returns a hash code</div>
+            </div>
+            <div class="step">
+                <div class="num">2</div>
+                <div class="desc"><b>Hash → Index</b> — Hash code is modulo'd with capacity to find bucket index</div>
+            </div>
+            <div class="step">
+                <div class="num">3</div>
+                <div class="desc"><b>Collision Handling</b> — If multiple keys map to same index, <b>chaining</b> (linked list) or <b>tree</b> is used</div>
+            </div>
+            <div class="step">
+                <div class="num">4</div>
+                <div class="desc"><b>O(1) Lookup</b> — Average time for get/put operations</div>
+            </div>
+        </div>
+        <div class="internal-box">
+            <div style="font-family:var(--font-d); font-size:1.1rem; color:var(--text); margin-bottom:0.8rem;">
+                <i class="fas fa-sitemap" style="color:var(--amber);"></i> Data Structure
+            </div>
+            <div style="font-family:var(--font-m); font-size:0.8rem; background:var(--bg-card); border-radius:8px; padding:0.8rem; border:1px solid var(--border-soft);">
+                <span style="color:var(--teal);">static class</span> <span style="color:var(--text);">Node&lt;K,V&gt;</span> <span style="color:var(--text-dim);">{</span><br>
+                &nbsp;&nbsp;<span style="color:var(--text-faint);">final int</span> <span style="color:var(--violet);">hash</span>;<br>
+                &nbsp;&nbsp;<span style="color:var(--text-faint);">final K</span> <span style="color:var(--violet);">key</span>;<br>
+                &nbsp;&nbsp;<span style="color:var(--text-faint);">V</span> <span style="color:var(--violet);">value</span>;<br>
+                &nbsp;&nbsp;<span style="color:var(--text-faint);">Node&lt;K,V&gt;</span> <span style="color:var(--violet);">next</span>;<br>
+                <span style="color:var(--text-dim);">}</span>
+            </div>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.85rem;">
+                <span class="meta-chip"><i class="fas fa-arrow-right"></i> Array of Node (buckets)</span>
+                <span class="meta-chip"><i class="fas fa-link"></i> Chaining for collisions</span>
+                <span class="meta-chip"><i class="fas fa-tree"></i> Treeify when > 8</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- put() and get() -->
+    <div class="grid-2" style="margin-top:0.5rem;">
+        <div class="card">
+            <div style="font-family:var(--font-d); font-size:1.1rem; color:var(--text);">
+                <i class="fas fa-pen" style="color:var(--green);"></i> put(key, value)
+            </div>
+            <div class="step" style="padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <div class="num" style="background:var(--green-dim); color:var(--green);">1</div>
+                <div class="desc"><b>Compute hash</b> — <code>hash = hash(key.hashCode())</code></div>
+            </div>
+            <div class="step" style="padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <div class="num" style="background:var(--green-dim); color:var(--green);">2</div>
+                <div class="desc"><b>Index calculation</b> — <code>index = (n - 1) & hash</code></div>
+            </div>
+            <div class="step" style="padding:0.4rem 0;">
+                <div class="num" style="background:var(--green-dim); color:var(--green);">3</div>
+                <div class="desc"><b>Insert node</b> — If collision, traverse list; if key exists, overwrite; else append</div>
+            </div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); font-size:1.1rem; color:var(--text);">
+                <i class="fas fa-search" style="color:var(--amber);"></i> get(key)
+            </div>
+            <div class="step" style="padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <div class="num" style="background:var(--amber-dim); color:var(--amber);">1</div>
+                <div class="desc"><b>Compute hash</b> — Same as put</div>
+            </div>
+            <div class="step" style="padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <div class="num" style="background:var(--amber-dim); color:var(--amber);">2</div>
+                <div class="desc"><b>Find bucket</b> — Use index to locate bucket</div>
+            </div>
+            <div class="step" style="padding:0.4rem 0;">
+                <div class="num" style="background:var(--amber-dim); color:var(--amber);">3</div>
+                <div class="desc"><b>Traverse</b> — If key found → return value; else → null</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. WHERE CAN HASHMAP BE APPLIED -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>Where Can HashMap Be Applied?</h2>
+        <p class="desc">HashMaps are extremely powerful in these scenarios — recognize when to reach for them.</p>
+    </div>
+    <div class="grid-2">
+        <div class="card" style="padding:1.2rem 1.4rem;">
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <i class="fas fa-bolt" style="color:var(--teal); width:1.5rem;"></i>
+                <span><b>Fast lookups</b> — O(1) average time</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <i class="fas fa-calculator" style="color:var(--teal); width:1.5rem;"></i>
+                <span><b>Count frequencies</b> — Word count, character frequency</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <i class="fas fa-check-circle" style="color:var(--teal); width:1.5rem;"></i>
+                <span><b>Check existence</b> — Has this element been seen before?</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <i class="fas fa-link" style="color:var(--teal); width:1.5rem;"></i>
+                <span><b>Unique mappings</b> — ID → value, URL → shortened URL</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                <i class="fas fa-database" style="color:var(--teal); width:1.5rem;"></i>
+                <span><b>Caching/memoization</b> — Store intermediate results in DP</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0;">
+                <i class="fas fa-object-group" style="color:var(--teal); width:1.5rem;"></i>
+                <span><b>Group by key</b> — Group anagrams, group by property</span>
+            </div>
+        </div>
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-lightbulb" style="margin-right:6px;"></i> When to Use</span>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.95rem;">
+                <p><i class="fas fa-arrow-right" style="color:var(--teal);"></i> You need <b>O(1) lookups</b></p>
+                <p><i class="fas fa-arrow-right" style="color:var(--teal);"></i> You see <b>"count"</b>, <b>"most"</b>, <b>"duplicate"</b>, <b>"frequency"</b></p>
+                <p><i class="fas fa-arrow-right" style="color:var(--teal);"></i> You need to <b>map one type to another</b> (String → Integer)</p>
+                <p><i class="fas fa-arrow-right" style="color:var(--teal);"></i> You need to <b>remember previously seen values</b></p>
+                <p><i class="fas fa-arrow-right" style="color:var(--teal);"></i> You need <b>grouping</b> or <b>partitioning</b> data</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. HOW TO RECOGNIZE -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>How to Recognize HashMap Pattern</h2>
+        <p class="desc">These clues in problem statements should immediately make you think of HashMap.</p>
+    </div>
+    <div class="recog-grid">
+        <div class="recog-item"><i class="fas fa-copy"></i><span class="hint">"Find duplicates"</span><span class="reason">→ Track seen values</span></div>
+        <div class="recog-item"><i class="fas fa-chart-bar"></i><span class="hint">"Find frequency/count"</span><span class="reason">→ Use value as counter</span></div>
+        <div class="recog-item"><i class="fas fa-index"></i><span class="hint">"Get index of previous"</span><span class="reason">→ Store index as value</span></div>
+        <div class="recog-item"><i class="fas fa-bolt"></i><span class="hint">"Fast lookups"</span><span class="reason">→ HashMap is O(1) lookup</span></div>
+        <div class="recog-item"><i class="fas fa-layer-group"></i><span class="hint">"Group by value"</span><span class="reason">→ Key = group, Value = List</span></div>
+        <div class="recog-item"><i class="fas fa-history"></i><span class="hint">"Check if seen before"</span><span class="reason">→ Use containsKey</span></div>
+        <div class="recog-item"><i class="fas fa-plus-square"></i><span class="hint">"Count pairs/sums"</span><span class="reason">→ Store complements</span></div>
+        <div class="recog-item"><i class="fas fa-crown"></i><span class="hint">"Most frequent"</span><span class="reason">→ Frequency counting</span></div>
+    </div>
+
+    <!-- 5. EXAMPLES -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Example Use Cases with Code</h2>
+        <p class="desc">Real patterns you'll see over and over again in coding problems.</p>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--teal); font-size:1rem;">
+                <i class="fas fa-calculator"></i> Count Frequency
+            </div>
+            <div class="code-snippet">Map&lt;Character, Integer&gt; freq = <span class="keyword">new</span> HashMap&lt;&gt;();
+                <span class="keyword">for</span> (char c : str.toCharArray()) {
+                freq.put(c, freq.getOrDefault(c, 0) + 1);
+                }</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">
+                <i class="fas fa-arrow-right" style="color:var(--teal);"></i> <b>Pattern:</b> Character → Frequency
+            </div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--amber); font-size:1rem;">
+                <i class="fas fa-plus"></i> Two Sum
+            </div>
+            <div class="code-snippet">Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();
+                <span class="keyword">for</span> (int i = 0; i &lt; nums.length; i++) {
+                <span class="type">int</span> complement = target - nums[i];
+                <span class="keyword">if</span> (map.containsKey(complement)) {
+                <span class="keyword">return</span> <span class="keyword">new int</span>[]{map.get(complement), i};
+                }
+                map.put(nums[i], i);
+                }</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">
+                <i class="fas fa-arrow-right" style="color:var(--amber);"></i> <b>Pattern:</b> Value → Index
+            </div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--violet); font-size:1rem;">
+                <i class="fas fa-object-ungroup"></i> Group Anagrams
+            </div>
+            <div class="code-snippet">Map&lt;String, List&lt;String&gt;&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();
+                <span class="keyword">for</span> (String word : words) {
+                char[] chars = word.toCharArray();
+                Arrays.sort(chars);
+                String key = <span class="keyword">new</span> String(chars);
+                map.computeIfAbsent(key, k -> <span class="keyword">new</span> ArrayList&lt;&gt;()).add(word);
+                }</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">
+                <i class="fas fa-arrow-right" style="color:var(--violet);"></i> <b>Pattern:</b> Sorted String → List of Anagrams
+            </div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--pink); font-size:1rem;">
+                <i class="fas fa-arrows-left-right"></i> Subarray Sum Equals K
+            </div>
+            <div class="code-snippet">Map&lt;Integer, Integer&gt; prefixSum = <span class="keyword">new</span> HashMap&lt;&gt;();
+                prefixSum.put(0, 1);
+                <span class="type">int</span> sum = 0, count = 0;
+                <span class="keyword">for</span> (<span class="type">int</span> num : nums) {
+                sum += num;
+                <span class="keyword">if</span> (prefixSum.containsKey(sum - k)) {
+                count += prefixSum.get(sum - k);
+                }
+                prefixSum.put(sum, prefixSum.getOrDefault(sum, 0) + 1);
+                }</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">
+                <i class="fas fa-arrow-right" style="color:var(--pink);"></i> <b>Pattern:</b> Prefix Sum → Frequency
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. ADVANTAGES -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Advantages of Using HashMap</h2>
+        <p class="desc">Why HashMap is one of the most widely used data structures in programming.</p>
+    </div>
+    <div class="card">
+        <div class="benefit-grid">
+            <div class="benefit-item"><i class="fas fa-bolt"></i> O(1) time lookup — Fast get/put/remove</div>
+            <div class="benefit-item"><i class="fas fa-chart-simple"></i> Easy to count data — Frequency maps are straightforward</div>
+            <div class="benefit-item"><i class="fas fa-memory"></i> Good for memoization — Store intermediate results in recursion/DP</div>
+            <div class="benefit-item"><i class="fas fa-shuffle"></i> Can map any type — Supports generic key-value</div>
+            <div class="benefit-item"><i class="fas fa-rotate-left"></i> Useful in backtracking/DFS — To avoid recomputation</div>
+            <div class="benefit-item"><i class="fas fa-flexibility"></i> Flexible key types — Can use String, Integer, custom objects</div>
+        </div>
+    </div>
+
+    <!-- 7. BEST PRACTICES -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>Best Practices</h2>
+        <p class="desc">Write cleaner, more efficient HashMap code with these tips.</p>
+    </div>
+    <div class="grid-2">
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--teal); margin-bottom:0.6rem;">
+                <i class="fas fa-check-circle"></i> Use getOrDefault()
+            </div>
+            <div class="code-snippet">freq.put(c, freq.getOrDefault(c, 0) + 1);</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">Avoids null checks and simplifies counting.</div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--amber); margin-bottom:0.6rem;">
+                <i class="fas fa-check-circle"></i> Use computeIfAbsent()
+            </div>
+            <div class="code-snippet">map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">Clean way to handle List initialization.</div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--violet); margin-bottom:0.6rem;">
+                <i class="fas fa-check-circle"></i> Use immutable keys
+            </div>
+            <div style="color:var(--text-dim); font-size:0.9rem; margin-top:0.4rem;">
+                <p>String, Integer are safe. For custom objects, override <code>hashCode()</code> and <code>equals()</code>.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div style="font-family:var(--font-d); color:var(--pink); margin-bottom:0.6rem;">
+                <i class="fas fa-check-circle"></i> Initialize with capacity
+            </div>
+            <div class="code-snippet">Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;(initialCapacity);</div>
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-top:0.4rem;">Reduces rehashing overhead for large datasets.</div>
+        </div>
+    </div>
+
+    <!-- 8. COMMON MISTAKES -->
+    <div class="sec">
+        <div class="sec-num">08</div>
+        <h2>Common Mistakes</h2>
+        <p class="desc">Avoid these pitfalls when working with HashMap.</p>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Mutable objects as keys</div>
+            <p>Using mutable objects as keys can change their hash code after insertion, making them unretrievable.</p>
+            <div class="fix">Fix: Use <b>immutable keys</b> (String, Integer) or override hashCode/equals.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Not handling null values</div>
+            <p>HashMap allows null values, but <code>map.get(key)</code> returns null for both missing keys and null values.</p>
+            <div class="fix">Fix: Use <b>containsKey()</b> to check existence before get().</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Modifying while iterating</div>
+            <p>Modifying a HashMap while iterating over it throws ConcurrentModificationException.</p>
+            <div class="fix">Fix: Use <b>Iterator</b> or copy the map before modification.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Not considering collision overhead</div>
+            <p>Poor hash codes or many collisions degrade performance to O(n) or O(log n).</p>
+            <div class="fix">Fix: Use <b>proper initial capacity</b> and good hash functions.</div>
+        </div>
+    </div>
+
+    <!-- 9. PROBLEMS WITH PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">09</div>
+        <h2>All 15 Problems — Approach Patterns</h2>
+        <p class="desc">Each card shows the <b>approach pattern</b> (not the full solution) and the common pitfall for that exact problem.</p>
+    </div>
+
+    <!-- Group A: Basic Lookup -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--teal)"></div>
+        <h3>Group A — Basic Lookup & Existence</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <!-- Group B: Frequency Counting -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--amber)"></div>
+        <h3>Group B — Frequency Counting</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <!-- Group C: Grouping & Mapping -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--violet)"></div>
+        <h3>Group C — Grouping & Mapping</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-c"></div>
+
+    <!-- Group D: Advanced Patterns -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--pink)"></div>
+        <h3>Group D — Advanced Patterns</h3>
+        <span class="count">3 problems</span>
+    </div>
+    <div class="problem-grid" id="group-d"></div>
+
+    <!-- 10. CHEAT SHEET -->
+    <div class="sec">
+        <div class="sec-num">10</div>
+        <h2>Quick Reference</h2>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Feature</th><th>HashMap</th></tr></thead>
+            <tbody>
+            <tr><td class="lbl">Access time</td><td>O(1) avg</td></tr>
+            <tr><td class="lbl">Stores</td><td>Key-Value</td></tr>
+            <tr><td class="lbl">Null allowed?</td><td>1 null key, many null values</td></tr>
+            <tr><td class="lbl">Ordered?</td><td>No (use LinkedHashMap)</td></tr>
+            <tr><td class="lbl">Thread-safe?</td><td>No (use ConcurrentHashMap)</td></tr>
+            <tr><td class="lbl">Collision resolution</td><td>Chaining (linked list → tree)</td></tr>
+            <tr><td class="lbl">Initial capacity</td><td>16 (default)</td></tr>
+            <tr><td class="lbl">Load factor</td><td>0.75 (default)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 11. MASTERY PATH -->
+    <div class="sec">
+        <div class="sec-num">11</div>
+        <h2>Suggested Practice Order</h2>
+        <p class="desc">Work top to bottom — each tier assumes you're comfortable with the one above it. Click a problem once you can solve it without looking at the approach.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 15 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <footer>HashMap · Mastery Notes — recognize the pattern, choose the right tool</footer>
+</div>
+
+<script>
+    // ============ PROBLEM DATA ============
+    const problems = {
+        a: [
+            {
+                num: "1",
+                name: "Two Sum",
+                desc: "Find two indices such that nums[i] + nums[j] == target.",
+                approach: "Store each number's index in a map. For each element, check if complement exists. Return both indices when found.",
+                pattern: "Value → Index",
+                pitfall: "Using the same element twice — ensure you don't reuse the current index.",
+                difficulty: "Easy"
+            },
+            {
+                num: "217",
+                name: "Contains Duplicate",
+                desc: "Check if any value appears at least twice in the array.",
+                approach: "Use a HashSet to track seen values. If a value is already in the set → return true.",
+                pattern: "Set → Existence",
+                pitfall: "Using HashMap when HashSet would be simpler and more memory efficient.",
+                difficulty: "Easy"
+            },
+            {
+                num: "205",
+                name: "Isomorphic Strings",
+                desc: "Check if two strings are isomorphic (characters can be replaced to get the second string).",
+                approach: "Use two maps to track character mappings in both directions. If a mapping conflicts → return false.",
+                pattern: "Char → Char (both directions)",
+                pitfall: "Only checking one direction — you need to ensure both strings map consistently.",
+                difficulty: "Easy"
+            },
+            {
+                num: "290",
+                name: "Word Pattern",
+                desc: "Check if a pattern string follows the same pattern as a word sequence.",
+                approach: "Split words into array. Use two maps: pattern char → word, and word → pattern char. Check both directions.",
+                pattern: "Index/Character mapping",
+                pitfall: "Different number of chars vs words — returns false immediately.",
+                difficulty: "Easy"
+            }
+        ],
+        b: [
+            {
+                num: "242",
+                name: "Valid Anagram",
+                desc: "Check if two strings are anagrams of each other.",
+                approach: "Count frequency of characters in both strings using a map. Compare the frequency maps.",
+                pattern: "Char → Frequency",
+                pitfall: "Using a single map and decrementing works, but forgetting to check if all counts are zero at the end.",
+                difficulty: "Easy"
+            },
+            {
+                num: "347",
+                name: "Top K Frequent Elements",
+                desc: "Find the k most frequent elements in an array.",
+                approach: "Count frequencies using HashMap. Use a min-heap or bucket sort to get the top k.",
+                pattern: "Frequency count → Top K",
+                pitfall: "Sorting the entire frequency map gives O(n log n) instead of O(n log k) with a heap.",
+                difficulty: "Medium"
+            },
+            {
+                num: "438",
+                name: "Find All Anagrams in a String",
+                desc: "Find all start indices of anagrams of pattern p in string s.",
+                approach: "Use a sliding window with a frequency map. When window size matches p, check if frequencies match.",
+                pattern: "Sliding window + Frequency",
+                pitfall: "Recreating the frequency map for each window gives O(n*k) — maintain it incrementally.",
+                difficulty: "Medium"
+            },
+            {
+                num: "409",
+                name: "Longest Palindrome by Concatenating",
+                desc: "Find the longest palindrome that can be built using given two-letter words.",
+                approach: "Count word frequencies. Pair reverse words together. Track if any unpaired word can be in the middle.",
+                pattern: "Word frequency + Pairing",
+                pitfall: "Double counting words — each word can only be used once.",
+                difficulty: "Medium"
+            }
+        ],
+        c: [
+            {
+                num: "49",
+                name: "Group Anagrams",
+                desc: "Group words that are anagrams of each other.",
+                approach: "Sort each word to create a key. Use map: sorted string → list of original strings.",
+                pattern: "Sorted string → List",
+                pitfall: "Using char counting instead of sorting — both work but sorting is simpler.",
+                difficulty: "Medium"
+            },
+            {
+                num: "3",
+                name: "Longest Substring Without Repeating",
+                desc: "Find the length of the longest substring without repeating characters.",
+                approach: "Use a map to store the last seen index of each character. When a repeat is found, move left pointer.",
+                pattern: "Char → Last Index",
+                pitfall: "Not updating left pointer correctly — it should move to max(left, lastSeen[c] + 1).",
+                difficulty: "Medium"
+            },
+            {
+                num: "560",
+                name: "Subarray Sum Equals K",
+                desc: "Count the number of subarrays with sum equal to k.",
+                approach: "Use a map to store prefix sum frequencies. For each sum, check if (sum - k) exists.",
+                pattern: "Prefix sum → Frequency",
+                pitfall: "Forgetting to initialize the map with (0,1) — handles subarrays starting at index 0.",
+                difficulty: "Medium"
+            },
+            {
+                num: "652",
+                name: "Find Duplicate Subtrees",
+                desc: "Find all duplicate subtrees in a binary tree.",
+                approach: "Serialize each subtree into a string. Use a map: serialization → count. Add to result when count == 2.",
+                pattern: "Subtree serialization → Count",
+                pitfall: "Using a pre-order traversal without including null markers can cause collisions.",
+                difficulty: "Medium"
+            }
+        ],
+        d: [
+            {
+                num: "76",
+                name: "Minimum Window Substring",
+                desc: "Find the minimum window in s that contains all characters of t.",
+                approach: "Use two maps: one for target counts, one for window counts. Expand right, shrink left when all chars match.",
+                pattern: "Sliding window + Char count",
+                pitfall: "Not tracking the number of matched characters correctly — use a 'required' count.",
+                difficulty: "Hard"
+            },
+            {
+                num: "128",
+                name: "Longest Consecutive Sequence",
+                desc: "Find the length of the longest consecutive elements sequence.",
+                approach: "Store all numbers in a HashSet. For each number, check if it's the start of a sequence and count forward.",
+                pattern: "Set → Sequence tracking",
+                pitfall: "Checking both directions for every number gives O(n²) — only check from the start of a sequence.",
+                difficulty: "Medium"
+            },
+            {
+                num: "987",
+                name: "Vertical Order Traversal",
+                desc: "Traverse a binary tree vertically, grouping nodes by column index.",
+                approach: "Use a map: column index → list of (row, value) pairs. Sort by row then value for each column.",
+                pattern: "Column index → Node list",
+                pitfall: "Not sorting within each column by row and value — vertical order requires both.",
+                difficulty: "Hard"
+            }
+        ]
+    };
+
+    // ============ RENDER PROBLEM CARDS ============
+    function renderProblems(groupId, cls, arr) {
+        const container = document.getElementById(groupId);
+        arr.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            const diffClass = p.difficulty === "Easy" ? "diff-easy" : p.difficulty === "Medium" ? "diff-medium" : "diff-hard";
+            card.innerHTML = `
+                <div class="phead">
+                    <div>
+                        <div class="pnum">LeetCode ${p.num}</div>
+                        <div class="pname">${p.name}</div>
+                    </div>
+                    <div class="pnum-id"><span class="${diffClass}">${p.difficulty}</span></div>
+                </div>
+                <div class="pdesc">${p.desc}</div>
+                <div class="papproach">
+                    <div class="pattern-tag">🔑 ${p.pattern}</div>
+                    <b>Approach —</b> ${p.approach}
+                </div>
+                <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+                <div class="pfoot">
+                    <span class="complexity"><i class="fas fa-key"></i> ${p.pattern}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    renderProblems("group-a", "g1", problems.a);
+    renderProblems("group-b", "g2", problems.b);
+    renderProblems("group-c", "g3", problems.c);
+    renderProblems("group-d", "g4", problems.d);
+
+    // ============ MASTERY CHECKLIST ============
+    const allProblems = [
+        { n: "1 · Two Sum", tier: "start here" },
+        { n: "217 · Contains Duplicate", tier: "start here" },
+        { n: "242 · Valid Anagram", tier: "start here" },
+        { n: "205 · Isomorphic Strings", tier: "start here" },
+        { n: "49 · Group Anagrams", tier: "core" },
+        { n: "3 · Longest Substring Without Repeating", tier: "core" },
+        { n: "560 · Subarray Sum Equals K", tier: "core" },
+        { n: "347 · Top K Frequent Elements", tier: "core" },
+        { n: "438 · Find All Anagrams", tier: "core" },
+        { n: "290 · Word Pattern", tier: "core" },
+        { n: "409 · Longest Palindrome", tier: "stretch" },
+        { n: "128 · Longest Consecutive Sequence", tier: "stretch" },
+        { n: "652 · Find Duplicate Subtrees", tier: "stretch" },
+        { n: "76 · Minimum Window Substring", tier: "hard" },
+        { n: "987 · Vertical Order Traversal", tier: "hard" }
+    ];
+
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress() {
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done / allProblems.length * 100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+
+    allProblems.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", () => { item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>

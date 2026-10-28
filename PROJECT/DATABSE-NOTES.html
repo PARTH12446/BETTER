@@ -1,0 +1,2614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Database Notes - MongoDB & SQL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f0f4f9;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            color: #1a2332;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        .header {
+            background: linear-gradient(135deg, #0b1e33 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 28px;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(11, 30, 51, 0.3);
+        }
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header h1 i.fa-database { color: #00758F; }
+        .header h1 i.fa-leaf { color: #47A248; }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid #60a5fa;
+        }
+        .header .badge-group {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .header .badge-group span {
+            background: rgba(255,255,255,0.15);
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .topic-nav {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .topic-nav .label {
+            font-weight: 600;
+            color: #334155;
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .topic-btn {
+            background: transparent;
+            border: 1px solid #d1d9e6;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .topic-btn:hover {
+            background: #e6edf8;
+            border-color: #7c9bcf;
+            transform: translateY(-1px);
+        }
+        .topic-btn.active-sql {
+            background: #00758F;
+            border-color: #00758F;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,117,143,0.3);
+        }
+        .topic-btn.active-mongo {
+            background: #47A248;
+            border-color: #47A248;
+            color: white;
+            box-shadow: 0 4px 8px rgba(71,162,72,0.3);
+        }
+        .content {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+        }
+        .topic-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        .topic-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0b1e33;
+        }
+        .topic-header .badge {
+            background: #dbeafe;
+            color: #1e4a7a;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+        .note-section { margin-bottom: 2rem; }
+        .note-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e3a6f;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .note-section h3 i {
+            color: #2563eb;
+            font-size: 1rem;
+            width: 1.5rem;
+        }
+        .note-section h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b5e4b;
+            margin: 1rem 0 0.5rem;
+        }
+        .note-section p, .note-section li {
+            color: #334155;
+            line-height: 1.8;
+            font-size: 0.98rem;
+        }
+        .note-section ul, .note-section ol {
+            padding-left: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .note-section li { margin-bottom: 0.4rem; }
+        .code-block {
+            background: #0b1e33;
+            color: #e2e8f0;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            margin: 0.8rem 0 1.2rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+            position: relative;
+        }
+        .code-block .lang-tag {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.1rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .code-block .comment { color: #94a3b8; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #34d399; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .variable { color: #fbbf24; }
+        .code-block .tag { color: #f87171; }
+        .code-block .sql-keyword { color: #ff79c6; }
+        .code-block .sql-string { color: #f1fa8c; }
+        .code-block .sql-function { color: #50fa7b; }
+        .note-box {
+            background: #f1f6fe;
+            border-left: 4px solid #2563eb;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+        }
+        .note-box.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        .note-box.success {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+        }
+        .note-box.sql-box {
+            border-left-color: #00758F;
+            background: #e8f4f8;
+        }
+        .note-box.mongo-box {
+            border-left-color: #47A248;
+            background: #e8f5e8;
+        }
+        .note-box i { margin-right: 0.5rem; }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .diagram-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        .comparison-table th {
+            background: #f1f6fe;
+            font-weight: 600;
+        }
+        .comparison-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header { padding: 1.5rem; }
+            .header h1 { font-size: 1.8rem; flex-wrap: wrap; }
+            .content { padding: 1.5rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .topic-header h2 { font-size: 1.4rem; }
+            .code-block { font-size: 0.8rem; padding: 1rem; }
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9edf4;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            border-radius: 4px;
+            width: 100%;
+            transition: width 0.3s;
+        }
+        .loading-text {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+        .loading-text i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .tech-tag {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+        }
+        .tech-tag.sql {
+            background: #e1f0f5;
+            color: #00758F;
+        }
+        .tech-tag.mongo {
+            background: #e6f5e6;
+            color: #47A248;
+        }
+        .tech-tag.both {
+            background: #e8e8f0;
+            color: #4a4a6a;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <i class="fas fa-database"></i>
+            <i class="fas fa-leaf"></i>
+            Complete Database Notes
+        </h1>
+        <p>SQL & MongoDB · 30+ topics · deep explanations · real examples · code samples</p>
+        <div class="badge-group">
+            <span><i class="fas fa-check-circle"></i> 30 Topics</span>
+            <span><i class="fas fa-code"></i> 100+ Examples</span>
+            <span><i class="fas fa-brain"></i> All Levels</span>
+        </div>
+    </div>
+
+    <div class="topic-nav" id="topicNav">
+        <span class="label"><i class="fas fa-tag"></i> Topics:</span>
+    </div>
+
+    <div class="content" id="contentArea">
+        <div class="topic-header">
+            <h2 id="topicTitle">Loading...</h2>
+            <span class="badge" id="topicBadge">Deep Notes</span>
+        </div>
+        <div id="notesContent">
+            <div class="loading-text">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading content...
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="fill" id="progressFill"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // DATABASE TOPICS DATA
+    // ================================================================
+    const topicData = {
+        // ========== SQL TOPICS ==========
+        '1. SQL Introduction & Basics': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-info-circle"></i> What is SQL?</h3>
+                    <p><strong>SQL (Structured Query Language)</strong> is a standard language for managing relational databases. It's used to communicate with databases and perform operations like querying, updating, and managing data.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Types of SQL Statements</h3>
+                    <ul>
+                        <li><strong>DDL (Data Definition Language):</strong> CREATE, ALTER, DROP, TRUNCATE</li>
+                        <li><strong>DML (Data Manipulation Language):</strong> SELECT, INSERT, UPDATE, DELETE</li>
+                        <li><strong>DCL (Data Control Language):</strong> GRANT, REVOKE</li>
+                        <li><strong>TCL (Transaction Control Language):</strong> COMMIT, ROLLBACK, SAVEPOINT</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Basic SQL Commands</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- CREATE TABLE</span>
+                        <span class="sql-keyword">CREATE TABLE</span> users (
+                            id <span class="sql-keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,
+                            name <span class="sql-keyword">VARCHAR</span>(100) <span class="sql-keyword">NOT NULL</span>,
+                            email <span class="sql-keyword">VARCHAR</span>(255) <span class="sql-keyword">UNIQUE NOT NULL</span>,
+                            age <span class="sql-keyword">INT</span>,
+                            created_at <span class="sql-keyword">TIMESTAMP DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span>
+                        );
+
+                        <span class="comment">-- INSERT</span>
+                        <span class="sql-keyword">INSERT INTO</span> users (name, email, age)
+                        <span class="sql-keyword">VALUES</span> (<span class="sql-string">'John Doe'</span>, <span class="sql-string">'john@example.com'</span>, 30);
+
+                        <span class="comment">-- SELECT</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">WHERE</span> age > 25;
+
+                        <span class="comment">-- UPDATE</span>
+                        <span class="sql-keyword">UPDATE</span> users <span class="sql-keyword">SET</span> age = 31 <span class="sql-keyword">WHERE</span> id = 1;
+
+                        <span class="comment">-- DELETE</span>
+                        <span class="sql-keyword">DELETE FROM</span> users <span class="sql-keyword">WHERE</span> id = 1;
+                    </div>
+                </div>
+
+                <div class="note-box sql-box">
+                    <i class="fas fa-database"></i>
+                    <strong>SQL Databases:</strong> PostgreSQL, MySQL, Oracle, SQL Server, SQLite
+                </div>
+            `
+        },
+        '2. SQL Data Types & Constraints': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Common SQL Data Types</h3>
+                    <table class="comparison-table">
+                        <tr><th>Data Type</th><th>Description</th><th>Example</th></tr>
+                        <tr><td>INT</td><td>Whole numbers</td><td>age INT</td></tr>
+                        <tr><td>VARCHAR(n)</td><td>Variable-length string</td><td>name VARCHAR(100)</td></tr>
+                        <tr><td>CHAR(n)</td><td>Fixed-length string</td><td>code CHAR(10)</td></tr>
+                        <tr><td>TEXT</td><td>Long text</td><td>description TEXT</td></tr>
+                        <tr><td>DECIMAL(p,s)</td><td>Exact numeric</td><td>price DECIMAL(10,2)</td></tr>
+                        <tr><td>FLOAT</td><td>Approximate numeric</td><td>weight FLOAT</td></tr>
+                        <tr><td>DATE</td><td>Date (YYYY-MM-DD)</td><td>birth_date DATE</td></tr>
+                        <tr><td>TIMESTAMP</td><td>Date and time</td><td>created_at TIMESTAMP</td></tr>
+                        <tr><td>BOOLEAN</td><td>True/False</td><td>is_active BOOLEAN</td></tr>
+                        <tr><td>JSON</td><td>JSON data (PostgreSQL)</td><td>metadata JSON</td></tr>
+                    </table>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Constraints</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="sql-keyword">CREATE TABLE</span> products (
+                            id <span class="sql-keyword">INT PRIMARY KEY</span>,
+                            name <span class="sql-keyword">VARCHAR</span>(100) <span class="sql-keyword">NOT NULL</span>,
+                            sku <span class="sql-keyword">VARCHAR</span>(50) <span class="sql-keyword">UNIQUE</span>,
+                            price <span class="sql-keyword">DECIMAL</span>(10,2) <span class="sql-keyword">CHECK</span> (price > 0),
+                            category_id <span class="sql-keyword">INT</span>,
+                            <span class="sql-keyword">FOREIGN KEY</span> (category_id) <span class="sql-keyword">REFERENCES</span> categories(id),
+                            stock <span class="sql-keyword">INT DEFAULT</span> 0
+                        );
+                    </div>
+                    <ul>
+                        <li><strong>PRIMARY KEY:</strong> Unique identifier for each row</li>
+                        <li><strong>FOREIGN KEY:</strong> Links to another table</li>
+                        <li><strong>UNIQUE:</strong> Ensures all values are different</li>
+                        <li><strong>NOT NULL:</strong> Cannot be empty</li>
+                        <li><strong>CHECK:</strong> Validates data</li>
+                        <li><strong>DEFAULT:</strong> Default value if not provided</li>
+                    </ul>
+                </div>
+            `
+        },
+        '3. SQL SELECT Queries': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-search"></i> SELECT Queries</h3>
+                    <p>The <code>SELECT</code> statement retrieves data from a database.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Basic SELECT</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Select all columns</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- Select specific columns</span>
+                        <span class="sql-keyword">SELECT</span> name, email <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- Select distinct values</span>
+                        <span class="sql-keyword">SELECT DISTINCT</span> city <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- Alias (AS)</span>
+                        <span class="sql-keyword">SELECT</span> name <span class="sql-keyword">AS</span> full_name, age <span class="sql-keyword">AS</span> user_age <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- Filter (WHERE)</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">WHERE</span> age >= 18 <span class="sql-keyword">AND</span> city = <span class="sql-string">'New York'</span>;
+
+                        <span class="comment">-- Pattern matching (LIKE)</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">WHERE</span> name <span class="sql-keyword">LIKE</span> <span class="sql-string">'J%'</span>;
+
+                        <span class="comment">-- IN operator</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">WHERE</span> city <span class="sql-keyword">IN</span> (<span class="sql-string">'NYC'</span>, <span class="sql-string">'LA'</span>, <span class="sql-string">'SF'</span>);
+
+                        <span class="comment">-- BETWEEN</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">WHERE</span> age <span class="sql-keyword">BETWEEN</span> 25 <span class="sql-keyword">AND</span> 35;
+
+                        <span class="comment">-- Sort (ORDER BY)</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">ORDER BY</span> created_at <span class="sql-keyword">DESC</span>;
+
+                        <span class="comment">-- Limit</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">LIMIT</span> 10 <span class="sql-keyword">OFFSET</span> 20;
+                    </div>
+                </div>
+
+                <div class="note-box sql-box">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Pro Tip:</strong> Use <code>EXPLAIN</code> before a query to see how the database executes it and optimize performance.
+                </div>
+            `
+        },
+        '4. SQL Joins & Relationships': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-link"></i> SQL Joins</h3>
+                    <p><strong>JOIN</strong> combines rows from two or more tables based on a related column.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Types of Joins</h3>
+                    <div class="diagram-box">
+                        ┌─────────────────────────────────────────────────────────┐
+                        │                   JOIN TYPES                          │
+                        ├─────────────────────────────────────────────────────────┤
+                        │                                                       │
+                        │  INNER JOIN: Only matching rows                       │
+                        │  ┌─────────┐  ┌─────────┐                           │
+                        │  │    A    │  │    B    │                           │
+                        │  │  ┌───┐ │  │ ┌───┐  │                           │
+                        │  │  │   │ │  │ │   │  │                           │
+                        │  │  └───┘ │  │ └───┘  │                           │
+                        │  └─────────┘  └─────────┘                           │
+                        │                                                       │
+                        │  LEFT JOIN: All rows from left + matches             │
+                        │  ┌─────────┐  ┌─────────┐                           │
+                        │  │    A    │  │    B    │                           │
+                        │  │  ┌─────┐│  │ ┌───┐  │                           │
+                        │  │  │     ││  │ │   │  │                           │
+                        │  │  └─────┘│  │ └───┘  │                           │
+                        │  └─────────┘  └─────────┘                           │
+                        │                                                       │
+                        │  RIGHT JOIN: All rows from right + matches           │
+                        │                                                       │
+                        │  FULL OUTER JOIN: All rows from both                 │
+                        └─────────────────────────────────────────────────────────┘
+                    </div>
+
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- INNER JOIN</span>
+                        <span class="sql-keyword">SELECT</span> users.name, orders.total
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">INNER JOIN</span> orders <span class="sql-keyword">ON</span> users.id = orders.user_id;
+
+                        <span class="comment">-- LEFT JOIN (all users, even those without orders)</span>
+                        <span class="sql-keyword">SELECT</span> users.name, <span class="sql-function">COALESCE</span>(orders.total, 0) <span class="sql-keyword">AS</span> total
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">LEFT JOIN</span> orders <span class="sql-keyword">ON</span> users.id = orders.user_id;
+
+                        <span class="comment">-- RIGHT JOIN</span>
+                        <span class="sql-keyword">SELECT</span> users.name, orders.total
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">RIGHT JOIN</span> orders <span class="sql-keyword">ON</span> users.id = orders.user_id;
+
+                        <span class="comment">-- FULL OUTER JOIN (PostgreSQL)</span>
+                        <span class="sql-keyword">SELECT</span> users.name, orders.total
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">FULL OUTER JOIN</span> orders <span class="sql-keyword">ON</span> users.id = orders.user_id;
+
+                        <span class="comment">-- SELF JOIN (joining a table to itself)</span>
+                        <span class="sql-keyword">SELECT</span> e1.name <span class="sql-keyword">AS</span> employee, e2.name <span class="sql-keyword">AS</span> manager
+                        <span class="sql-keyword">FROM</span> employees e1
+                        <span class="sql-keyword">LEFT JOIN</span> employees e2 <span class="sql-keyword">ON</span> e1.manager_id = e2.id;
+
+                        <span class="comment">-- Multiple JOINs</span>
+                        <span class="sql-keyword">SELECT</span> users.name, orders.total, products.name <span class="sql-keyword">AS</span> product
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">JOIN</span> orders <span class="sql-keyword">ON</span> users.id = orders.user_id
+                        <span class="sql-keyword">JOIN</span> order_items <span class="sql-keyword">ON</span> orders.id = order_items.order_id
+                        <span class="sql-keyword">JOIN</span> products <span class="sql-keyword">ON</span> order_items.product_id = products.id;
+                    </div>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Example:</strong> E-commerce database with Users, Orders, and Products tables. Use JOINs to get complete order information.
+                </div>
+            `
+        },
+        '5. SQL Aggregation & Grouping': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-chart-bar"></i> Aggregation Functions</h3>
+                    <p>Aggregate functions perform calculations on multiple rows and return a single value.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Common Aggregate Functions</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- COUNT</span>
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">FROM</span> users;
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">COUNT</span>(<span class="sql-keyword">DISTINCT</span> city) <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- SUM</span>
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">SUM</span>(total) <span class="sql-keyword">AS</span> total_revenue <span class="sql-keyword">FROM</span> orders;
+
+                        <span class="comment">-- AVG</span>
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">AVG</span>(age) <span class="sql-keyword">AS</span> avg_age <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- MIN / MAX</span>
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">MIN</span>(price) <span class="sql-keyword">AS</span> cheapest, <span class="sql-function">MAX</span>(price) <span class="sql-keyword">AS</span> most_expensive <span class="sql-keyword">FROM</span> products;
+
+                        <span class="comment">-- GROUP BY</span>
+                        <span class="sql-keyword">SELECT</span> city, <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> user_count
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">GROUP BY</span> city
+                        <span class="sql-keyword">ORDER BY</span> user_count <span class="sql-keyword">DESC</span>;
+
+                        <span class="comment">-- GROUP BY with HAVING (filter groups)</span>
+                        <span class="sql-keyword">SELECT</span> city, <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> user_count
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">GROUP BY</span> city
+                        <span class="sql-keyword">HAVING</span> <span class="sql-function">COUNT</span>(*) > 100;
+
+                        <span class="comment">-- Multiple aggregations</span>
+                        <span class="sql-keyword">SELECT</span>
+                            category,
+                            <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> product_count,
+                            <span class="sql-function">AVG</span>(price) <span class="sql-keyword">AS</span> avg_price,
+                            <span class="sql-function">SUM</span>(stock) <span class="sql-keyword">AS</span> total_stock
+                        <span class="sql-keyword">FROM</span> products
+                        <span class="sql-keyword">GROUP BY</span> category;
+
+                        <span class="comment">-- ROLLUP (PostgreSQL)</span>
+                        <span class="sql-keyword">SELECT</span> category, <span class="sql-function">SUM</span>(price) <span class="sql-keyword">FROM</span> products
+                        <span class="sql-keyword">GROUP BY</span> <span class="sql-function">ROLLUP</span>(category);
+                    </div>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> Any column in SELECT that is not in an aggregate function must be in the GROUP BY clause.
+                </div>
+            `
+        },
+        '6. SQL Subqueries & CTEs': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-list-ol"></i> Subqueries</h3>
+                    <p>A <strong>subquery</strong> is a query inside another query.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Subquery Examples</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Subquery in WHERE</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">WHERE</span> age > (<span class="sql-keyword">SELECT</span> <span class="sql-function">AVG</span>(age) <span class="sql-keyword">FROM</span> users);
+
+                        <span class="comment">-- Subquery in SELECT</span>
+                        <span class="sql-keyword">SELECT</span>
+                            name,
+                            ( <span class="sql-keyword">SELECT</span> <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">WHERE</span> user_id = users.id ) <span class="sql-keyword">AS</span> order_count
+                        <span class="sql-keyword">FROM</span> users;
+
+                        <span class="comment">-- Subquery in FROM (derived table)</span>
+                        <span class="sql-keyword">SELECT</span> avg_age
+                        <span class="sql-keyword">FROM</span> ( <span class="sql-keyword">SELECT</span> <span class="sql-function">AVG</span>(age) <span class="sql-keyword">AS</span> avg_age <span class="sql-keyword">FROM</span> users ) <span class="sql-keyword">AS</span> derived;
+
+                        <span class="comment">-- EXISTS</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users u
+                        <span class="sql-keyword">WHERE</span> <span class="sql-keyword">EXISTS</span> (
+                            <span class="sql-keyword">SELECT</span> 1 <span class="sql-keyword">FROM</span> orders o <span class="sql-keyword">WHERE</span> o.user_id = u.id
+                        );
+
+                        <span class="comment">-- ANY / ALL</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> products
+                        <span class="sql-keyword">WHERE</span> price > <span class="sql-keyword">ANY</span> (<span class="sql-keyword">SELECT</span> price <span class="sql-keyword">FROM</span> products <span class="sql-keyword">WHERE</span> category = <span class="sql-string">'premium'</span>);
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> CTE (Common Table Expressions)</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Basic CTE</span>
+                        <span class="sql-keyword">WITH</span> top_users <span class="sql-keyword">AS</span> (
+                            <span class="sql-keyword">SELECT</span> user_id, <span class="sql-function">SUM</span>(total) <span class="sql-keyword">AS</span> total_spent
+                            <span class="sql-keyword">FROM</span> orders
+                            <span class="sql-keyword">GROUP BY</span> user_id
+                            <span class="sql-keyword">ORDER BY</span> total_spent <span class="sql-keyword">DESC</span>
+                            <span class="sql-keyword">LIMIT</span> 10
+                        )
+                        <span class="sql-keyword">SELECT</span> users.name, top_users.total_spent
+                        <span class="sql-keyword">FROM</span> top_users
+                        <span class="sql-keyword">JOIN</span> users <span class="sql-keyword">ON</span> users.id = top_users.user_id;
+
+                        <span class="comment">-- Multiple CTEs</span>
+                        <span class="sql-keyword">WITH</span>
+                            cte1 <span class="sql-keyword">AS</span> ( <span class="sql-keyword">SELECT</span> ... ),
+                            cte2 <span class="sql-keyword">AS</span> ( <span class="sql-keyword">SELECT</span> ... )
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> cte1 <span class="sql-keyword">JOIN</span> cte2 <span class="sql-keyword">ON</span> ...;
+
+                        <span class="comment">-- Recursive CTE (hierarchical data)</span>
+                        <span class="sql-keyword">WITH</span> <span class="sql-function">RECURSIVE</span> org_tree <span class="sql-keyword">AS</span> (
+                            <span class="comment">-- Base case</span>
+                            <span class="sql-keyword">SELECT</span> id, name, manager_id, 1 <span class="sql-keyword">AS</span> level
+                            <span class="sql-keyword">FROM</span> employees <span class="sql-keyword">WHERE</span> manager_id <span class="sql-keyword">IS</span> <span class="sql-keyword">NULL</span>
+                            <span class="sql-keyword">UNION</span> <span class="sql-keyword">ALL</span>
+                            <span class="comment">-- Recursive case</span>
+                            <span class="sql-keyword">SELECT</span> e.id, e.name, e.manager_id, ot.level + 1
+                            <span class="sql-keyword">FROM</span> employees e
+                            <span class="sql-keyword">JOIN</span> org_tree ot <span class="sql-keyword">ON</span> e.manager_id = ot.id
+                        )
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> org_tree;
+                    </div>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Best Practice:</strong> CTEs make complex queries more readable and maintainable. Use them instead of nested subqueries when possible.
+                </div>
+            `
+        },
+        '7. SQL Indexes & Performance': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-bolt"></i> Database Indexing</h3>
+                    <p><strong>Indexes</strong> are data structures that improve query performance by allowing fast data retrieval.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Index Types</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- B-Tree Index (default, most common)</span>
+                        <span class="sql-keyword">CREATE INDEX</span> idx_users_email <span class="sql-keyword">ON</span> users(email);
+
+                        <span class="comment">-- Composite Index (multiple columns)</span>
+                        <span class="sql-keyword">CREATE INDEX</span> idx_orders_user_date <span class="sql-keyword">ON</span> orders(user_id, created_at);
+
+                        <span class="comment">-- Unique Index</span>
+                        <span class="sql-keyword">CREATE UNIQUE INDEX</span> idx_users_email_unique <span class="sql-keyword">ON</span> users(email);
+
+                        <span class="comment">-- Hash Index (PostgreSQL - equality only)</span>
+                        <span class="sql-keyword">CREATE INDEX</span> idx_users_email_hash <span class="sql-keyword">ON</span> users <span class="sql-keyword">USING HASH</span> (email);
+
+                        <span class="comment">-- Full-Text Index (PostgreSQL)</span>
+                        <span class="sql-keyword">CREATE INDEX</span> idx_posts_content <span class="sql-keyword">ON</span> posts <span class="sql-keyword">USING GIN</span> (<span class="sql-function">to_tsvector</span>(<span class="sql-string">'english'</span>, content));
+
+                        <span class="comment">-- Partial Index (PostgreSQL)</span>
+                        <span class="sql-keyword">CREATE INDEX</span> idx_active_users <span class="sql-keyword">ON</span> users(email) <span class="sql-keyword">WHERE</span> is_active = <span class="sql-keyword">true</span>;
+
+                        <span class="comment">-- Drop Index</span>
+                        <span class="sql-keyword">DROP INDEX</span> idx_users_email;
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Query Optimization</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- EXPLAIN ANALYZE (PostgreSQL)</span>
+                        <span class="sql-keyword">EXPLAIN ANALYZE</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">WHERE</span> user_id = 12345;
+
+                        <span class="comment">-- Use SELECT only needed columns</span>
+                        <span class="comment">-- Bad:</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">WHERE</span> user_id = 12345;
+                        <span class="comment">-- Good:</span>
+                        <span class="sql-keyword">SELECT</span> id, total, created_at <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">WHERE</span> user_id = 12345;
+
+                        <span class="comment">-- Use EXISTS instead of IN for large datasets</span>
+                        <span class="comment">-- Bad:</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users <span class="sql-keyword">WHERE</span> id <span class="sql-keyword">IN</span> (<span class="sql-keyword">SELECT</span> user_id <span class="sql-keyword">FROM</span> orders);
+                        <span class="comment">-- Good:</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users u <span class="sql-keyword">WHERE EXISTS</span> (<span class="sql-keyword">SELECT</span> 1 <span class="sql-keyword">FROM</span> orders o <span class="sql-keyword">WHERE</span> o.user_id = u.id);
+
+                        <span class="comment">-- Use LIMIT for pagination</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">ORDER BY</span> created_at <span class="sql-keyword">DESC LIMIT</span> 20 <span class="sql-keyword">OFFSET</span> 40;
+                    </div>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Trade-offs:</strong> Indexes speed up reads but slow down writes (INSERT, UPDATE, DELETE). Each index consumes storage space.
+                </div>
+            `
+        },
+        '8. SQL Transactions & ACID': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-exchange-alt"></i> Transactions</h3>
+                    <p>A <strong>transaction</strong> is a sequence of operations performed as a single logical unit of work.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> ACID Properties</h3>
+                    <ul>
+                        <li><strong>Atomicity:</strong> All or nothing - if one part fails, the entire transaction is rolled back</li>
+                        <li><strong>Consistency:</strong> Data remains valid - constraints, rules, and relationships are maintained</li>
+                        <li><strong>Isolation:</strong> Transactions are independent - they don't interfere with each other</li>
+                        <li><strong>Durability:</strong> Committed data is permanent - even after system failure</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Transaction Commands</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Begin a transaction</span>
+                        <span class="sql-keyword">BEGIN</span>;
+
+                        <span class="comment">-- Perform operations</span>
+                        <span class="sql-keyword">UPDATE</span> accounts <span class="sql-keyword">SET</span> balance = balance - 100 <span class="sql-keyword">WHERE</span> id = 1;
+                        <span class="sql-keyword">UPDATE</span> accounts <span class="sql-keyword">SET</span> balance = balance + 100 <span class="sql-keyword">WHERE</span> id = 2;
+
+                        <span class="comment">-- Check if everything is correct</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> accounts <span class="sql-keyword">WHERE</span> id <span class="sql-keyword">IN</span> (1, 2);
+
+                        <span class="comment">-- Commit (make permanent)</span>
+                        <span class="sql-keyword">COMMIT</span>;
+
+                        <span class="comment">-- OR Rollback (undo)</span>
+                        <span class="sql-keyword">ROLLBACK</span>;
+
+                        <span class="comment">-- Savepoint (partial rollback)</span>
+                        <span class="sql-keyword">SAVEPOINT</span> before_update;
+                        <span class="sql-keyword">UPDATE</span> accounts <span class="sql-keyword">SET</span> balance = balance - 50 <span class="sql-keyword">WHERE</span> id = 1;
+                        <span class="comment">-- Oops, mistake! Rollback to savepoint</span>
+                        <span class="sql-keyword">ROLLBACK TO</span> before_update;
+                        <span class="sql-keyword">COMMIT</span>;
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Isolation Levels</h3>
+                    <table class="comparison-table">
+                        <tr><th>Isolation Level</th><th>Dirty Read</th><th>Non-Repeatable Read</th><th>Phantom Read</th></tr>
+                        <tr><td>READ UNCOMMITTED</td><td>✅ Allowed</td><td>✅ Allowed</td><td>✅ Allowed</td></tr>
+                        <tr><td>READ COMMITTED</td><td>❌ Prevented</td><td>✅ Allowed</td><td>✅ Allowed</td></tr>
+                        <tr><td>REPEATABLE READ</td><td>❌ Prevented</td><td>❌ Prevented</td><td>✅ Allowed</td></tr>
+                        <tr><td>SERIALIZABLE</td><td>❌ Prevented</td><td>❌ Prevented</td><td>❌ Prevented</td></tr>
+                    </table>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Set isolation level (PostgreSQL)</span>
+                        <span class="sql-keyword">SET TRANSACTION</span> <span class="sql-keyword">ISOLATION LEVEL</span> <span class="sql-keyword">SERIALIZABLE</span>;
+                        <span class="sql-keyword">BEGIN</span>;
+                        <span class="comment">-- Your operations</span>
+                        <span class="sql-keyword">COMMIT</span>;
+                    </div>
+                </div>
+
+                <div class="note-box sql-box">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Example:</strong> Bank transfer is the classic transaction example. Deduct from one account and credit another - both must succeed or fail together.
+                </div>
+            `
+        },
+        '9. SQL Views & Stored Procedures': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-eye"></i> Views</h3>
+                    <p>A <strong>view</strong> is a virtual table based on a SELECT query. It doesn't store data but shows a filtered/combined view of data.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Creating Views</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Simple View</span>
+                        <span class="sql-keyword">CREATE VIEW</span> active_users <span class="sql-keyword">AS</span>
+                        <span class="sql-keyword">SELECT</span> id, name, email, created_at
+                        <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">WHERE</span> is_active = <span class="sql-keyword">true</span>;
+
+                        <span class="comment">-- Use view like a table</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> active_users <span class="sql-keyword">WHERE</span> created_at > <span class="sql-string">'2024-01-01'</span>;
+
+                        <span class="comment">-- Complex View with JOINs</span>
+                        <span class="sql-keyword">CREATE VIEW</span> order_summary <span class="sql-keyword">AS</span>
+                        <span class="sql-keyword">SELECT</span>
+                            u.id <span class="sql-keyword">AS</span> user_id,
+                            u.name,
+                            <span class="sql-function">COUNT</span>(o.id) <span class="sql-keyword">AS</span> order_count,
+                            <span class="sql-function">SUM</span>(o.total) <span class="sql-keyword">AS</span> total_spent
+                        <span class="sql-keyword">FROM</span> users u
+                        <span class="sql-keyword">LEFT JOIN</span> orders o <span class="sql-keyword">ON</span> u.id = o.user_id
+                        <span class="sql-keyword">GROUP BY</span> u.id, u.name;
+
+                        <span class="comment">-- Materialized View (PostgreSQL - stores data)</span>
+                        <span class="sql-keyword">CREATE MATERIALIZED VIEW</span> daily_sales <span class="sql-keyword">AS</span>
+                        <span class="sql-keyword">SELECT</span>
+                            <span class="sql-function">DATE</span>(created_at) <span class="sql-keyword">AS</span> sale_date,
+                            <span class="sql-function">SUM</span>(total) <span class="sql-keyword">AS</span> daily_total
+                        <span class="sql-keyword">FROM</span> orders
+                        <span class="sql-keyword">GROUP BY</span> <span class="sql-function">DATE</span>(created_at);
+
+                        <span class="comment">-- Refresh materialized view</span>
+                        <span class="sql-keyword">REFRESH MATERIALIZED VIEW</span> daily_sales;
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Stored Procedures</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL (PostgreSQL)</span>
+                        <span class="comment">-- Stored Procedure</span>
+                        <span class="sql-keyword">CREATE OR REPLACE PROCEDURE</span> transfer_money(
+                            from_account <span class="sql-keyword">INT</span>,
+                            to_account <span class="sql-keyword">INT</span>,
+                            amount <span class="sql-keyword">DECIMAL</span>
+                        )
+                        <span class="sql-keyword">LANGUAGE plpgsql</span>
+                        <span class="sql-keyword">AS</span> $$
+                        <span class="sql-keyword">BEGIN</span>
+                            <span class="comment">-- Check balance</span>
+                            <span class="sql-keyword">IF</span> (<span class="sql-keyword">SELECT</span> balance <span class="sql-keyword">FROM</span> accounts <span class="sql-keyword">WHERE</span> id = from_account) < amount <span class="sql-keyword">THEN</span>
+                                <span class="sql-keyword">RAISE EXCEPTION</span> <span class="sql-string">'Insufficient funds'</span>;
+                            <span class="sql-keyword">END IF</span>;
+
+                            <span class="comment">-- Transfer</span>
+                            <span class="sql-keyword">UPDATE</span> accounts <span class="sql-keyword">SET</span> balance = balance - amount <span class="sql-keyword">WHERE</span> id = from_account;
+                            <span class="sql-keyword">UPDATE</span> accounts <span class="sql-keyword">SET</span> balance = balance + amount <span class="sql-keyword">WHERE</span> id = to_account;
+
+                            <span class="comment">-- Log transaction</span>
+                            <span class="sql-keyword">INSERT INTO</span> transactions (from_account, to_account, amount, created_at)
+                            <span class="sql-keyword">VALUES</span> (from_account, to_account, amount, <span class="sql-function">NOW</span>());
+
+                            <span class="sql-keyword">COMMIT</span>;
+                        <span class="sql-keyword">END</span>;
+                        $$;
+
+                        <span class="comment">-- Call procedure</span>
+                        <span class="sql-keyword">CALL</span> transfer_money(1, 2, 100.00);
+                    </div>
+                </div>
+            `
+        },
+        '10. SQL vs NoSQL Comparison': {
+            tech: 'both',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-balance-scale"></i> SQL vs NoSQL</h3>
+                    <p>Understanding the differences and when to use each.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Comparison Table</h3>
+                    <table class="comparison-table">
+                        <tr><th>Feature</th><th>SQL</th><th>NoSQL</th></tr>
+                        <tr><td>Data Model</td><td>Relational (tables)</td><td>Document/Key-Value/Graph</td></tr>
+                        <tr><td>Schema</td><td>Fixed, predefined</td><td>Dynamic, schema-less</td></tr>
+                        <tr><td>Scaling</td><td>Vertical (hard)</td><td>Horizontal (easy)</td></tr>
+                        <tr><td>Transactions</td><td>ACID (strong)</td><td>BASE (eventual)</td></tr>
+                        <tr><td>Query Language</td><td>SQL</td><td>API/Query-specific</td></tr>
+                        <tr><td>Relationships</td><td>Foreign keys, JOINs</td><td>Embedded or referenced</td></tr>
+                        <tr><td>Performance</td><td>Complex queries, JOINs</td><td>Simple queries, fast reads</td></tr>
+                        <tr><td>Examples</td><td>PostgreSQL, MySQL</td><td>MongoDB, Cassandra</td></tr>
+                    </table>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> When to Use SQL</h3>
+                    <ul>
+                        <li><strong>Complex relationships:</strong> Many-to-many relationships, JOINs</li>
+                        <li><strong>ACID compliance:</strong> Banking, financial systems, inventory</li>
+                        <li><strong>Structured data:</strong> Known schema, stable requirements</li>
+                        <li><strong>Data integrity:</strong> Foreign keys, constraints, validation</li>
+                        <li><strong>Reporting:</strong> Complex aggregations, analytics</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> When to Use NoSQL</h3>
+                    <ul>
+                        <li><strong>Unstructured data:</strong> JSON, documents, flexible schema</li>
+                        <li><strong>High scalability:</strong> Millions of reads/writes per second</li>
+                        <li><strong>Rapid development:</strong> Schema changes without migration</li>
+                        <li><strong>Real-time data:</strong> Caching, session storage, user profiles</li>
+                        <li><strong>Big Data:</strong> Logs, analytics, IoT data</li>
+                    </ul>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Modern Approach:</strong> Many systems use both - SQL for core transactional data and NoSQL for cache, logs, and flexible data.
+                </div>
+            `
+        },
+
+        // ========== MONGODB TOPICS ==========
+        '11. MongoDB Introduction & Basics': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-leaf"></i> What is MongoDB?</h3>
+                    <p><strong>MongoDB</strong> is a NoSQL document database that stores data in flexible, JSON-like documents.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Key Concepts</h3>
+                    <ul>
+                        <li><strong>Database:</strong> Container for collections</li>
+                        <li><strong>Collection:</strong> Group of documents (like SQL tables)</li>
+                        <li><strong>Document:</strong> Individual record (like SQL rows)</li>
+                        <li><strong>Field:</strong> Key-value pair in a document</li>
+                        <li><strong>BSON:</strong> Binary JSON - MongoDB's data format</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Basic MongoDB Commands</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB Shell)</span>
+                        <span class="comment">// Switch to database</span>
+                        <span class="function">use</span> mydb;
+
+                        <span class="comment">// Create collection and insert document</span>
+                        db.users.<span class="function">insertOne</span>({
+                            <span class="variable">name</span>: <span class="string">"John Doe"</span>,
+                            <span class="variable">email</span>: <span class="string">"john@example.com"</span>,
+                            <span class="variable">age</span>: 30,
+                            <span class="variable">address</span>: {
+                                <span class="variable">street</span>: <span class="string">"123 Main St"</span>,
+                                <span class="variable">city</span>: <span class="string">"New York"</span>
+                            },
+                            <span class="variable">hobbies</span>: [<span class="string">"reading"</span>, <span class="string">"coding"</span>],
+                            <span class="variable">createdAt</span>: <span class="keyword">new</span> <span class="keyword">Date</span>()
+                        });
+
+                        <span class="comment">// Find documents</span>
+                        db.users.<span class="function">find</span>({ age: { <span class="variable">$gte</span>: 25 } });
+
+                        <span class="comment">// Update documents</span>
+                        db.users.<span class="function">updateOne</span>(
+                            { <span class="variable">email</span>: <span class="string">"john@example.com"</span> },
+                            { <span class="variable">$set</span>: { <span class="variable">age</span>: 31 } }
+                        );
+
+                        <span class="comment">// Delete documents</span>
+                        db.users.<span class="function">deleteOne</span>({ <span class="variable">email</span>: <span class="string">"john@example.com"</span> });
+                    </div>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>MongoDB Advantages:</strong> Flexible schema, horizontal scaling, rich query language, index support, aggregation pipeline.
+                </div>
+            `
+        },
+        '12. MongoDB CRUD Operations': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-crud"></i> CRUD Operations</h3>
+                    <p>Create, Read, Update, Delete operations in MongoDB.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Create (Insert)</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Node.js with Mongoose)</span>
+                        <span class="comment">// Single document insert</span>
+                        <span class="keyword">const</span> user = <span class="keyword">new</span> <span class="function">User</span>({
+                            <span class="variable">name</span>: <span class="string">"Jane Doe"</span>,
+                            <span class="variable">email</span>: <span class="string">"jane@example.com"</span>,
+                            <span class="variable">age</span>: 28
+                        });
+                        <span class="keyword">await</span> user.<span class="function">save</span>();
+
+                        <span class="comment">// Insert many</span>
+                        <span class="keyword">await</span> User.<span class="function">insertMany</span>([
+                            { <span class="variable">name</span>: <span class="string">"User1"</span>, <span class="variable">email</span>: <span class="string">"user1@example.com"</span> },
+                            { <span class="variable">name</span>: <span class="string">"User2"</span>, <span class="variable">email</span>: <span class="string">"user2@example.com"</span> }
+                        ]);
+
+                        <span class="comment">// MongoDB Shell</span>
+                        db.users.<span class="function">insertOne</span>({
+                            <span class="variable">name</span>: <span class="string">"John"</span>,
+                            <span class="variable">email</span>: <span class="string">"john@example.com"</span>
+                        });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Read (Find)</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Mongoose)</span>
+                        <span class="comment">// Find all</span>
+                        <span class="keyword">const</span> users = <span class="keyword">await</span> User.<span class="function">find</span>();
+
+                        <span class="comment">// Find with conditions</span>
+                        <span class="keyword">const</span> adults = <span class="keyword">await</span> User.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$gte</span>: 18 } });
+
+                        <span class="comment">// Find one</span>
+                        <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findOne</span>({ <span class="variable">email</span>: <span class="string">"john@example.com"</span> });
+
+                        <span class="comment">// Find by ID</span>
+                        <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findById</span>(userId);
+
+                        <span class="comment">// Select specific fields</span>
+                        <span class="keyword">const</span> users = <span class="keyword">await</span> User.<span class="function">find</span>()
+                            .<span class="function">select</span>(<span class="string">'name email'</span>)
+                            .<span class="function">sort</span>({ <span class="variable">name</span>: 1 })
+                            .<span class="function">limit</span>(10)
+                            .<span class="function">skip</span>(20);
+
+                        <span class="comment">// Count</span>
+                        <span class="keyword">const</span> count = <span class="keyword">await</span> User.<span class="function">countDocuments</span>({ <span class="variable">age</span>: { <span class="variable">$gte</span>: 18 } });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Update</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Mongoose)</span>
+                        <span class="comment">// Update one</span>
+                        <span class="keyword">await</span> User.<span class="function">updateOne</span>(
+                            { <span class="variable">email</span>: <span class="string">"john@example.com"</span> },
+                            { <span class="variable">$set</span>: { <span class="variable">age</span>: 31 } }
+                        );
+
+                        <span class="comment">// Update many</span>
+                        <span class="keyword">await</span> User.<span class="function">updateMany</span>(
+                            { <span class="variable">age</span>: { <span class="variable">$lt</span>: 18 } },
+                            { <span class="variable">$set</span>: { <span class="variable">status</span>: <span class="string">"minor"</span> } }
+                        );
+
+                        <span class="comment">// Find and update (returns updated document)</span>
+                        <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findByIdAndUpdate</span>(
+                            userId,
+                            { <span class="variable">$set</span>: { <span class="variable">age</span>: 32 } },
+                            { <span class="variable">new</span>: <span class="keyword">true</span>, <span class="variable">runValidators</span>: <span class="keyword">true</span> }
+                        );
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Delete</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Mongoose)</span>
+                        <span class="comment">// Delete one</span>
+                        <span class="keyword">await</span> User.<span class="function">deleteOne</span>({ <span class="variable">email</span>: <span class="string">"john@example.com"</span> });
+
+                        <span class="comment">// Delete many</span>
+                        <span class="keyword">await</span> User.<span class="function">deleteMany</span>({ <span class="variable">age</span>: { <span class="variable">$lt</span>: 18 } });
+
+                        <span class="comment">// Find and delete</span>
+                        <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findByIdAndDelete</span>(userId);
+                    </div>
+                </div>
+            `
+        },
+        '13. MongoDB Query Operators': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-search"></i> Query Operators</h3>
+                    <p>MongoDB provides various operators for advanced querying.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Comparison Operators</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// Equality: $eq</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">name</span>: <span class="string">"John"</span> });
+
+                        <span class="comment">// Not equal: $ne</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$ne</span>: 30 } });
+
+                        <span class="comment">// Greater than: $gt, $gte</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$gt</span>: 25, <span class="variable">$lte</span>: 35 } });
+
+                        <span class="comment">// In array: $in, $nin</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">city</span>: { <span class="variable">$in</span>: [<span class="string">"NYC"</span>, <span class="string">"LA"</span>, <span class="string">"SF"</span>] } });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Logical Operators</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// AND (implicit)</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$gte</span>: 18 }, <span class="variable">city</span>: <span class="string">"NYC"</span> });
+
+                        <span class="comment">// AND (explicit)</span>
+                        db.users.<span class="function">find</span>({
+                            <span class="variable">$and</span>: [
+                                { <span class="variable">age</span>: { <span class="variable">$gte</span>: 18 } },
+                                { <span class="variable">city</span>: <span class="string">"NYC"</span> }
+                            ]
+                        });
+
+                        <span class="comment">// OR</span>
+                        db.users.<span class="function">find</span>({
+                            <span class="variable">$or</span>: [
+                                { <span class="variable">city</span>: <span class="string">"NYC"</span> },
+                                { <span class="variable">city</span>: <span class="string">"LA"</span> }
+                            ]
+                        });
+
+                        <span class="comment">// NOT</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$not</span>: { <span class="variable">$lt</span>: 18 } } });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Array Operators</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// Array contains: $all</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">hobbies</span>: { <span class="variable">$all</span>: [<span class="string">"reading"</span>, <span class="string">"coding"</span>] } });
+
+                        <span class="comment">// Array size: $size</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">hobbies</span>: { <span class="variable">$size</span>: 3 } });
+
+                        <span class="comment">// Array element match: $elemMatch</span>
+                        db.users.<span class="function">find</span>({
+                            <span class="variable">orders</span>: {
+                                <span class="variable">$elemMatch</span>: {
+                                    <span class="variable">total</span>: { <span class="variable">$gt</span>: 100 },
+                                    <span class="variable">status</span>: <span class="string">"completed"</span>
+                                }
+                            }
+                        });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Element Operators</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// Field exists: $exists</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">phone</span>: { <span class="variable">$exists</span>: <span class="keyword">true</span> } });
+
+                        <span class="comment">// Field type: $type</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$type</span>: <span class="string">"number"</span> } });
+                    </div>
+                </div>
+            `
+        },
+        '14. MongoDB Aggregation Pipeline': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-pipeline"></i> Aggregation Pipeline</h3>
+                    <p>The <strong>aggregation pipeline</strong> is MongoDB's powerful data processing framework similar to SQL's GROUP BY and JOINs.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Common Stages</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// $match - Filter documents</span>
+                        <span class="keyword">const</span> result = <span class="keyword">await</span> db.collection(<span class="string">'orders'</span>)
+                            .<span class="function">aggregate</span>([
+                                { <span class="variable">$match</span>: { <span class="variable">total</span>: { <span class="variable">$gt</span>: 100 } } }
+                            ])
+                            .<span class="function">toArray</span>();
+
+                        <span class="comment">// $group - Group by field</span>
+                        <span class="keyword">const</span> result = <span class="keyword">await</span> db.collection(<span class="string">'orders'</span>)
+                            .<span class="function">aggregate</span>([
+                                {
+                                    <span class="variable">$group</span>: {
+                                        <span class="variable">_id</span>: <span class="string">"$category"</span>,
+                                        <span class="variable">totalRevenue</span>: { <span class="variable">$sum</span>: <span class="string">"$total"</span> },
+                                        <span class="variable">avgPrice</span>: { <span class="variable">$avg</span>: <span class="string">"$price"</span> },
+                                        <span class="variable">count</span>: { <span class="variable">$sum</span>: 1 },
+                                        <span class="variable">maxPrice</span>: { <span class="variable">$max</span>: <span class="string">"$price"</span> }
+                                    }
+                                }
+                            ])
+                            .<span class="function">toArray</span>();
+
+                        <span class="comment">// $project - Select fields</span>
+                        <span class="keyword">const</span> result = <span class="keyword">await</span> db.collection(<span class="string">'users'</span>)
+                            .<span class="function">aggregate</span>([
+                                {
+                                    <span class="variable">$project</span>: {
+                                        <span class="variable">name</span>: 1,
+                                        <span class="variable">email</span>: 1,
+                                        <span class="variable">fullAddress</span>: {
+                                            <span class="variable">$concat</span>: [<span class="string">"$address.street"</span>, <span class="string">", "</span>, <span class="string">"$address.city"</span>]
+                                        },
+                                        <span class="variable">ageGroup</span>: {
+                                            <span class="variable">$cond</span>: {
+                                                <span class="variable">if</span>: { <span class="variable">$gte</span>: [<span class="string">"$age"</span>, 18] },
+                                                <span class="variable">then</span>: <span class="string">"Adult"</span>,
+                                                <span class="variable">else</span>: <span class="string">"Minor"</span>
+                                            }
+                                        }
+                                    }
+                                }
+                            ])
+                            .<span class="function">toArray</span>();
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Advanced Pipeline</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// $unwind - Flatten arrays</span>
+                        <span class="keyword">const</span> result = <span class="keyword">await</span> db.collection(<span class="string">'orders'</span>)
+                            .<span class="function">aggregate</span>([
+                                { <span class="variable">$unwind</span>: <span class="string">"$items"</span> },
+                                { <span class="variable">$group</span>: {
+                                    <span class="variable">_id</span>: <span class="string">"$items.productId"</span>,
+                                    <span class="variable">totalSold</span>: { <span class="variable">$sum</span>: <span class="string">"$items.quantity"</span> }
+                                }}
+                            ])
+                            .<span class="function">toArray</span>();
+
+                        <span class="comment">// $lookup - JOIN (MongoDB 3.2+)</span>
+                        <span class="keyword">const</span> result = <span class="keyword">await</span> db.collection(<span class="string">'orders'</span>)
+                            .<span class="function">aggregate</span>([
+                                {
+                                    <span class="variable">$lookup</span>: {
+                                        <span class="variable">from</span>: <span class="string">"users"</span>,
+                                        <span class="variable">localField</span>: <span class="string">"userId"</span>,
+                                        <span class="variable">foreignField</span>: <span class="string">"_id"</span>,
+                                        <span class="variable">as</span>: <span class="string">"user"</span>
+                                    }
+                                },
+                                { <span class="variable">$unwind</span>: <span class="string">"$user"</span> },
+                                {
+                                    <span class="variable">$project</span>: {
+                                        <span class="variable">orderTotal</span>: <span class="string">"$total"</span>,
+                                        <span class="variable">userName</span>: <span class="string">"$user.name"</span>,
+                                        <span class="variable">userEmail</span>: <span class="string">"$user.email"</span>
+                                    }
+                                }
+                            ])
+                            .<span class="function">toArray</span>();
+
+                        <span class="comment">// $facet - Multiple aggregations in one pipeline</span>
+                        <span class="keyword">const</span> result = <span class="keyword">await</span> db.collection(<span class="string">'products'</span>)
+                            .<span class="function">aggregate</span>([
+                                {
+                                    <span class="variable">$facet</span>: {
+                                        <span class="variable">totalProducts</span>: [{ <span class="variable">$count</span>: <span class="string">"count"</span> }],
+                                        <span class="variable">avgPrice</span>: [{ <span class="variable">$group</span>: {
+                                            <span class="variable">_id</span>: <span class="keyword">null</span>,
+                                            <span class="variable">avg</span>: { <span class="variable">$avg</span>: <span class="string">"$price"</span> }
+                                        }}],
+                                        <span class="variable">categories</span>: [{ <span class="variable">$group</span>: {
+                                            <span class="variable">_id</span>: <span class="string">"$category"</span>,
+                                            <span class="variable">count</span>: { <span class="variable">$sum</span>: 1 }
+                                        }}]
+                                    }
+                                }
+                            ])
+                            .<span class="function">toArray</span>();
+                    </div>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>Tip:</strong> Aggregation pipelines are powerful but can be memory-intensive. Use indexes and $match early to reduce data processed.
+                </div>
+            `
+        },
+        '15. MongoDB Indexing': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-bolt"></i> Indexing in MongoDB</h3>
+                    <p>Indexes improve query performance by reducing the amount of data MongoDB needs to scan.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Creating Indexes</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// Single field index</span>
+                        db.users.<span class="function">createIndex</span>({ <span class="variable">email</span>: 1 });
+
+                        <span class="comment">// Compound index (multiple fields)</span>
+                        db.orders.<span class="function">createIndex</span>({ <span class="variable">userId</span>: 1, <span class="variable">createdAt</span>: -1 });
+
+                        <span class="comment">// Unique index</span>
+                        db.users.<span class="function">createIndex</span>({ <span class="variable">email</span>: 1 }, { <span class="variable">unique</span>: <span class="keyword">true</span> });
+
+                        <span class="comment">// Text index (search)</span>
+                        db.posts.<span class="function">createIndex</span>({ <span class="variable">content</span>: <span class="string">"text"</span>, <span class="variable">title</span>: <span class="string">"text"</span> });
+
+                        <span class="comment">// Geospatial index</span>
+                        db.places.<span class="function">createIndex</span>({ <span class="variable">location</span>: <span class="string">"2dsphere"</span> });
+
+                        <span class="comment">// Hashed index (for sharding)</span>
+                        db.users.<span class="function">createIndex</span>({ <span class="variable">userId</span>: <span class="string">"hashed"</span> });
+
+                        <span class="comment">// TTL index (auto-delete after expiry)</span>
+                        db.sessions.<span class="function">createIndex</span>({ <span class="variable">expiresAt</span>: 1 }, { <span class="variable">expireAfterSeconds</span>: 0 });
+
+                        <span class="comment">// Drop index</span>
+                        db.users.<span class="function">dropIndex</span>(<span class="string">"email_1"</span>);
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Index Types</h3>
+                    <ul>
+                        <li><strong>Single Field:</strong> Simple index on one field</li>
+                        <li><strong>Compound:</strong> Index on multiple fields (order matters!)</li>
+                        <li><strong>Unique:</strong> Prevents duplicate values</li>
+                        <li><strong>Text:</strong> Full-text search capability</li>
+                        <li><strong>Geospatial:</strong> Location-based queries</li>
+                        <li><strong>Hashed:</strong> Used for sharding</li>
+                        <li><strong>TTL:</strong> Auto-expire documents after a set time</li>
+                        <li><strong>Multikey:</strong> Index for array fields</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Query Performance</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">// Explain query execution plan</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: { <span class="variable">$gt</span>: 25 } }).<span class="function">explain</span>(<span class="string">"executionStats"</span>);
+
+                        <span class="comment">// Covered query (all fields in index)</span>
+                        <span class="comment">// If you only need fields that are in the index</span>
+                        db.users.<span class="function">find</span>({ <span class="variable">age</span>: 30 }, { <span class="variable">_id</span>: 0, <span class="variable">age</span>: 1, <span class="variable">name</span>: 1 })
+                            .<span class="function">hint</span>({ <span class="variable">age</span>: 1, <span class="variable">name</span>: 1 });
+                    </div>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Remember:</strong> Indexes speed up reads but slow down writes. Each index also consumes storage and memory.
+                </div>
+            `
+        },
+        '16. MongoDB Schema Design': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-drafting-compass"></i> Schema Design</h3>
+                    <p>Designing efficient MongoDB schemas for your application.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Embedding vs Referencing</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Mongoose)</span>
+                        <span class="comment">// EMBEDDED (Denormalized) - Good for: 1-to-few, read-heavy</span>
+                        <span class="keyword">const</span> userSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                            <span class="variable">name</span>: <span class="keyword">String</span>,
+                            <span class="variable">addresses</span>: [{
+                                <span class="variable">street</span>: <span class="keyword">String</span>,
+                                <span class="variable">city</span>: <span class="keyword">String</span>,
+                                <span class="variable">zip</span>: <span class="keyword">String</span>
+                            }],
+                            <span class="variable">orders</span>: [{
+                                <span class="variable">date</span>: <span class="keyword">Date</span>,
+                                <span class="variable">total</span>: <span class="keyword">Number</span>,
+                                <span class="variable">items</span>: [{
+                                    <span class="variable">productId</span>: <span class="keyword">String</span>,
+                                    <span class="variable">quantity</span>: <span class="keyword">Number</span>
+                                }]
+                            }]
+                        });
+
+                        <span class="comment">// REFERENCED (Normalized) - Good for: 1-to-many, write-heavy</span>
+                        <span class="keyword">const</span> userSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                            <span class="variable">name</span>: <span class="keyword">String</span>,
+                            <span class="variable">addresses</span>: [{ <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">ObjectId</span>, <span class="variable">ref</span>: <span class="string">'Address'</span> }]
+                        });
+
+                        <span class="keyword">const</span> addressSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                            <span class="variable">userId</span>: { <span class="variable">type</span>: mongoose.<span class="variable">Schema</span>.<span class="variable">Types</span>.<span class="variable">ObjectId</span>, <span class="variable">ref</span>: <span class="string">'User'</span> },
+                            <span class="variable">street</span>: <span class="keyword">String</span>,
+                            <span class="variable">city</span>: <span class="keyword">String</span>,
+                            <span class="variable">zip</span>: <span class="keyword">String</span>
+                        });
+
+                        <span class="comment">// Populate references</span>
+                        <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findById</span>(userId)
+                            .<span class="function">populate</span>(<span class="string">'addresses'</span>)
+                            .<span class="function">populate</span>({
+                                <span class="variable">path</span>: <span class="string">'orders'</span>,
+                                <span class="variable">populate</span>: { <span class="variable">path</span>: <span class="string">'items.productId'</span> }
+                            });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Design Patterns</h3>
+                    <ul>
+                        <li><strong>Embedding:</strong> Use when data is accessed together, 1-to-few relationships</li>
+                        <li><strong>Referencing:</strong> Use when data is accessed separately, 1-to-many/many-to-many</li>
+                        <li><strong>Bucket Pattern:</strong> Group related data (e.g., time-series data)</li>
+                        <li><strong>Attribute Pattern:</strong> Handle multiple similar fields</li>
+                        <li><strong>Subset Pattern:</strong> Keep frequently accessed data in a separate collection</li>
+                        <li><strong>Outlier Pattern:</strong> Handle documents that don't fit the schema</li>
+                        <li><strong>Computed Pattern:</strong> Pre-calculate and store derived values</li>
+                    </ul>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>Best Practice:</strong> Design schemas around your application's query patterns, not around the data structure itself.
+                </div>
+            `
+        },
+        '17. MongoDB with Mongoose (Node.js)': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-mongoose"></i> Mongoose ODM</h3>
+                    <p><strong>Mongoose</strong> is an Object Data Modeling (ODM) library for MongoDB and Node.js.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Mongoose Setup</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Node.js)</span>
+                        <span class="keyword">const</span> mongoose = <span class="function">require</span>(<span class="string">'mongoose'</span>);
+
+                        <span class="comment">// Connect to MongoDB</span>
+                        <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">connectDB</span>() {
+                            <span class="keyword">try</span> {
+                                <span class="keyword">await</span> mongoose.<span class="function">connect</span>(<span class="string">'mongodb://localhost:27017/myapp'</span>, {
+                                    <span class="variable">useNewUrlParser</span>: <span class="keyword">true</span>,
+                                    <span class="variable">useUnifiedTopology</span>: <span class="keyword">true</span>
+                                });
+                                <span class="function">console</span>.<span class="function">log</span>(<span class="string">'MongoDB connected'</span>);
+                            } <span class="keyword">catch</span> (error) {
+                                <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Connection error:'</span>, error);
+                                process.<span class="function">exit</span>(1);
+                            }
+                        }
+
+                        <span class="function">connectDB</span>();
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Schema & Model</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Node.js)</span>
+                        <span class="comment">// Define schema</span>
+                        <span class="keyword">const</span> userSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                            <span class="variable">name</span>: {
+                                <span class="variable">type</span>: <span class="keyword">String</span>,
+                                <span class="variable">required</span>: [<span class="keyword">true</span>, <span class="string">'Name is required'</span>],
+                                <span class="variable">trim</span>: <span class="keyword">true</span>,
+                                <span class="variable">minlength</span>: [2, <span class="string">'Name too short'</span>]
+                            },
+                            <span class="variable">email</span>: {
+                                <span class="variable">type</span>: <span class="keyword">String</span>,
+                                <span class="variable">required</span>: <span class="keyword">true</span>,
+                                <span class="variable">unique</span>: <span class="keyword">true</span>,
+                                <span class="variable">lowercase</span>: <span class="keyword">true</span>,
+                                <span class="variable">match</span>: [/^\\S+@\\S+\\.\\S+$/, <span class="string">'Invalid email'</span>]
+                            },
+                            <span class="variable">age</span>: {
+                                <span class="variable">type</span>: <span class="keyword">Number</span>,
+                                <span class="variable">min</span>: [18, <span class="string">'Must be 18+'</span>],
+                                <span class="variable">max</span>: [120, <span class="string">'Invalid age'</span>]
+                            },
+                            <span class="variable">address</span>: {
+                                <span class="variable">street</span>: <span class="keyword">String</span>,
+                                <span class="variable">city</span>: <span class="keyword">String</span>,
+                                <span class="variable">zipCode</span>: <span class="keyword">String</span>
+                            },
+                            <span class="variable">hobbies</span>: [<span class="keyword">String</span>],
+                            <span class="variable">createdAt</span>: {
+                                <span class="variable">type</span>: <span class="keyword">Date</span>,
+                                <span class="variable">default</span>: <span class="keyword">Date</span>.<span class="function">now</span>
+                            }
+                        }, {
+                            <span class="variable">timestamps</span>: <span class="keyword">true</span> <span class="comment">// Adds createdAt and updatedAt</span>
+                        });
+
+                        <span class="comment">// Static method</span>
+                        userSchema.<span class="function">static</span>(<span class="string">'findByEmail'</span>, <span class="keyword">function</span>(email) {
+                            <span class="keyword">return</span> <span class="keyword">this</span>.<span class="function">findOne</span>({ <span class="variable">email</span>: email });
+                        });
+
+                        <span class="comment">// Instance method</span>
+                        userSchema.<span class="function">method</span>(<span class="string">'getProfile'</span>, <span class="keyword">function</span>() {
+                            <span class="keyword">return</span> {
+                                <span class="variable">name</span>: <span class="keyword">this</span>.<span class="variable">name</span>,
+                                <span class="variable">email</span>: <span class="keyword">this</span>.<span class="variable">email</span>,
+                                <span class="variable">age</span>: <span class="keyword">this</span>.<span class="variable">age</span>,
+                                <span class="variable">hobbies</span>: <span class="keyword">this</span>.<span class="variable">hobbies</span>
+                            };
+                        });
+
+                        <span class="comment">// Pre-save middleware</span>
+                        userSchema.<span class="function">pre</span>(<span class="string">'save'</span>, <span class="keyword">function</span>(next) {
+                            <span class="comment">// Hash password before saving</span>
+                            <span class="keyword">if</span> (<span class="keyword">this</span>.<span class="function">isModified</span>(<span class="string">'password'</span>)) {
+                                <span class="keyword">this</span>.<span class="variable">password</span> = <span class="function">hash</span>(<span class="keyword">this</span>.<span class="variable">password</span>);
+                            }
+                            <span class="function">next</span>();
+                        });
+
+                        <span class="comment">// Create model</span>
+                        <span class="keyword">const</span> User = mongoose.<span class="function">model</span>(<span class="string">'User'</span>, userSchema);
+
+                        <span class="comment">// Use model</span>
+                        <span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findByEmail</span>(<span class="string">'john@example.com'</span>);
+                        <span class="keyword">const</span> profile = user.<span class="function">getProfile</span>();
+                    </div>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>Mongoose Features:</strong> Schema validation, middleware, population, aggregation helpers, type casting.
+                </div>
+            `
+        },
+        '18. MongoDB Transactions & ACID': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-exchange-alt"></i> Transactions in MongoDB</h3>
+                    <p>MongoDB supports multi-document ACID transactions (since version 4.0).</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Transaction Example</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Node.js with Mongoose)</span>
+                        <span class="keyword">const</span> session = <span class="keyword">await</span> mongoose.<span class="function">startSession</span>();
+                        session.<span class="function">startTransaction</span>();
+
+                        <span class="keyword">try</span> {
+                            <span class="comment">// Operation 1: Update user balance</span>
+                            <span class="keyword">await</span> User.<span class="function">updateOne</span>(
+                                { <span class="variable">_id</span>: userId },
+                                { <span class="variable">$inc</span>: { <span class="variable">balance</span>: -100 } },
+                                { <span class="variable">session</span> }
+                            );
+
+                            <span class="comment">// Operation 2: Create order</span>
+                            <span class="keyword">const</span> order = <span class="keyword">new</span> <span class="function">Order</span>({
+                                <span class="variable">userId</span>: userId,
+                                <span class="variable">items</span>: items,
+                                <span class="variable">total</span>: 100
+                            });
+                            <span class="keyword">await</span> order.<span class="function">save</span>({ <span class="variable">session</span> });
+
+                            <span class="comment">// Operation 3: Update inventory</span>
+                            <span class="keyword">await</span> Product.<span class="function">updateOne</span>(
+                                { <span class="variable">_id</span>: productId },
+                                { <span class="variable">$inc</span>: { <span class="variable">stock</span>: -1 } },
+                                { <span class="variable">session</span> }
+                            );
+
+                            <span class="comment">// Commit transaction</span>
+                            <span class="keyword">await</span> session.<span class="function">commitTransaction</span>();
+                            <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Transaction committed successfully'</span>);
+
+                        } <span class="keyword">catch</span> (error) {
+                            <span class="comment">// Rollback on error</span>
+                            <span class="keyword">await</span> session.<span class="function">abortTransaction</span>();
+                            <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Transaction rolled back:'</span>, error);
+                            <span class="keyword">throw</span> error;
+
+                        } <span class="keyword">finally</span> {
+                            <span class="keyword">await</span> session.<span class="function">endSession</span>();
+                        }
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Transaction Limitations</h3>
+                    <ul>
+                        <li>Transactions have a default 60-second timeout</li>
+                        <li>Can only modify a maximum of 1000 documents</li>
+                        <li>Cannot modify collections in a sharded cluster (limited support)</li>
+                        <li>Read operations in transactions may return stale data</li>
+                    </ul>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Tip:</strong> Use transactions sparingly. Design your schema to avoid needing transactions when possible.
+                </div>
+            `
+        },
+        '19. MongoDB Replication': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-copy"></i> Replication in MongoDB</h3>
+                    <p><strong>Replication</strong> creates redundant copies of your data across multiple servers.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Replica Set</h3>
+                    <div class="diagram-box">
+                        ┌─────────────────────────────────────────────────────┐
+                        │                    Replica Set                    │
+                        ├─────────────────────────────────────────────────────┤
+                        │                                                   │
+                        │            ┌──────────────┐                      │
+                        │            │   Primary    │                      │
+                        │            │  (Writes)    │                      │
+                        │            └──────┬───────┘                      │
+                        │                   │                              │
+                        │         ┌─────────┼─────────┐                    │
+                        │         │         │         │                    │
+                        │    ┌────▼────┐ ┌───▼────┐ ┌─▼─────┐             │
+                        │    │Secondary│ │Secondary│ │Secondary│           │
+                        │    │ (Read)  │ │ (Read)  │ │ (Read)  │           │
+                        │    └─────────┘ └─────────┘ └─────────┘           │
+                        │                                                   │
+                        │         ┌──────────┐                             │
+                        │         │  Arbiter │ (Voting only, no data)      │
+                        │         └──────────┘                             │
+                        └─────────────────────────────────────────────────────┘
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Replica Set Configuration</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB Shell)</span>
+                        <span class="comment">// Initialize replica set</span>
+                        rs.<span class="function">initiate</span>({
+                            <span class="variable">_id</span>: <span class="string">"rs0"</span>,
+                            <span class="variable">members</span>: [
+                                { <span class="variable">_id</span>: 0, <span class="variable">host</span>: <span class="string">"mongodb1:27017"</span> },
+                                { <span class="variable">_id</span>: 1, <span class="variable">host</span>: <span class="string">"mongodb2:27017"</span> },
+                                { <span class="variable">_id</span>: 2, <span class="variable">host</span>: <span class="string">"mongodb3:27017"</span>, <span class="variable">arbiterOnly</span>: <span class="keyword">true</span> }
+                            ]
+                        });
+
+                        <span class="comment">// Check status</span>
+                        rs.<span class="function">status</span>();
+
+                        <span class="comment">// Read preferences in application</span>
+                        <span class="comment">// primary, primaryPreferred, secondary, secondaryPreferred, nearest</span>
+                        <span class="keyword">await</span> User.<span class="function">find</span>().<span class="function">read</span>(<span class="string">'secondaryPreferred'</span>);
+
+                        <span class="comment">// Write concern</span>
+                        <span class="keyword">await</span> User.<span class="function">create</span>(userData, {
+                            <span class="variable">writeConcern</span>: {
+                                <span class="variable">w</span>: <span class="string">"majority"</span>,
+                                <span class="variable">wtimeout</span>: 5000 <span class="comment">// 5 second timeout</span>
+                            }
+                        });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Benefits</h3>
+                    <ul>
+                        <li><strong>High Availability:</strong> Automatic failover if primary fails</li>
+                        <li><strong>Data Redundancy:</strong> Multiple copies of data</li>
+                        <li><strong>Read Scaling:</strong> Distribute reads to secondaries</li>
+                        <li><strong>Disaster Recovery:</strong> Data survives node failure</li>
+                    </ul>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>Best Practice:</strong> Use at least 3 members in a replica set (or 2 + 1 arbiter) for proper elections.
+                </div>
+            `
+        },
+        '20. MongoDB Sharding': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-database"></i> Sharding in MongoDB</h3>
+                    <p><strong>Sharding</strong> distributes data across multiple servers to handle large datasets and high throughput.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Sharding Architecture</h3>
+                    <div class="diagram-box">
+                        ┌─────────────────────────────────────────────────────┐
+                        │               Sharded Cluster                     │
+                        ├─────────────────────────────────────────────────────┤
+                        │                                                   │
+                        │              ┌──────────────┐                    │
+                        │              │   Router     │                    │
+                        │              │  (mongos)    │                    │
+                        │              └──────┬───────┘                    │
+                        │                     │                            │
+                        │                     ▼                            │
+                        │              ┌──────────────┐                    │
+                        │              │   Config     │                    │
+                        │              │   Servers    │                    │
+                        │              └──────────────┘                    │
+                        │                     │                            │
+                        │         ┌───────────┼───────────┐                │
+                        │         ▼           ▼           ▼                │
+                        │    ┌─────────┐ ┌─────────┐ ┌─────────┐         │
+                        │    │ Shard 1 │ │ Shard 2 │ │ Shard 3 │         │
+                        │    │(Replica)│ │(Replica)│ │(Replica)│         │
+                        │    └─────────┘ └─────────┘ └─────────┘         │
+                        │                                                   │
+                        └─────────────────────────────────────────────────────┘
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Sharding Configuration</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB Shell)</span>
+                        <span class="comment">// Enable sharding for database</span>
+                        sh.<span class="function">enableSharding</span>(<span class="string">"myapp"</span>);
+
+                        <span class="comment">// Shard collection by hashed key</span>
+                        sh.<span class="function">shardCollection</span>(
+                            <span class="string">"myapp.users"</span>,
+                            { <span class="variable">userId</span>: <span class="string">"hashed"</span> }
+                        );
+
+                        <span class="comment">// Shard by range</span>
+                        sh.<span class="function">shardCollection</span>(
+                            <span class="string">"myapp.orders"</span>,
+                            { <span class="variable">createdAt</span>: 1 }
+                        );
+
+                        <span class="comment">// Add shards</span>
+                        sh.<span class="function">addShard</span>(<span class="string">"rs1/mongodb1:27017"</span>);
+                        sh.<span class="function">addShard</span>(<span class="string">"rs2/mongodb2:27017"</span>);
+                        sh.<span class="function">addShard</span>(<span class="string">"rs3/mongodb3:27017"</span>);
+
+                        <span class="comment">// Check sharding status</span>
+                        sh.<span class="function">status</span>();
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Choosing a Shard Key</h3>
+                    <ul>
+                        <li><strong>Hashed:</strong> Even distribution, good for high write workloads</li>
+                        <li><strong>Range:</strong> Good for time-series data, range queries</li>
+                        <li><strong>Compound:</strong> Multiple fields combined</li>
+                    </ul>
+                    <p><strong>Criteria:</strong> High cardinality, even distribution, query isolation.</p>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> Choose your shard key carefully - it cannot be changed after sharding is enabled.
+                </div>
+            `
+        },
+        '21. MongoDB Security': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-shield-alt"></i> MongoDB Security</h3>
+                    <p>Essential security practices for MongoDB.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Authentication & Authorization</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB Shell)</span>
+                        <span class="comment">// Create admin user</span>
+                        db.<span class="function">createUser</span>({
+                            <span class="variable">user</span>: <span class="string">"admin"</span>,
+                            <span class="variable">pwd</span>: <span class="string">"securePassword"</span>,
+                            <span class="variable">roles</span>: [
+                                { <span class="variable">role</span>: <span class="string">"userAdminAnyDatabase"</span>, <span class="variable">db</span>: <span class="string">"admin"</span> },
+                                { <span class="variable">role</span>: <span class="string">"readWriteAnyDatabase"</span>, <span class="variable">db</span>: <span class="string">"admin"</span> }
+                            ]
+                        });
+
+                        <span class="comment">// Create application user with specific permissions</span>
+                        db.<span class="function">createUser</span>({
+                            <span class="variable">user</span>: <span class="string">"appUser"</span>,
+                            <span class="variable">pwd</span>: <span class="string">"appPassword"</span>,
+                            <span class="variable">roles</span>: [
+                                { <span class="variable">role</span>: <span class="string">"readWrite"</span>, <span class="variable">db</span>: <span class="string">"myapp"</span> }
+                            ]
+                        });
+
+                        <span class="comment">// Connect with authentication</span>
+                        <span class="keyword">const</span> mongoose = <span class="function">require</span>(<span class="string">'mongoose'</span>);
+                        <span class="keyword">await</span> mongoose.<span class="function">connect</span>(<span class="string">'mongodb://appUser:appPassword@localhost:27017/myapp'</span>);
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Security Checklist</h3>
+                    <ul>
+                        <li><strong>Authentication:</strong> Enable authentication (SCRAM, x.509)</li>
+                        <li><strong>Authorization:</strong> Use role-based access control (RBAC)</li>
+                        <li><strong>Encryption:</strong> Enable SSL/TLS for network encryption</li>
+                        <li><strong>Encryption at Rest:</strong> Use MongoDB Enterprise encryption</li>
+                        <li><strong>Network Security:</strong> Restrict binding to 0.0.0.0, use firewalls</li>
+                        <li><strong>Change Default Port:</strong> Don't use port 27017 publicly</li>
+                        <li><strong>Regular Updates:</strong> Keep MongoDB updated</li>
+                        <li><strong>Audit Logs:</strong> Enable auditing for compliance</li>
+                        <li><strong>Backups:</strong> Regular encrypted backups</li>
+                    </ul>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Never:</strong> Expose MongoDB directly to the internet without authentication and firewall.
+                </div>
+            `
+        },
+        '22. MongoDB Backup & Recovery': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-database"></i> Backup Strategies</h3>
+                    <p>Protecting your MongoDB data with proper backup and recovery procedures.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Backup Tools</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">Terminal</span>
+                        <span class="comment"># mongodump - Create binary backup</span>
+                        mongodump --uri="mongodb://localhost:27017" --out=/backups/mongodb/
+
+                        <span class="comment"># Backup specific database</span>
+                        mongodump --db=myapp --out=/backups/myapp/
+
+                        <span class="comment"># Backup specific collection</span>
+                        mongodump --db=myapp --collection=users --out=/backups/users/
+
+                        <span class="comment"># mongorestore - Restore from backup</span>
+                        mongorestore --uri="mongodb://localhost:27017" /backups/mongodb/
+
+                        <span class="comment"># Restore specific database</span>
+                        mongorestore --db=myapp /backups/myapp/
+
+                        <span class="comment"># Compressed backup</span>
+                        mongodump --archive=/backups/db.gz --gzip
+                        mongorestore --archive=/backups/db.gz --gzip
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Backup Strategies</h3>
+                    <ul>
+                        <li><strong>Full Backup:</strong> Complete copy of all data (daily)</li>
+                        <li><strong>Incremental Backup:</strong> Only changes since last backup (hourly)</li>
+                        <li><strong>Point-in-Time Recovery:</strong> Using Oplog for recovery</li>
+                        <li><strong>Cloud Backup:</strong> MongoDB Atlas built-in backup</li>
+                    </ul>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>Best Practice:</strong> Always test your backups by restoring them in a test environment.
+                </div>
+            `
+        },
+        '23. MongoDB Monitoring & Performance': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-chart-line"></i> Monitoring MongoDB</h3>
+                    <p>Tools and techniques for monitoring MongoDB performance.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Monitoring Commands</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">Terminal</span>
+                        <span class="comment"># mongostat - Real-time stats</span>
+                        mongostat --host=localhost:27017
+
+                        <span class="comment"># mongotop - Collection activity</span>
+                        mongotop --host=localhost:27017
+
+                        <span class="comment"># Server status</span>
+                        db.<span class="function">serverStatus</span>();
+
+                        <span class="comment"># Current operations</span>
+                        db.<span class="function">currentOp</span>();
+
+                        <span class="comment"># Collection stats</span>
+                        db.<span class="function">getCollection</span>(<span class="string">'users'</span>).<span class="function">stats</span>();
+
+                        <span class="comment"># Database profiler</span>
+                        db.<span class="function">setProfilingLevel</span>(2); <span class="comment">// 0=off, 1=slow, 2=all</span>
+                        db.<span class="function">system</span>.<span class="function">profile</span>.<span class="function">find</span>().<span class="function">sort</span>({ <span class="variable">ts</span>: -1 }).<span class="function">limit</span>(10);
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Performance Optimization</h3>
+                    <ul>
+                        <li><strong>Indexes:</strong> Create proper indexes for queries</li>
+                        <li><strong>Query Optimization:</strong> Use explain() to analyze queries</li>
+                        <li><strong>Write Concerns:</strong> Balance durability vs performance</li>
+                        <li><strong>Read Preferences:</strong> Distribute reads to secondaries</li>
+                        <li><strong>Connection Pooling:</strong> Reuse connections (Mongoose does this)</li>
+                        <li><strong>Hardware:</strong> Adequate RAM, SSDs for storage</li>
+                        <li><strong>Schema Design:</strong> Proper embedding/referencing</li>
+                    </ul>
+                </div>
+
+                <div class="note-box mongo-box">
+                    <i class="fas fa-leaf"></i>
+                    <strong>Tools:</strong> MongoDB Atlas, Ops Manager, Cloud Manager, Prometheus + Grafana.
+                </div>
+            `
+        },
+        '24. MongoDB Change Streams': {
+            tech: 'mongo',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-stream"></i> Change Streams</h3>
+                    <p><strong>Change Streams</strong> allow you to listen for real-time changes to your MongoDB data.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Change Streams Example</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Node.js with Mongoose)</span>
+                        <span class="comment">// Listen to changes on a collection</span>
+                        <span class="keyword">const</span> changeStream = User.<span class="function">watch</span>();
+
+                        changeStream.<span class="function">on</span>(<span class="string">'change'</span>, (change) => {
+                            <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Change detected:'</span>, change);
+
+                            <span class="comment">// Handle different operations</span>
+                            <span class="keyword">switch</span> (change.<span class="variable">operationType</span>) {
+                                <span class="keyword">case</span> <span class="string">'insert'</span>:
+                                    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'New document inserted:'</span>, change.<span class="variable">fullDocument</span>);
+                                    <span class="keyword">break</span>;
+
+                                <span class="keyword">case</span> <span class="string">'update'</span>:
+                                    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Document updated:'</span>, change.<span class="variable">documentKey</span>);
+                                    <span class="keyword">break</span>;
+
+                                <span class="keyword">case</span> <span class="string">'delete'</span>:
+                                    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Document deleted:'</span>, change.<span class="variable">documentKey</span>);
+                                    <span class="keyword">break</span>;
+
+                                <span class="keyword">case</span> <span class="string">'replace'</span>:
+                                    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Document replaced:'</span>, change.<span class="variable">fullDocument</span>);
+                                    <span class="keyword">break</span>;
+                            }
+                        });
+
+                        <span class="comment">// Listen with aggregation pipeline filtering</span>
+                        <span class="keyword">const</span> changeStream = User.<span class="function">watch</span>([
+                            {
+                                <span class="variable">$match</span>: {
+                                    <span class="variable">$or</span>: [
+                                        { <span class="variable">operationType</span>: <span class="string">'insert'</span> },
+                                        { <span class="variable">operationType</span>: <span class="string">'update'</span> }
+                                    ],
+                                    <span class="string">'fullDocument.age'</span>: { <span class="variable">$gte</span>: 18 }
+                                }
+                            }
+                        ]);
+
+                        <span class="comment">// Resume from a specific timestamp</span>
+                        <span class="keyword">const</span> resumeToken = changeStream.<span class="function">getResumeToken</span>();
+                        <span class="comment">// Store resumeToken to resume later</span>
+
+                        <span class="comment">// Resume from token</span>
+                        <span class="keyword">const</span> changeStream = User.<span class="function">watch</span>([], {
+                            <span class="variable">resumeAfter</span>: resumeToken
+                        });
+
+                        <span class="comment">// Close change stream</span>
+                        changeStream.<span class="function">close</span>();
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Use Cases</h3>
+                    <ul>
+                        <li><strong>Real-time Notifications:</strong> Notify users when data changes</li>
+                        <li><strong>Audit Logs:</strong> Track all changes to documents</li>
+                        <li><strong>Data Synchronization:</strong> Sync data across systems</li>
+                        <li><strong>Cache Invalidation:</strong> Invalidate cache when data changes</li>
+                        <li><strong>Event-Driven Architecture:</strong> Trigger workflows</li>
+                    </ul>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> Change Streams require replica sets or sharded clusters. They don't work on standalone MongoDB instances.
+                </div>
+            `
+        },
+        '25. SQL vs MongoDB - Detailed Comparison': {
+            tech: 'both',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-balance-scale"></i> SQL vs MongoDB</h3>
+                    <p>A detailed comparison to help you choose the right database.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Comparison Table</h3>
+                    <table class="comparison-table">
+                        <tr><th>Feature</th><th>SQL</th><th>MongoDB</th></tr>
+                        <tr><td>Data Model</td><td>Relational (tables)</td><td>Document (JSON/BSON)</td></tr>
+                        <tr><td>Schema</td><td>Fixed, predefined</td><td>Dynamic, flexible</td></tr>
+                        <tr><td>Query Language</td><td>SQL</td><td>MongoDB Query API</td></tr>
+                        <tr><td>JOINs</td><td>Supported (complex)</td><td>Supported ($lookup)</td></tr>
+                        <tr><td>Transactions</td><td>ACID (strong)</td><td>Multi-document ACID (v4.0+)</td></tr>
+                        <tr><td>Scaling</td><td>Vertical (hard)</td><td>Horizontal (easy)</td></tr>
+                        <tr><td>Indexing</td><td>B-Tree, Hash, etc.</td><td>B-Tree, Geo, Text, etc.</td></tr>
+                        <tr><td>Aggregation</td><td>GROUP BY, JOINs</td><td>Aggregation Pipeline</td></tr>
+                        <tr><td>Performance</td><td>Complex queries</td><td>Simple queries, fast</td></tr>
+                        <tr><td>Use Cases</td><td>Banking, ERP, CRM</td><td>Real-time, IoT, Content</td></tr>
+                    </table>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Feature Comparison</h3>
+                    <div class="grid-2">
+                        <div class="note-box sql-box">
+                            <i class="fas fa-database"></i>
+                            <strong>SQL Advantages:</strong>
+                            <ul>
+                                <li>Strong ACID compliance</li>
+                                <li>Complex relationships (JOINs)</li>
+                                <li>Data integrity (FKs, constraints)</li>
+                                <li>Standardized query language</li>
+                                <li>Mature ecosystem</li>
+                            </ul>
+                        </div>
+                        <div class="note-box mongo-box">
+                            <i class="fas fa-leaf"></i>
+                            <strong>MongoDB Advantages:</strong>
+                            <ul>
+                                <li>Flexible schema</li>
+                                <li>Horizontal scaling (sharding)</li>
+                                <li>High write throughput</li>
+                                <li>Rich query language</li>
+                                <li>Built-in aggregation</li>
+                                <li>Geospatial queries</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> When to Choose</h3>
+                    <h4>Choose SQL when:</h4>
+                    <ul>
+                        <li>Data is structured and relationships are complex</li>
+                        <li>ACID transactions are critical</li>
+                        <li>Data integrity is a top priority</li>
+                        <li>Complex reporting and analytics are needed</li>
+                        <li>Team is experienced with SQL</li>
+                    </ul>
+
+                    <h4>Choose MongoDB when:</h4>
+                    <ul>
+                        <li>Data is unstructured or evolves frequently</li>
+                        <li>High write throughput is needed</li>
+                        <li>Horizontal scaling is required</li>
+                        <li>Real-time data is important</li>
+                        <li>JSON-like documents are natural</li>
+                        <li>Geospatial queries are needed</li>
+                    </ul>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Modern Approach:</strong> Many applications use both - SQL for core transactional data and MongoDB for cache, logs, and flexible data.
+                </div>
+            `
+        },
+        '26. PostgreSQL vs MySQL': {
+            tech: 'sql',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-database"></i> PostgreSQL vs MySQL</h3>
+                    <p>Two of the most popular open-source SQL databases.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Comparison Table</h3>
+                    <table class="comparison-table">
+                        <tr><th>Feature</th><th>PostgreSQL</th><th>MySQL</th></tr>
+                        <tr><td>ACID Compliance</td><td>Full</td><td>With InnoDB</td></tr>
+                        <tr><td>JSON Support</td><td>Excellent (JSONB)</td><td>Good</td></tr>
+                        <tr><td>Full-Text Search</td><td>Excellent</td><td>Good</td></tr>
+                        <tr><td>Replication</td><td>Streaming, Logical</td><td>Master-Slave, Group</td></tr>
+                        <tr><td>Views</td><td>Updatable, Materialized</td><td>Basic</td></tr>
+                        <tr><td>Triggers</td><td>Full PL/pgSQL</td><td>Basic</td></tr>
+                        <tr><td>Extensions</td><td>Rich ecosystem</td><td>Limited</td></tr>
+                        <tr><td>Performance</td><td>Complex queries</td><td>Simple queries, faster</td></tr>
+                        <tr><td>Use Cases</td><td>Analytics, Complex apps</td><td>Web apps, Read-heavy</td></tr>
+                    </table>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> PostgreSQL Features</h3>
+                    <ul>
+                        <li><strong>Advanced Data Types:</strong> JSONB, ARRAY, HSTORE, UUID</li>
+                        <li><strong>Window Functions:</strong> RANK, DENSE_RANK, LAG, LEAD</li>
+                        <li><strong>Full-Text Search:</strong> to_tsvector, tsquery</li>
+                        <li><strong>Materialized Views:</strong> Stored results for fast queries</li>
+                        <li><strong>Extensions:</strong> PostGIS (GIS), pgcrypto, citext</li>
+                        <li><strong>JSONB:</strong> GIN indexes for fast JSON queries</li>
+                    </ul>
+                    <div class="code-block">
+                        <span class="lang-tag">PostgreSQL</span>
+                        <span class="comment">-- JSONB query</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users
+                        <span class="sql-keyword">WHERE</span> data @> <span class="sql-string">'{"preferences": {"theme": "dark"}}'</span>;
+
+                        <span class="comment">-- Full-text search</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> posts
+                        <span class="sql-keyword">WHERE</span> <span class="sql-function">to_tsvector</span>(<span class="sql-string">'english'</span>, content) @@ <span class="sql-function">to_tsquery</span>(<span class="sql-string">'nodejs & express'</span>);
+
+                        <span class="comment">-- Window function</span>
+                        <span class="sql-keyword">SELECT</span> *,
+                            <span class="sql-function">RANK</span>() <span class="sql-keyword">OVER</span> (<span class="sql-keyword">PARTITION BY</span> category <span class="sql-keyword">ORDER BY</span> price <span class="sql-keyword">DESC</span>) <span class="sql-keyword">AS</span> rank
+                        <span class="sql-keyword">FROM</span> products;
+                    </div>
+                </div>
+
+                <div class="note-box sql-box">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Recommendation:</strong> Choose PostgreSQL for complex applications, analytics, and when you need advanced features. Choose MySQL for simple web applications and when you need speed for simple queries.
+                </div>
+            `
+        },
+        '27. Database Design Best Practices': {
+            tech: 'both',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-drafting-compass"></i> Database Design Best Practices</h3>
+                    <p>Essential principles for designing efficient databases.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> General Principles</h3>
+                    <ul>
+                        <li><strong>Normalize to 3NF:</strong> Reduce redundancy, improve integrity</li>
+                        <li><strong>Denormalize when needed:</strong> For performance, caching</li>
+                        <li><strong>Choose the right data types:</strong> Use appropriate sizes</li>
+                        <li><strong>Add indexes strategically:</strong> For frequently queried columns</li>
+                        <li><strong>Use foreign keys:</strong> Maintain referential integrity</li>
+                        <li><strong>Plan for growth:</strong> Consider future scalability</li>
+                        <li><strong>Document your schema:</strong> Create ER diagrams</li>
+                        <li><strong>Use naming conventions:</strong> Consistent naming</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> SQL Design Tips</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Good practices</span>
+                        <span class="sql-keyword">CREATE TABLE</span> orders (
+                            id <span class="sql-keyword">BIGSERIAL PRIMARY KEY</span>,        <span class="comment">-- Use BIGSERIAL for large tables</span>
+                            user_id <span class="sql-keyword">INT NOT NULL</span>,            <span class="comment">-- NOT NULL when possible</span>
+                            total <span class="sql-keyword">DECIMAL</span>(10,2) <span class="sql-keyword">CHECK</span> (total >= 0), <span class="comment">-- Constraints for data integrity</span>
+                            status <span class="sql-keyword">VARCHAR</span>(20) <span class="sql-keyword">DEFAULT</span> <span class="sql-string">'pending'</span>,
+                            created_at <span class="sql-keyword">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span>,
+                            <span class="sql-keyword">FOREIGN KEY</span> (user_id) <span class="sql-keyword">REFERENCES</span> users(id) <span class="sql-keyword">ON DELETE CASCADE</span>
+                        );
+
+                        <span class="comment">-- Use composite indexes for common queries</span>
+                        <span class="sql-keyword">CREATE INDEX</span> idx_orders_user_status <span class="sql-keyword">ON</span> orders(user_id, status);
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> MongoDB Design Tips</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (Mongoose)</span>
+                        <span class="comment">-- Embed when data is accessed together</span>
+                        <span class="keyword">const</span> orderSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+                            <span class="variable">userId</span>: { <span class="variable">type</span>: <span class="keyword">String</span>, <span class="variable">required</span>: <span class="keyword">true</span> },
+                            <span class="variable">items</span>: [{ <span class="comment">// Embedded items</span>
+                                <span class="variable">productId</span>: <span class="keyword">String</span>,
+                                <span class="variable">quantity</span>: <span class="keyword">Number</span>,
+                                <span class="variable">price</span>: <span class="keyword">Number</span>
+                            }],
+                            <span class="variable">total</span>: { <span class="variable">type</span>: <span class="keyword">Number</span>, <span class="variable">min</span>: 0 },
+                            <span class="variable">createdAt</span>: { <span class="variable">type</span>: <span class="keyword">Date</span>, <span class="variable">default</span>: <span class="keyword">Date</span>.<span class="function">now</span> },
+                            <span class="variable">status</span>: { <span class="variable">type</span>: <span class="keyword">String</span>, <span class="variable">enum</span>: [<span class="string">'pending'</span>, <span class="string">'completed'</span>], <span class="variable">default</span>: <span class="string">'pending'</span> }
+                        });
+
+                        <span class="comment">-- Create indexes for common queries</span>
+                        orderSchema.<span class="function">index</span>({ <span class="variable">userId</span>: 1, <span class="variable">createdAt</span>: -1 });
+                        orderSchema.<span class="function">index</span>({ <span class="variable">status</span>: 1 });
+                    </div>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Key Takeaway:</strong> Design your database based on your application's query patterns, not just the data structure.
+                </div>
+            `
+        },
+        '28. Database Security Best Practices': {
+            tech: 'both',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-shield-alt"></i> Database Security</h3>
+                    <p>Essential security practices for protecting your databases.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> General Security Checklist</h3>
+                    <ul>
+                        <li><strong>Authentication:</strong> Always require authentication</li>
+                        <li><strong>Authorization:</strong> Use principle of least privilege</li>
+                        <li><strong>Encryption:</strong> Encrypt data at rest and in transit</li>
+                        <li><strong>Network Security:</strong> Use firewalls, VPCs</li>
+                        <li><strong>Regular Updates:</strong> Keep database software updated</li>
+                        <li><strong>Backups:</strong> Regular encrypted backups</li>
+                        <li><strong>Audit Logs:</strong> Enable logging for compliance</li>
+                        <li><strong>Input Validation:</strong> Prevent SQL injection</li>
+                        <li><strong>Parameterized Queries:</strong> Always use prepared statements</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> SQL Injection Prevention</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL (Node.js with pg)</span>
+                        <span class="comment">// BAD - Vulnerable to SQL injection</span>
+                        <span class="keyword">const</span> query = <span class="string">\`SELECT * FROM users WHERE email = '\${userEmail}'\`</span>;
+                        <span class="keyword">await</span> pool.<span class="function">query</span>(query);
+
+                        <span class="comment">// GOOD - Parameterized query</span>
+                        <span class="keyword">await</span> pool.<span class="function">query</span>(<span class="string">'SELECT * FROM users WHERE email = $1'</span>, [userEmail]);
+
+                        <span class="comment">// GOOD - Using ORM (Mongoose)</span>
+                        <span class="keyword">await</span> User.<span class="function">findOne</span>({ <span class="variable">email</span>: userEmail });
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Role-Based Access Control</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL (PostgreSQL)</span>
+                        <span class="comment">-- Create roles</span>
+                        <span class="sql-keyword">CREATE ROLE</span> app_read;
+                        <span class="sql-keyword">CREATE ROLE</span> app_write;
+
+                        <span class="comment">-- Grant permissions</span>
+                        <span class="sql-keyword">GRANT SELECT ON</span> users <span class="sql-keyword">TO</span> app_read;
+                        <span class="sql-keyword">GRANT INSERT, UPDATE, DELETE ON</span> users <span class="sql-keyword">TO</span> app_write;
+
+                        <span class="comment">-- Create users with roles</span>
+                        <span class="sql-keyword">CREATE USER</span> reader <span class="sql-keyword">WITH PASSWORD</span> <span class="sql-string">'pass123'</span>;
+                        <span class="sql-keyword">GRANT</span> app_read <span class="sql-keyword">TO</span> reader;
+
+                        <span class="sql-keyword">CREATE USER</span> writer <span class="sql-keyword">WITH PASSWORD</span> <span class="sql-string">'pass456'</span>;
+                        <span class="sql-keyword">GRANT</span> app_write <span class="sql-keyword">TO</span> writer;
+                    </div>
+                </div>
+
+                <div class="note-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Critical:</strong> Always validate and sanitize user input. Never trust user input in database queries.
+                </div>
+            `
+        },
+        '29. Database Performance Tuning': {
+            tech: 'both',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-tachometer-alt"></i> Performance Tuning</h3>
+                    <p>Optimizing database performance for production workloads.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> General Optimization Tips</h3>
+                    <ul>
+                        <li><strong>Indexing:</strong> Add indexes for frequently queried columns</li>
+                        <li><strong>Query Optimization:</strong> Use EXPLAIN to analyze queries</li>
+                        <li><strong>Connection Pooling:</strong> Reuse connections</li>
+                        <li><strong>Hardware:</strong> Adequate RAM, fast SSDs</li>
+                        <li><strong>Partitioning:</strong> Partition large tables</li>
+                        <li><strong>Regular Maintenance:</strong> Vacuum, analyze, rebuild indexes</li>
+                        <li><strong>Caching:</strong> Use Redis/ElastiCache</li>
+                        <li><strong>Read Replicas:</strong> Offload read traffic</li>
+                        <li><strong>Horizontal Scaling:</strong> Sharding for massive scale</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> SQL Performance Tips</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">SQL</span>
+                        <span class="comment">-- Use EXPLAIN ANALYZE</span>
+                        <span class="sql-keyword">EXPLAIN ANALYZE</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">WHERE</span> user_id = 12345;
+
+                        <span class="comment">-- Use specific columns instead of *</span>
+                        <span class="sql-keyword">SELECT</span> id, total, created_at <span class="sql-keyword">FROM</span> orders <span class="sql-keyword">WHERE</span> user_id = 12345;
+
+                        <span class="comment">-- Use EXISTS instead of IN for large datasets</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> users u
+                        <span class="sql-keyword">WHERE EXISTS</span> (<span class="sql-keyword">SELECT</span> 1 <span class="sql-keyword">FROM</span> orders o <span class="sql-keyword">WHERE</span> o.user_id = u.id);
+
+                        <span class="comment">-- Use LIMIT for pagination</span>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> orders
+                        <span class="sql-keyword">ORDER BY</span> created_at <span class="sql-keyword">DESC</span>
+                        <span class="sql-keyword">LIMIT</span> 20 <span class="sql-keyword">OFFSET</span> 40;
+
+                        <span class="comment">-- Use batch operations</span>
+                        <span class="sql-keyword">INSERT INTO</span> users (name, email) <span class="sql-keyword">VALUES</span>
+                            (<span class="sql-string">'User1'</span>, <span class="sql-string">'user1@example.com'</span>),
+                            (<span class="sql-string">'User2'</span>, <span class="sql-string">'user2@example.com'</span>);
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> MongoDB Performance Tips</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">JavaScript (MongoDB)</span>
+                        <span class="comment">-- Use explain() to analyze queries</span>
+                        db.orders.<span class="function">find</span>({ <span class="variable">userId</span>: 12345 }).<span class="function">explain</span>(<span class="string">"executionStats"</span>);
+
+                        <span class="comment">-- Use projection to limit fields</span>
+                        db.orders.<span class="function">find</span>(
+                            { <span class="variable">userId</span>: 12345 },
+                            { <span class="variable">total</span>: 1, <span class="variable">createdAt</span>: 1 }
+                        );
+
+                        <span class="comment">-- Use batch operations for inserts</span>
+                        db.orders.<span class="function">insertMany</span>([
+                            { <span class="variable">userId</span>: 1, <span class="variable">total</span>: 100 },
+                            { <span class="variable">userId</span>: 2, <span class="variable">total</span>: 200 }
+                        ]);
+
+                        <span class="comment">-- Use indexes for frequent queries</span>
+                        db.orders.<span class="function">createIndex</span>({ <span class="variable">userId</span>: 1, <span class="variable">createdAt</span>: -1 });
+                    </div>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Best Practice:</strong> Monitor your database performance regularly and tune based on actual usage patterns.
+                </div>
+            `
+        },
+        '30. Database Migration & Version Control': {
+            tech: 'both',
+            content: `
+                <div class="note-section">
+                    <h3><i class="fas fa-code-branch"></i> Database Migrations</h3>
+                    <p>Managing database schema changes over time.</p>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Migration Tools</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">Terminal</span>
+                        <span class="comment"># SQL - Using migrate (Node.js)</span>
+                        npm install -g migrate
+
+                        <span class="comment"># Create migration</span>
+                        migrate create add_users_table
+
+                        <span class="comment"># Migration file (up)</span>
+                        <span class="sql-keyword">CREATE TABLE</span> users (
+                            id <span class="sql-keyword">SERIAL PRIMARY KEY</span>,
+                            name <span class="sql-keyword">VARCHAR</span>(100),
+                            email <span class="sql-keyword">VARCHAR</span>(255) <span class="sql-keyword">UNIQUE</span>
+                        );
+
+                        <span class="comment"># Migration file (down)</span>
+                        <span class="sql-keyword">DROP TABLE</span> users;
+
+                        <span class="comment"># Run migrations</span>
+                        migrate up
+                        migrate down
+
+                        <span class="comment"># Prisma migrations</span>
+                        npx prisma migrate dev --name init
+                        npx prisma migrate deploy
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Migration Best Practices</h3>
+                    <ul>
+                        <li><strong>Always test migrations:</strong> Test in staging first</li>
+                        <li><strong>Make migrations idempotent:</strong> Can run multiple times safely</li>
+                        <li><strong>Write rollback scripts:</strong> Always have a down migration</li>
+                        <li><strong>Version control migrations:</strong> Store in Git</li>
+                        <li><strong>Use migration tools:</strong> Don't manually alter schemas</li>
+                        <li><strong>Deploy during low traffic:</strong> Minimize downtime</li>
+                        <li><strong>Monitor after migration:</strong> Check for performance issues</li>
+                    </ul>
+                </div>
+
+                <div class="note-section">
+                    <h3><i class="fas fa-code"></i> Example: Prisma Migration</h3>
+                    <div class="code-block">
+                        <span class="lang-tag">Prisma Schema</span>
+                        <span class="comment">// prisma/schema.prisma</span>
+                        model User {
+                            id        Int      @id @default(autoincrement())
+                            name      String
+                            email     String   @unique
+                            posts     Post[]
+                            createdAt DateTime @default(now())
+                            updatedAt DateTime @updatedAt
+                        }
+
+                        model Post {
+                            id        Int      @id @default(autoincrement())
+                            title     String
+                            content   String
+                            authorId  Int
+                            author    User     @relation(fields: [authorId], references: [id])
+                            createdAt DateTime @default(now())
+                            updatedAt DateTime @updatedAt
+                        }
+
+                        <span class="comment">// Terminal</span>
+                        npx prisma migrate dev --name add_user_posts
+                        npx prisma generate
+                        npx prisma studio
+                    </div>
+                </div>
+
+                <div class="note-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Key Takeaway:</strong> Always use migration tools to manage schema changes. Never manually modify production databases.
+                </div>
+            `
+        }
+    };
+
+    // ================================================================
+    // RENDER ENGINE
+    // ================================================================
+    const topicNames = Object.keys(topicData);
+
+    function init() {
+        const topicNav = document.getElementById('topicNav');
+        const topicTitle = document.getElementById('topicTitle');
+        const topicBadge = document.getElementById('topicBadge');
+        const notesContent = document.getElementById('notesContent');
+        const progressFill = document.getElementById('progressFill');
+
+        let activeTopic = topicNames[0];
+
+        function renderNav() {
+            const label = topicNav.querySelector('.label');
+            topicNav.innerHTML = '';
+            topicNav.appendChild(label);
+            topicNames.forEach(name => {
+                const btn = document.createElement('button');
+                let className = 'topic-btn';
+                const tech = topicData[name]?.tech || 'both';
+                if (name === activeTopic) {
+                    if (tech === 'sql') className += ' active-sql';
+                    else if (tech === 'mongo') className += ' active-mongo';
+                    else className += ' active-sql';
+                }
+                btn.className = className;
+                let displayName = name;
+                if (name.length > 45) {
+                    displayName = name.substring(0, 42) + '...';
+                }
+                btn.textContent = displayName;
+                btn.title = name;
+                btn.dataset.topic = name;
+                btn.addEventListener('click', () => {
+                    activeTopic = name;
+                    renderNav();
+                    renderContent(name);
+                });
+                topicNav.appendChild(btn);
+            });
+        }
+
+        function renderContent(topicName) {
+            const data = topicData[topicName];
+            if (!data) {
+                notesContent.innerHTML = '<p style="padding:2rem;text-align:center;color:#64748b;">Topic not found.</p>';
+                return;
+            }
+
+            topicTitle.textContent = topicName;
+            topicBadge.textContent = 'Deep Notes';
+            notesContent.innerHTML = data.content;
+
+            const total = topicNames.length;
+            const current = topicNames.indexOf(topicName) + 1;
+            const progress = Math.round((current / total) * 100);
+            progressFill.style.width = progress + '%';
+            progressFill.title = progress + '% complete';
+        }
+
+        renderNav();
+        renderContent(activeTopic);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+</script>
+</body>
+</html>

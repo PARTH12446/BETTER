@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node.js Complete Notes – All 30 Topics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f0f4f9; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; color: #1a2332; }
+        .container { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .header {
+            background: linear-gradient(135deg, #0b1e33 0%, #1a365d 100%);
+            color: white; padding: 2.5rem 2rem; border-radius: 28px;
+            margin-bottom: 2rem; box-shadow: 0 20px 40px rgba(11,30,51,0.3);
+        }
+        .header h1 { font-size: 2.8rem; font-weight: 700; display: flex; align-items: center; gap: 1rem; }
+        .header h1 i { color: #68d391; }
+        .header p { font-size: 1.1rem; opacity: 0.9; margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #68d391; }
+        .header .badge-group { margin-top: 1rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .header .badge-group span { background: rgba(255,255,255,0.15); padding: 0.3rem 1.2rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; }
+        .topic-nav {
+            background: white; border-radius: 20px; padding: 1rem 1.5rem;
+            margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+        }
+        .topic-nav .label { font-weight: 600; color: #334155; margin-right: 0.5rem; font-size: 0.95rem; }
+        .topic-btn {
+            background: transparent; border: 1px solid #d1d9e6; padding: 0.4rem 1rem;
+            border-radius: 40px; font-size: 0.8rem; font-weight: 500; color: #1e293b;
+            cursor: pointer; transition: all 0.2s; background: white; white-space: nowrap;
+        }
+        .topic-btn:hover { background: #e6edf8; border-color: #7c9bcf; transform: translateY(-1px); }
+        .topic-btn.active { background: #1e3a6f; border-color: #1e3a6f; color: white; box-shadow: 0 4px 8px rgba(30,58,111,0.2); }
+        .content { background: white; border-radius: 28px; padding: 2.5rem; box-shadow: 0 12px 30px rgba(0,0,0,0.05); }
+        .topic-header {
+            display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4; padding-bottom: 0.75rem; margin-bottom: 2rem;
+        }
+        .topic-header h2 { font-size: 2rem; font-weight: 600; color: #0b1e33; }
+        .topic-header .badge { background: #dbeafe; color: #1e4a7a; padding: 0.2rem 1rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; margin-left: auto; }
+        .note-section { margin-bottom: 2rem; }
+        .note-section h3 { font-size: 1.3rem; font-weight: 600; color: #1e3a6f; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .note-section h3 i { color: #2563eb; font-size: 1rem; width: 1.5rem; }
+        .note-section p, .note-section li { color: #334155; line-height: 1.7; font-size: 0.98rem; }
+        .note-section ul, .note-section ol { padding-left: 1.8rem; margin-bottom: 0.5rem; }
+        .note-section li { margin-bottom: 0.3rem; }
+        .code-block {
+            background: #0b1e33; color: #e2e8f0; padding: 1.2rem 1.5rem;
+            border-radius: 12px; margin: 0.8rem 0 1.2rem;
+            font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9rem;
+            overflow-x: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.6;
+            position: relative;
+        }
+        .code-block .lang-tag { position: absolute; top: 0.5rem; right: 1rem; background: rgba(255,255,255,0.1); padding: 0.1rem 0.8rem; border-radius: 12px; font-size: 0.7rem; color: #94a3b8; font-family: 'Segoe UI', sans-serif; }
+        .code-block .comment { color: #94a3b8; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #34d399; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .variable { color: #fbbf24; }
+        .note-box { background: #f1f6fe; border-left: 4px solid #2563eb; padding: 1rem 1.5rem; border-radius: 8px; margin: 0.8rem 0; }
+        .note-box.warning { border-left-color: #f59e0b; background: #fffbeb; }
+        .note-box.success { border-left-color: #10b981; background: #ecfdf5; }
+        .note-box i { margin-right: 0.5rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header { padding: 1.5rem; }
+            .header h1 { font-size: 1.8rem; flex-wrap: wrap; }
+            .content { padding: 1.5rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .topic-header h2 { font-size: 1.4rem; }
+            .code-block { font-size: 0.8rem; padding: 1rem; }
+        }
+        .progress-bar { width: 100%; height: 4px; background: #e9edf4; border-radius: 4px; margin-top: 2rem; }
+        .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 4px; width: 100%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fab fa-node"></i> Node.js Complete Notes</h1>
+        <p>All 30 core topics · from fundamentals to production · code examples · best practices</p>
+        <div class="badge-group">
+            <span><i class="fas fa-check-circle"></i> 30 Topics</span>
+            <span><i class="fas fa-code"></i> 150+ Examples</span>
+            <span><i class="fas fa-graduation-cap"></i> Beginner → Advanced</span>
+        </div>
+    </div>
+    <div class="topic-nav" id="topicNav"><span class="label"><i class="fas fa-tag"></i> Topics:</span></div>
+    <div class="content" id="contentArea">
+        <div class="topic-header"><h2 id="topicTitle">Loading...</h2><span class="badge" id="topicBadge">Complete Notes</span></div>
+        <div id="notesContent"></div>
+        <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // COMPLETE NODE.JS NOTES - ALL 30 TOPICS
+    // ================================================================
+
+    const NOTES = {
+
+        '1. Introduction to Node.js': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-info-circle"></i> What is Node.js?</h3>
+    <p><strong>Node.js</strong> is an open-source, cross-platform JavaScript runtime environment that executes JavaScript code outside a web browser. It's built on Chrome's V8 JavaScript engine.</p>
+    <p>Node.js uses an <strong>event-driven, non-blocking I/O model</strong> that makes it lightweight and efficient.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-lightbulb"></i> Key Features</h3>
+    <ul>
+        <li><strong>Event-Driven:</strong> Uses events to handle asynchronous operations</li>
+        <li><strong>Non-Blocking I/O:</strong> Handles multiple operations concurrently</li>
+        <li><strong>Single-Threaded:</strong> Uses a single thread with event loop</li>
+        <li><strong>NPM:</strong> Largest ecosystem of open-source libraries</li>
+        <li><strong>Cross-Platform:</strong> Runs on Windows, Linux, macOS</li>
+    </ul>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-sitemap"></i> Architecture</h3>
+    <div class="code-block"><span class="lang-tag">Architecture</span>
+┌─────────────────────────────┐
+│    V8 Engine (JavaScript)    │
+├─────────────────────────────┤
+│    libuv (Event Loop)        │
+├─────────────────────────────┤
+│    Core Modules (fs, http..) │
+├─────────────────────────────┤
+│    User Code (Your App)      │
+└─────────────────────────────┘</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-terminal"></i> Installation</h3>
+    <div class="code-block"><span class="lang-tag">Terminal</span>
+# Check if Node is installed
+node --version
+npm --version
+
+# Install via NVM (recommended)
+nvm install 20
+nvm use 20
+
+# Initialize a new project
+npm init -y</div>
+</div>
+<div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// app.js - Hello World</span>
+<span class="keyword">console</span>.<span class="function">log</span>(<span class="string">'Hello, Node.js!'</span>);
+
+<span class="comment">// Creating a simple server</span>
+<span class="keyword">const</span> http = <span class="function">require</span>(<span class="string">'http'</span>);
+<span class="keyword">const</span> server = http.<span class="function">createServer</span>((req, res) => {
+    res.<span class="function">writeHead</span>(200, { <span class="string">'Content-Type'</span>: <span class="string">'text/plain'</span> });
+    res.<span class="function">end</span>(<span class="string">'Hello World!'</span>);
+});
+server.<span class="function">listen</span>(3000, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Server running on port 3000'</span>);
+});</div>
+`
+        },
+
+        '2. NPM & Package Management': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-box"></i> What is NPM?</h3>
+    <p><strong>NPM (Node Package Manager)</strong> is the default package manager for Node.js. It allows you to install, manage, and share packages/libraries.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-file-alt"></i> package.json</h3>
+    <p>The <code>package.json</code> file contains metadata about your project and its dependencies.</p>
+    <div class="code-block"><span class="lang-tag">JSON</span>
+{
+  <span class="string">"name"</span>: <span class="string">"my-app"</span>,
+  <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="string">"dependencies"</span>: {
+    <span class="string">"express"</span>: <span class="string">"^4.18.2"</span>
+  },
+  <span class="string">"devDependencies"</span>: {
+    <span class="string">"nodemon"</span>: <span class="string">"^2.0.22"</span>
+  }
+}</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-terminal"></i> Essential Commands</h3>
+    <div class="code-block"><span class="lang-tag">Terminal</span>
+# Initialize project
+npm init -y
+
+# Install dependencies
+npm install express
+npm install --save-dev nodemon
+npm install -g pm2
+
+# Install all dependencies from package.json
+npm install
+
+# Update packages
+npm update
+npm audit fix</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-code-branch"></i> Semantic Versioning</h3>
+    <ul>
+        <li><strong>^1.2.3</strong> → Compatible with 1.x.x</li>
+        <li><strong>~1.2.3</strong> → Compatible with 1.2.x</li>
+        <li><strong>1.2.3</strong> → Exact version only</li>
+    </ul>
+</div>
+<div class="note-box warning"><i class="fas fa-exclamation-triangle"></i> Always commit <code>package-lock.json</code> to version control!</div>
+`
+        },
+
+        '3. Core Modules - File System (fs)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-folder"></i> File System Module</h3>
+    <p>The <code>fs</code> module provides file I/O operations with sync, callback, and promise-based versions.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-book"></i> Reading & Writing Files</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> fs = <span class="function">require</span>(<span class="string">'fs'</span>);
+<span class="keyword">const</span> fsPromises = fs.<span class="variable">promises</span>;
+
+<span class="comment">// Read file (async/await)</span>
+<span class="keyword">const</span> data = <span class="keyword">await</span> fsPromises.<span class="function">readFile</span>(<span class="string">'file.txt'</span>, <span class="string">'utf8'</span>);
+
+<span class="comment">// Write file</span>
+<span class="keyword">await</span> fsPromises.<span class="function">writeFile</span>(<span class="string">'output.txt'</span>, <span class="string">'Hello World'</span>);
+
+<span class="comment">// Append to file</span>
+<span class="keyword">await</span> fsPromises.<span class="function">appendFile</span>(<span class="string">'output.txt'</span>, <span class="string">'\\nNew line'</span>);
+
+<span class="comment">// Create directory</span>
+<span class="keyword">await</span> fsPromises.<span class="function">mkdir</span>(<span class="string">'./folder'</span>, { recursive: <span class="keyword">true</span> });
+
+<span class="comment">// Check if exists</span>
+<span class="keyword">const</span> exists = <span class="keyword">await</span> fsPromises.<span class="function">access</span>(<span class="string">'file.txt'</span>).<span class="function">then</span>(() => <span class="keyword">true</span>).<span class="function">catch</span>(() => <span class="keyword">false</span>);
+
+<span class="comment">// Delete file</span>
+<span class="keyword">await</span> fsPromises.<span class="function">unlink</span>(<span class="string">'file.txt'</span>);</div>
+</div>
+<div class="note-box warning"><i class="fas fa-exclamation-triangle"></i> Prefer async/promise-based methods to avoid blocking the event loop.</div>
+`
+        },
+
+        '4. Core Modules - Path & OS': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-map"></i> Path Module</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> path = <span class="function">require</span>(<span class="string">'path'</span>);
+
+<span class="comment">// Join paths</span>
+path.<span class="function">join</span>(<span class="string">'users'</span>, <span class="string">'john'</span>, <span class="string">'file.txt'</span>);
+
+<span class="comment">// Resolve absolute path</span>
+path.<span class="function">resolve</span>(<span class="string">'docs'</span>, <span class="string">'file.txt'</span>);
+
+<span class="comment">// Get file info</span>
+path.<span class="function">basename</span>(<span class="string">'/users/john/file.txt'</span>); <span class="comment">// 'file.txt'</span>
+path.<span class="function">dirname</span>(<span class="string">'/users/john/file.txt'</span>);  <span class="comment">// '/users/john'</span>
+path.<span class="function">extname</span>(<span class="string">'file.txt'</span>);              <span class="comment">// '.txt'</span>
+
+<span class="comment">// Parse path</span>
+path.<span class="function">parse</span>(<span class="string">'/users/john/file.txt'</span>);</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-desktop"></i> OS Module</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> os = <span class="function">require</span>(<span class="string">'os'</span>);
+
+os.<span class="function">platform</span>();        <span class="comment">// 'win32', 'darwin', 'linux'</span>
+os.<span class="function">cpus</span>().<span class="variable">length</span>;       <span class="comment">// Number of CPU cores</span>
+os.<span class="function">totalmem</span>() / 1024 / 1024 / 1024; <span class="comment">// Total memory in GB</span>
+os.<span class="function">freemem</span>() / 1024 / 1024 / 1024;  <span class="comment">// Free memory in GB</span>
+os.<span class="function">homedir</span>();            <span class="comment">// Home directory</span>
+os.<span class="function">tmpdir</span>();             <span class="comment">// Temporary directory</span>
+os.<span class="function">hostname</span>();           <span class="comment">// System hostname</span></div>
+</div>
+`
+        },
+
+        '5. Event Loop & Async Patterns': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-sync"></i> Understanding the Event Loop</h3>
+    <p>The event loop is what allows Node.js to perform non-blocking I/O operations despite being single-threaded.</p>
+    <div class="code-block"><span class="lang-tag">Event Loop Phases</span>
+┌───────────────────────────┐
+│  1. Timers (setTimeout)   │
+├───────────────────────────┤
+│  2. Pending Callbacks     │
+├───────────────────────────┤
+│  3. Idle/Prepare          │
+├───────────────────────────┤
+│  4. Poll (I/O)            │
+├───────────────────────────┤
+│  5. Check (setImmediate)  │
+├───────────────────────────┤
+│  6. Close Callbacks       │
+└───────────────────────────┘</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-microchip"></i> Microtasks vs Macrotasks</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="string">'1: Main'</span>);
+
+<span class="function">setTimeout</span>(() => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'2: setTimeout (macrotask)'</span>);
+}, 0);
+
+<span class="keyword">Promise</span>.<span class="function">resolve</span>().<span class="function">then</span>(() => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'3: Promise (microtask)'</span>);
+});
+
+process.<span class="function">nextTick</span>(() => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'4: nextTick (microtask - highest)'</span>);
+});
+
+<span class="comment">// Output: 1, 4, 3, 2</span></div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-gem"></i> Async/Await (Modern Approach)</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">fetchUserData</span>() {
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> user = <span class="keyword">await</span> <span class="function">fetchUser</span>(userId);
+        <span class="keyword">const</span> posts = <span class="keyword">await</span> <span class="function">fetchPosts</span>(user.id);
+        <span class="keyword">return</span> { user, posts };
+    } <span class="keyword">catch</span> (error) {
+        <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Error:'</span>, error);
+        <span class="keyword">throw</span> error;
+    }
+}</div>
+</div>
+`
+        },
+
+        '6. HTTP Module & Creating Servers': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-globe"></i> HTTP Module</h3>
+    <p>The <code>http</code> module allows Node.js to create HTTP servers and make HTTP requests.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-server"></i> Creating a Server</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> http = <span class="function">require</span>(<span class="string">'http'</span>);
+
+<span class="keyword">const</span> server = http.<span class="function">createServer</span>((req, res) => {
+    <span class="keyword">const</span> { method, url } = req;
+
+    <span class="keyword">if</span> (url === <span class="string">'/'</span>) {
+        res.<span class="function">writeHead</span>(200, { <span class="string">'Content-Type'</span>: <span class="string">'text/plain'</span> });
+        res.<span class="function">end</span>(<span class="string">'Home Page'</span>);
+    } <span class="keyword">else</span> <span class="keyword">if</span> (url === <span class="string">'/api/users'</span>) {
+        res.<span class="function">writeHead</span>(200, { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> });
+        res.<span class="function">end</span>(<span class="keyword">JSON</span>.<span class="function">stringify</span>([{ id: 1, name: <span class="string">'John'</span> }]));
+    } <span class="keyword">else</span> {
+        res.<span class="function">writeHead</span>(404);
+        res.<span class="function">end</span>(<span class="string">'Not Found'</span>);
+    }
+});
+
+server.<span class="function">listen</span>(3000, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Server running on port 3000'</span>);
+});</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-arrow-right"></i> Making HTTP Requests</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// Using fetch (built-in)</span>
+<span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'https://api.example.com/users'</span>);
+<span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="function">json</span>();</div>
+</div>
+`
+        },
+
+        '7. Express.js Complete Guide': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-lightning"></i> What is Express.js?</h3>
+    <p><strong>Express.js</strong> is a fast, unopinionated, minimalist web framework for Node.js.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-play"></i> Basic Express Server</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> app = <span class="function">express</span>();
+
+<span class="comment">// Middleware</span>
+app.<span class="function">use</span>(express.<span class="function">json</span>());
+app.<span class="function">use</span>(express.<span class="function">urlencoded</span>({ extended: <span class="keyword">true</span> }));
+
+<span class="comment">// Routes</span>
+app.<span class="function">get</span>(<span class="string">'/'</span>, (req, res) => res.<span class="function">send</span>(<span class="string">'Hello World!'</span>));
+
+app.<span class="function">post</span>(<span class="string">'/users'</span>, (req, res) => {
+    <span class="keyword">const</span> { name } = req.<span class="variable">body</span>;
+    res.<span class="function">status</span>(201).<span class="function">json</span>({ message: <span class="string">\`User \${name} created\`</span> });
+});
+
+app.<span class="function">listen</span>(3000, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Server running on port 3000'</span>);
+});</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-sitemap"></i> Routing</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// Route parameters</span>
+app.<span class="function">get</span>(<span class="string">'/users/:id'</span>, (req, res) => {
+    res.<span class="function">json</span>({ userId: req.<span class="variable">params</span>.<span class="variable">id</span> });
+});
+
+<span class="comment">// Router (modular)</span>
+<span class="keyword">const</span> router = express.<span class="function">Router</span>();
+router.<span class="function">get</span>(<span class="string">'/'</span>, (req, res) => res.<span class="function">json</span>({ users: [] }));
+app.<span class="function">use</span>(<span class="string">'/api/users'</span>, router);</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-filter"></i> Middleware</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// Application-level middleware</span>
+app.<span class="function">use</span>((req, res, next) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`\${req.method} \${req.url}\`</span>);
+    <span class="function">next</span>();
+});
+
+<span class="comment">// Error-handling middleware</span>
+app.<span class="function">use</span>((err, req, res, next) => {
+    res.<span class="function">status</span>(500).<span class="function">json</span>({ error: err.<span class="variable">message</span> });
+});</div>
+</div>
+`
+        },
+
+        '8. MongoDB with Mongoose': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-database"></i> MongoDB & Mongoose</h3>
+    <p><strong>Mongoose</strong> is an Object Data Modeling (ODM) library for MongoDB and Node.js.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-connectdevelop"></i> Connection & Schema</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> mongoose = <span class="function">require</span>(<span class="string">'mongoose'</span>);
+
+<span class="comment">// Connect</span>
+<span class="keyword">await</span> mongoose.<span class="function">connect</span>(<span class="string">'mongodb://localhost:27017/myapp'</span>);
+
+<span class="comment">// Define schema</span>
+<span class="keyword">const</span> userSchema = <span class="keyword">new</span> mongoose.<span class="function">Schema</span>({
+    <span class="variable">name</span>: { <span class="variable">type</span>: <span class="keyword">String</span>, <span class="variable">required</span>: <span class="keyword">true</span> },
+    <span class="variable">email</span>: { <span class="variable">type</span>: <span class="keyword">String</span>, <span class="variable">unique</span>: <span class="keyword">true</span>, <span class="variable">required</span>: <span class="keyword">true</span> },
+    <span class="variable">age</span>: { <span class="variable">type</span>: <span class="keyword">Number</span>, <span class="variable">min</span>: 18, <span class="variable">max</span>: 120 }
+});
+
+<span class="keyword">const</span> User = mongoose.<span class="function">model</span>(<span class="string">'User'</span>, userSchema);</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-crud"></i> CRUD Operations</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// CREATE</span>
+<span class="keyword">const</span> user = <span class="keyword">new</span> <span class="function">User</span>({ name: <span class="string">'John'</span>, email: <span class="string">'john@test.com'</span> });
+<span class="keyword">await</span> user.<span class="function">save</span>();
+
+<span class="comment">// READ</span>
+<span class="keyword">const</span> users = <span class="keyword">await</span> User.<span class="function">find</span>();
+<span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">findById</span>(userId);
+<span class="keyword">const</span> adults = <span class="keyword">await</span> User.<span class="function">find</span>({ age: { $gte: 18 } });
+
+<span class="comment">// UPDATE</span>
+<span class="keyword">await</span> User.<span class="function">updateOne</span>(
+    { email: <span class="string">'john@test.com'</span> },
+    { $set: { age: 30 } }
+);
+
+<span class="comment">// DELETE</span>
+<span class="keyword">await</span> User.<span class="function">deleteOne</span>({ email: <span class="string">'john@test.com'</span> });</div>
+</div>
+`
+        },
+
+        '9. Authentication with JWT': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-lock"></i> JWT (JSON Web Tokens)</h3>
+    <p><strong>JWT</strong> is a compact, URL-safe token format used for authentication. Structure: <code>header.payload.signature</code></p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-key"></i> JWT Implementation</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> jwt = <span class="function">require</span>(<span class="string">'jsonwebtoken'</span>);
+<span class="keyword">const</span> bcrypt = <span class="function">require</span>(<span class="string">'bcryptjs'</span>);
+<span class="keyword">const</span> JWT_SECRET = process.<span class="variable">env</span>.<span class="variable">JWT_SECRET</span>;
+
+<span class="comment">// Generate token</span>
+<span class="keyword">const</span> token = jwt.<span class="function">sign</span>(
+    { userId: user.<span class="variable">_id</span>, email: user.<span class="variable">email</span> },
+    JWT_SECRET,
+    { expiresIn: <span class="string">'7d'</span> }
+);
+
+<span class="comment">// Verify token</span>
+<span class="keyword">try</span> {
+    <span class="keyword">const</span> decoded = jwt.<span class="function">verify</span>(token, JWT_SECRET);
+} <span class="keyword">catch</span> (error) {
+    <span class="comment">// Invalid token</span>
+}
+
+<span class="comment">// Hash password</span>
+<span class="keyword">const</span> hashedPassword = <span class="keyword">await</span> bcrypt.<span class="function">hash</span>(password, 10);
+
+<span class="comment">// Compare password</span>
+<span class="keyword">const</span> isValid = <span class="keyword">await</span> bcrypt.<span class="function">compare</span>(password, hashedPassword);</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-shield-alt"></i> Auth Middleware</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> auth = <span class="keyword">async</span> (req, res, next) => {
+    <span class="keyword">const</span> token = req.<span class="variable">headers</span>.<span class="variable">authorization</span>?.<span class="function">replace</span>(<span class="string">'Bearer '</span>, <span class="string">''</span>);
+
+    <span class="keyword">if</span> (!token) {
+        <span class="keyword">return</span> res.<span class="function">status</span>(401).<span class="function">json</span>({ error: <span class="string">'No token provided'</span> });
+    }
+
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> decoded = jwt.<span class="function">verify</span>(token, JWT_SECRET);
+        req.<span class="variable">user</span> = <span class="keyword">await</span> User.<span class="function">findById</span>(decoded.<span class="variable">userId</span>);
+        <span class="function">next</span>();
+    } <span class="keyword">catch</span> (error) {
+        res.<span class="function">status</span>(401).<span class="function">json</span>({ error: <span class="string">'Invalid token'</span> });
+    }
+};
+
+app.<span class="function">get</span>(<span class="string">'/profile'</span>, auth, (req, res) => {
+    res.<span class="function">json</span>({ user: req.<span class="variable">user</span> });
+});</div>
+</div>
+`
+        },
+
+        '10. Environment Variables & Configuration': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-cog"></i> Environment Variables</h3>
+    <p>Environment variables are key-value pairs used to configure applications without changing code.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-file"></i> .env Files</h3>
+    <div class="code-block"><span class="lang-tag">.env</span>
+NODE_ENV=development
+PORT=3000
+DB_URI=mongodb://localhost:27017/myapp
+JWT_SECRET=your-secret-key-change-this</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-terminal"></i> Using dotenv</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> dotenv = <span class="function">require</span>(<span class="string">'dotenv'</span>);
+dotenv.<span class="function">config</span>();
+
+<span class="keyword">const</span> port = process.<span class="variable">env</span>.<span class="variable">PORT</span> || 3000;
+<span class="keyword">const</span> dbUri = process.<span class="variable">env</span>.<span class="variable">DB_URI</span>;
+
+<span class="comment">// Validate required variables</span>
+<span class="keyword">const</span> required = [<span class="string">'DB_URI'</span>, <span class="string">'JWT_SECRET'</span>];
+required.<span class="function">forEach</span>(env => {
+    <span class="keyword">if</span> (!process.<span class="variable">env</span>[env]) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Error</span>(<span class="string">\`\${env} is required\`</span>);
+    }
+});</div>
+</div>
+<div class="note-box warning"><i class="fas fa-exclamation-triangle"></i> Never commit .env files to version control!</div>
+`
+        },
+
+        '11. Error Handling & Debugging': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-bug"></i> Error Handling Patterns</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// Try-Catch (Synchronous)</span>
+<span class="keyword">try</span> {
+    <span class="keyword">const</span> result = <span class="function">riskyOperation</span>();
+} <span class="keyword">catch</span> (error) {
+    <span class="function">console</span>.<span class="function">error</span>(error.<span class="variable">message</span>);
+}
+
+<span class="comment">// Async/Await with Try-Catch</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">handleRequest</span>() {
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="function">fetchData</span>();
+        <span class="keyword">return</span> data;
+    } <span class="keyword">catch</span> (error) {
+        <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Error:'</span>, error);
+        <span class="keyword">throw</span> error;
+    }
+}</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-tools"></i> Global Error Handling</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// Uncaught Exception</span>
+process.<span class="function">on</span>(<span class="string">'uncaughtException'</span>, (error) => {
+    <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Uncaught Exception:'</span>, error);
+    process.<span class="function">exit</span>(1);
+});
+
+<span class="comment">// Unhandled Rejection</span>
+process.<span class="function">on</span>(<span class="string">'unhandledRejection'</span>, (reason) => {
+    <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Unhandled Rejection:'</span>, reason);
+});
+
+<span class="comment">// Graceful Shutdown</span>
+process.<span class="function">on</span>(<span class="string">'SIGTERM'</span>, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Shutting down gracefully...'</span>);
+    server.<span class="function">close</span>(() => process.<span class="function">exit</span>(0));
+});</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-layer-group"></i> Custom Error Classes</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">class</span> <span class="function">AppError</span> <span class="keyword">extends</span> <span class="keyword">Error</span> {
+    <span class="function">constructor</span>(message, statusCode) {
+        <span class="function">super</span>(message);
+        <span class="keyword">this</span>.<span class="variable">statusCode</span> = statusCode;
+        <span class="keyword">this</span>.<span class="variable">isOperational</span> = <span class="keyword">true</span>;
+        <span class="keyword">Error</span>.<span class="function">captureStackTrace</span>(<span class="keyword">this</span>, <span class="keyword">this</span>.<span class="function">constructor</span>);
+    }
+}
+
+<span class="keyword">class</span> <span class="function">NotFoundError</span> <span class="keyword">extends</span> <span class="function">AppError</span> {
+    <span class="function">constructor</span>(message) {
+        <span class="function">super</span>(message, 404);
+        <span class="keyword">this</span>.<span class="variable">name</span> = <span class="string">'NotFoundError'</span>;
+    }
+}</div>
+</div>
+`
+        },
+
+        '12. Clustering & PM2': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-sitemap"></i> Clustering in Node.js</h3>
+    <p>The <strong>cluster</strong> module enables Node.js to take advantage of multi-core systems.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> cluster = <span class="function">require</span>(<span class="string">'cluster'</span>);
+<span class="keyword">const</span> os = <span class="function">require</span>(<span class="string">'os'</span>);
+
+<span class="keyword">if</span> (cluster.<span class="function">isMaster</span>) {
+    <span class="keyword">const</span> numCPUs = os.<span class="function">cpus</span>().<span class="variable">length</span>;
+
+    <span class="keyword">for</span> (<span class="keyword">let</span> i = 0; i < numCPUs; i++) {
+        cluster.<span class="function">fork</span>();
+    }
+
+    cluster.<span class="function">on</span>(<span class="string">'exit'</span>, (worker) => {
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`Worker \${worker.process.pid} died\`</span>);
+        cluster.<span class="function">fork</span>(); <span class="comment">// Replace dead worker</span>
+    });
+} <span class="keyword">else</span> {
+    <span class="comment">// Worker process</span>
+    <span class="function">startServer</span>();
+}</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-rocket"></i> PM2 Process Manager</h3>
+    <div class="code-block"><span class="lang-tag">Terminal</span>
+# Install PM2 globally
+npm install -g pm2
+
+# Start application
+pm2 start app.js --name "my-app"
+pm2 start app.js -i max  <span class="comment"># Cluster mode</span>
+
+# Manage processes
+pm2 list
+pm2 logs my-app
+pm2 restart my-app
+pm2 reload my-app  <span class="comment"># Zero-downtime</span>
+pm2 stop my-app
+pm2 delete my-app
+
+# Monitor
+pm2 monit
+
+# Save & startup
+pm2 save
+pm2 startup</div>
+</div>
+<div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// ecosystem.config.js</span>
+<span class="keyword">module</span>.<span class="variable">exports</span> = {
+    <span class="variable">apps</span>: [{
+        <span class="variable">name</span>: <span class="string">'my-app'</span>,
+        <span class="variable">script</span>: <span class="string">'server.js'</span>,
+        <span class="variable">instances</span>: <span class="string">'max'</span>,
+        <span class="variable">exec_mode</span>: <span class="string">'cluster'</span>,
+        <span class="variable">env</span>: { <span class="variable">NODE_ENV</span>: <span class="string">'production'</span> },
+        <span class="variable">max_memory_restart</span>: <span class="string">'1G'</span>
+    }]
+};</div>
+`
+        },
+
+        '13. Caching with Redis': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-database"></i> Redis Introduction</h3>
+    <p><strong>Redis</strong> is an in-memory data structure store used as a database, cache, and message broker.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-code"></i> Using Redis with Node.js</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> redis = <span class="function">require</span>(<span class="string">'redis'</span>);
+<span class="keyword">const</span> { promisify } = <span class="function">require</span>(<span class="string">'util'</span>);
+
+<span class="keyword">const</span> client = redis.<span class="function">createClient</span>({
+    <span class="variable">url</span>: process.<span class="variable">env</span>.<span class="variable">REDIS_URL</span> || <span class="string">'redis://localhost:6379'</span>
+});
+
+client.<span class="function">on</span>(<span class="string">'connect'</span>, () => <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Redis connected'</span>));
+
+<span class="keyword">const</span> getAsync = <span class="function">promisify</span>(client.<span class="function">get</span>).<span class="function">bind</span>(client);
+<span class="keyword">const</span> setAsync = <span class="function">promisify</span>(client.<span class="function">set</span>).<span class="function">bind</span>(client);
+
+<span class="comment">// Set with expiration (60 seconds)</span>
+<span class="keyword">await</span> <span class="function">setAsync</span>(<span class="string">'key'</span>, <span class="string">'value'</span>, <span class="string">'EX'</span>, 60);
+
+<span class="comment">// Get value</span>
+<span class="keyword">const</span> value = <span class="keyword">await</span> <span class="function">getAsync</span>(<span class="string">'key'</span>);
+
+<span class="comment">// Store JSON objects</span>
+<span class="keyword">await</span> <span class="function">setAsync</span>(<span class="string">'user:1'</span>, <span class="keyword">JSON</span>.<span class="function">stringify</span>(userData));</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-sync"></i> Caching Middleware</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> cacheMiddleware = (duration = 60) => {
+    <span class="keyword">return</span> <span class="keyword">async</span> (req, res, next) => {
+        <span class="keyword">const</span> key = <span class="string">\`cache:\${req.originalUrl}\`</span>;
+
+        <span class="keyword">try</span> {
+            <span class="keyword">const</span> cachedData = <span class="keyword">await</span> <span class="function">getAsync</span>(key);
+
+            <span class="keyword">if</span> (cachedData) {
+                <span class="keyword">return</span> res.<span class="function">json</span>(<span class="keyword">JSON</span>.<span class="function">parse</span>(cachedData));
+            }
+
+            <span class="keyword">const</span> originalSend = res.<span class="variable">json</span>;
+            res.<span class="variable">json</span> = <span class="keyword">function</span>(data) {
+                <span class="function">setAsync</span>(key, <span class="keyword">JSON</span>.<span class="function">stringify</span>(data), <span class="string">'EX'</span>, duration);
+                originalSend.<span class="function">call</span>(<span class="keyword">this</span>, data);
+            };
+
+            <span class="function">next</span>();
+        } <span class="keyword">catch</span> (error) {
+            <span class="function">next</span>();
+        }
+    };
+};
+
+app.<span class="function">get</span>(<span class="string">'/api/users'</span>, <span class="function">cacheMiddleware</span>(300), getUsers);</div>
+</div>
+`
+        },
+
+        '14. Testing with Jest & Supertest': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-vial"></i> Testing with Jest</h3>
+    <p><strong>Jest</strong> is a testing framework that provides a simple and complete testing solution.</p>
+</div>
+<div class="code-block"><span class="lang-tag">Terminal</span>
+npm install --save-dev jest supertest</div>
+<div class="note-section">
+    <h3><i class="fas fa-code"></i> Unit Tests</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="comment">// math.js</span>
+<span class="keyword">const</span> add = (a, b) => a + b;
+<span class="keyword">module</span>.<span class="variable">exports</span> = { add };
+
+<span class="comment">// math.test.js</span>
+<span class="keyword">const</span> { add } = <span class="function">require</span>(<span class="string">'./math'</span>);
+
+<span class="function">test</span>(<span class="string">'adds 1 + 2 to equal 3'</span>, () => {
+    <span class="function">expect</span>(<span class="function">add</span>(1, 2)).<span class="function">toBe</span>(3);
+});
+
+<span class="function">test</span>(<span class="string">'adds negative numbers'</span>, () => {
+    <span class="function">expect</span>(<span class="function">add</span>(-1, -2)).<span class="function">toBe</span>(-3);
+});</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-api"></i> API Testing with Supertest</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> request = <span class="function">require</span>(<span class="string">'supertest'</span>);
+<span class="keyword">const</span> app = <span class="function">require</span>(<span class="string">'../app'</span>);
+
+<span class="function">describe</span>(<span class="string">'User API'</span>, () => {
+    <span class="function">test</span>(<span class="string">'GET /users returns 200'</span>, <span class="keyword">async</span> () => {
+        <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">request</span>(app)
+            .<span class="function">get</span>(<span class="string">'/users'</span>)
+            .<span class="function">expect</span>(200);
+
+        <span class="function">expect</span>(response.<span class="variable">body</span>).<span class="function">toHaveProperty</span>(<span class="string">'users'</span>);
+    });
+
+    <span class="function">test</span>(<span class="string">'POST /users creates a user'</span>, <span class="keyword">async</span> () => {
+        <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">request</span>(app)
+            .<span class="function">post</span>(<span class="string">'/users'</span>)
+            .<span class="function">send</span>({ name: <span class="string">'John'</span>, email: <span class="string">'john@test.com'</span> })
+            .<span class="function">expect</span>(201);
+    });
+});</div>
+</div>
+`
+        },
+
+        '15. Security Best Practices': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-shield-alt"></i> Security Checklist</h3>
+    <ul>
+        <li>✅ Use Helmet.js for security headers</li>
+        <li>✅ Enable CORS only for trusted origins</li>
+        <li>✅ Use HTTPS in production</li>
+        <li>✅ Hash passwords with bcrypt (10-12 rounds)</li>
+        <li>✅ Use JWT with short expiration</li>
+        <li>✅ Store secrets in environment variables</li>
+        <li>✅ Implement rate limiting</li>
+        <li>✅ Use HTTP-only cookies for tokens</li>
+        <li>✅ Validate all incoming data</li>
+        <li>✅ Keep dependencies updated (npm audit)</li>
+        <li>✅ Implement proper logging</li>
+        <li>✅ Use SQL/NoSQL injection prevention</li>
+    </ul>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-helmet-safety"></i> Helmet.js</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> helmet = <span class="function">require</span>(<span class="string">'helmet'</span>);
+app.<span class="function">use</span>(<span class="function">helmet</span>());</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-shield-virus"></i> Rate Limiting</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> rateLimit = <span class="function">require</span>(<span class="string">'express-rate-limit'</span>);
+
+<span class="keyword">const</span> limiter = <span class="function">rateLimit</span>({
+    <span class="variable">windowMs</span>: 15 * 60 * 1000, <span class="comment">// 15 minutes</span>
+    <span class="variable">max</span>: 100, <span class="comment">// 100 requests per window</span>
+    <span class="variable">message</span>: <span class="string">'Too many requests'</span>
+});
+
+app.<span class="function">use</span>(<span class="string">'/api'</span>, limiter);
+
+<span class="comment">// Stricter for auth routes</span>
+<span class="keyword">const</span> authLimiter = <span class="function">rateLimit</span>({
+    <span class="variable">windowMs</span>: 15 * 60 * 1000,
+    <span class="variable">max</span>: 5 <span class="comment">// Only 5 login attempts</span>
+});
+app.<span class="function">use</span>(<span class="string">'/api/auth/login'</span>, authLimiter);</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-cookie"></i> Cookie Security</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+res.<span class="function">cookie</span>(<span class="string">'token'</span>, token, {
+    <span class="variable">httpOnly</span>: <span class="keyword">true</span>,   <span class="comment">// Cannot be accessed via JS</span>
+    <span class="variable">secure</span>: process.<span class="variable">env</span>.<span class="variable">NODE_ENV</span> === <span class="string">'production'</span>,
+    <span class="variable">sameSite</span>: <span class="string">'strict'</span>, <span class="comment">// CSRF protection</span>
+    <span class="variable">maxAge</span>: 7 * 24 * 60 * 60 * 1000 <span class="comment">// 7 days</span>
+});</div>
+</div>
+<div class="note-box warning"><i class="fas fa-exclamation-triangle"></i> Always use HTTPS in production and never expose secrets in code.</div>
+`
+        },
+
+        '16. Deployment & Production': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-cloud-upload-alt"></i> Production Deployment Checklist</h3>
+    <ul>
+        <li>✅ Set NODE_ENV=production</li>
+        <li>✅ Use environment variables</li>
+        <li>✅ Enable compression (gzip/brotli)</li>
+        <li>✅ Implement caching strategies</li>
+        <li>✅ Use PM2 for process management</li>
+        <li>✅ Set up logging with rotation</li>
+        <li>✅ Configure monitoring and alerts</li>
+        <li>✅ Use HTTPS with SSL certificates</li>
+        <li>✅ Set up database replication/backups</li>
+        <li>✅ Implement health checks</li>
+        <li>✅ Use load balancer (Nginx, ELB)</li>
+        <li>✅ Enable CORS properly</li>
+    </ul>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-docker"></i> Docker Deployment</h3>
+    <div class="code-block"><span class="lang-tag">Dockerfile</span>
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-server"></i> Nginx Reverse Proxy</h3>
+    <div class="code-block"><span class="lang-tag">nginx</span>
+server {
+    listen 80;
+    server_name api.example.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-chart-line"></i> Health Check Endpoint</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+app.<span class="function">get</span>(<span class="string">'/health'</span>, (req, res) => {
+    res.<span class="function">json</span>({
+        <span class="variable">status</span>: <span class="string">'OK'</span>,
+        <span class="variable">timestamp</span>: <span class="keyword">new</span> <span class="keyword">Date</span>().<span class="function">toISOString</span>(),
+        <span class="variable">uptime</span>: process.<span class="function">uptime</span>(),
+        <span class="variable">memory</span>: process.<span class="function">memoryUsage</span>(),
+        <span class="variable">pid</span>: process.<span class="variable">pid</span>
+    });
+});</div>
+</div>
+`
+        },
+
+        '17. Buffer & Streams': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-database"></i> Buffer</h3>
+    <p><strong>Buffer</strong> is a global class for handling binary data, useful when working with files or network operations.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> buf1 = Buffer.<span class="function">from</span>(<span class="string">'Hello'</span>);
+<span class="keyword">const</span> buf2 = Buffer.<span class="function">alloc</span>(10);
+<span class="keyword">const</span> buf3 = Buffer.<span class="function">allocUnsafe</span>(10);
+
+buf1.<span class="function">toString</span>(); <span class="comment">// 'Hello'</span>
+buf1.<span class="function">write</span>(<span class="string">'Hi'</span>);
+<span class="function">console</span>.<span class="function">log</span>(buf1[0]); <span class="comment">// 72 (ASCII 'H')</span>
+
+<span class="comment">// Concatenate buffers</span>
+<span class="keyword">const</span> combined = Buffer.<span class="function">concat</span>([buf1, Buffer.<span class="function">from</span>(<span class="string">' World'</span>)]);
+<span class="function">console</span>.<span class="function">log</span>(combined.<span class="function">toString</span>()); <span class="comment">// 'Hi World'</span></div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-water"></i> Streams</h3>
+    <p><strong>Streams</strong> handle data piece by piece, perfect for large files or network data.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> fs = <span class="function">require</span>(<span class="string">'fs'</span>);
+<span class="keyword">const</span> { pipeline } = <span class="function">require</span>(<span class="string">'stream'</span>);
+
+<span class="comment">// Readable stream</span>
+<span class="keyword">const</span> readStream = fs.<span class="function">createReadStream</span>(<span class="string">'large-file.txt'</span>, {
+    <span class="variable">encoding</span>: <span class="string">'utf8'</span>,
+    <span class="variable">highWaterMark</span>: 64 * 1024 <span class="comment">// 64KB chunks</span>
+});
+
+readStream.<span class="function">on</span>(<span class="string">'data'</span>, (chunk) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Chunk received:'</span>, chunk.<span class="variable">length</span>);
+});
+
+readStream.<span class="function">on</span>(<span class="string">'end'</span>, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'File reading completed'</span>);
+});
+
+<span class="comment">// Writable stream</span>
+<span class="keyword">const</span> writeStream = fs.<span class="function">createWriteStream</span>(<span class="string">'output.txt'</span>);
+writeStream.<span class="function">write</span>(<span class="string">'Hello'</span>);
+writeStream.<span class="function">write</span>(<span class="string">' World'</span>);
+writeStream.<span class="function">end</span>();
+
+<span class="comment">// Pipeline (safe piping with error handling)</span>
+<span class="function">pipeline</span>(
+    fs.<span class="function">createReadStream</span>(<span class="string">'input.txt'</span>),
+    fs.<span class="function">createWriteStream</span>(<span class="string">'output.txt'</span>),
+    (err) => {
+        <span class="keyword">if</span> (err) <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Pipeline failed:'</span>, err);
+        <span class="keyword">else</span> <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Pipeline succeeded'</span>);
+    }
+);
+
+<span class="comment">// Transform stream</span>
+<span class="keyword">const</span> { Transform } = <span class="function">require</span>(<span class="string">'stream'</span>);
+<span class="keyword">const</span> upperCaseTransform = <span class="keyword">new</span> <span class="function">Transform</span>({
+    <span class="function">transform</span>(chunk, encoding, callback) {
+        callback(<span class="keyword">null</span>, chunk.<span class="function">toString</span>().<span class="function">toUpperCase</span>());
+    }
+});</div>
+</div>
+`
+        },
+
+        '18. Events Module (EventEmitter)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-bolt"></i> EventEmitter</h3>
+    <p>The <strong>EventEmitter</strong> is the core of Node.js event-driven architecture. Most built-in modules inherit from it.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> EventEmitter = <span class="function">require</span>(<span class="string">'events'</span>);
+<span class="keyword">const</span> emitter = <span class="keyword">new</span> <span class="function">EventEmitter</span>();
+
+<span class="comment">// Add listeners</span>
+emitter.<span class="function">on</span>(<span class="string">'userLogin'</span>, (user) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`\${user} logged in\`</span>);
+});
+
+emitter.<span class="function">once</span>(<span class="string">'onceEvent'</span>, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'This runs only once'</span>);
+});
+
+<span class="comment">// Emit events</span>
+emitter.<span class="function">emit</span>(<span class="string">'userLogin'</span>, <span class="string">'John'</span>);
+emitter.<span class="function">emit</span>(<span class="string">'onceEvent'</span>);
+emitter.<span class="function">emit</span>(<span class="string">'onceEvent'</span>); <span class="comment">// No output (only runs once)</span>
+
+<span class="comment">// Remove listeners</span>
+<span class="keyword">const</span> handler = () => <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Hello'</span>);
+emitter.<span class="function">on</span>(<span class="string">'event'</span>, handler);
+emitter.<span class="function">removeListener</span>(<span class="string">'event'</span>, handler);
+emitter.<span class="function">removeAllListeners</span>(<span class="string">'event'</span>);
+
+<span class="comment">// Inherit from EventEmitter</span>
+<span class="keyword">class</span> <span class="function">MyEmitter</span> <span class="keyword">extends</span> EventEmitter {
+    <span class="function">doSomething</span>() {
+        <span class="keyword">this</span>.<span class="function">emit</span>(<span class="string">'done'</span>, { <span class="variable">result</span>: <span class="string">'success'</span> });
+    }
+}
+
+<span class="keyword">const</span> myEmitter = <span class="keyword">new</span> <span class="function">MyEmitter</span>();
+myEmitter.<span class="function">on</span>(<span class="string">'done'</span>, (data) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Result:'</span>, data.<span class="variable">result</span>);
+});
+myEmitter.<span class="function">doSomething</span>();</div>
+</div>
+`
+        },
+
+        '19. Child Processes': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-code-branch"></i> Child Process Module</h3>
+    <p>The <strong>child_process</strong> module allows you to run external processes and shell commands from Node.js.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> { spawn, exec, execFile, fork } = <span class="function">require</span>(<span class="string">'child_process'</span>);
+
+<span class="comment">// 1. spawn - streams output (best for large outputs)</span>
+<span class="keyword">const</span> child = <span class="function">spawn</span>(<span class="string">'ls'</span>, [<span class="string">'-la'</span>]);
+child.stdout.<span class="function">on</span>(<span class="string">'data'</span>, (data) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Output:'</span>, data.<span class="function">toString</span>());
+});
+child.stderr.<span class="function">on</span>(<span class="string">'data'</span>, (data) => {
+    <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Error:'</span>, data.<span class="function">toString</span>());
+});
+child.<span class="function">on</span>(<span class="string">'close'</span>, (code) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`Child process exited with code \${code}\`</span>);
+});
+
+<span class="comment">// 2. exec - buffers output (best for small outputs)</span>
+<span class="function">exec</span>(<span class="string">'node -v'</span>, (error, stdout, stderr) => {
+    <span class="keyword">if</span> (error) <span class="keyword">return</span> <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Error:'</span>, error);
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Node version:'</span>, stdout);
+});
+
+<span class="comment">// 3. execFile - execute a file directly</span>
+<span class="function">execFile</span>(<span class="string">'./script.sh'</span>, (error, stdout) => {
+    <span class="keyword">if</span> (error) <span class="keyword">return</span> <span class="function">console</span>.<span class="function">error</span>(error);
+    <span class="function">console</span>.<span class="function">log</span>(stdout);
+});
+
+<span class="comment">// 4. fork - for Node.js child processes (with IPC)</span>
+<span class="keyword">const</span> childProcess = <span class="function">fork</span>(<span class="string">'child.js'</span>);
+childProcess.<span class="function">on</span>(<span class="string">'message'</span>, (message) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Received from child:'</span>, message);
+});
+childProcess.<span class="function">send</span>({ hello: <span class="string">'world'</span> });</div>
+</div>
+`
+        },
+
+        '20. URL & Query String': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-link"></i> URL Module</h3>
+    <p>The <strong>URL</strong> module provides utilities for URL parsing and manipulation.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> url = <span class="function">require</span>(<span class="string">'url'</span>);
+<span class="keyword">const</span> querystring = <span class="function">require</span>(<span class="string">'querystring'</span>);
+
+<span class="comment">// URL parsing</span>
+<span class="keyword">const</span> myUrl = <span class="keyword">new</span> <span class="function">URL</span>(<span class="string">'https://example.com:8080/path?name=John&age=30#section'</span>);
+<span class="function">console</span>.<span class="function">log</span>({
+    <span class="variable">protocol</span>: myUrl.<span class="variable">protocol</span>,   <span class="comment">// 'https:'</span>
+    <span class="variable">hostname</span>: myUrl.<span class="variable">hostname</span>, <span class="comment">// 'example.com'</span>
+    <span class="variable">port</span>: myUrl.<span class="variable">port</span>,       <span class="comment">// '8080'</span>
+    <span class="variable">pathname</span>: myUrl.<span class="variable">pathname</span>, <span class="comment">// '/path'</span>
+    <span class="variable">search</span>: myUrl.<span class="variable">search</span>,     <span class="comment">// '?name=John&age=30'</span>
+    <span class="variable">hash</span>: myUrl.<span class="variable">hash</span>         <span class="comment">// '#section'</span>
+});
+
+<span class="comment">// Query parameters</span>
+<span class="keyword">const</span> params = myUrl.<span class="variable">searchParams</span>;
+params.<span class="function">get</span>(<span class="string">'name'</span>);     <span class="comment">// 'John'</span>
+params.<span class="function">get</span>(<span class="string">'age'</span>);      <span class="comment">// '30'</span>
+params.<span class="function">has</span>(<span class="string">'name'</span>);      <span class="comment">// true</span>
+params.<span class="function">set</span>(<span class="string">'city'</span>, <span class="string">'NYC'</span>); <span class="comment">// Add parameter</span>
+params.<span class="function">delete</span>(<span class="string">'age'</span>);      <span class="comment">// Remove parameter</span>
+
+<span class="comment">// Query string parsing (legacy)</span>
+<span class="keyword">const</span> query = querystring.<span class="function">parse</span>(<span class="string">'name=John&age=30'</span>);
+<span class="comment">// { name: 'John', age: '30' }</span>
+
+<span class="keyword">const</span> str = querystring.<span class="function">stringify</span>({ name: <span class="string">'John'</span>, age: 30 });
+<span class="comment">// 'name=John&age=30'</span></div>
+</div>
+`
+        },
+
+        '21. Middleware (Express)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-filter"></i> Express Middleware</h3>
+    <p>Middleware functions have access to the request and response objects and the next function in the cycle.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> app = <span class="function">express</span>();
+
+<span class="comment">// 1. Application-level middleware</span>
+app.<span class="function">use</span>((req, res, next) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">\`\${req.method} \${req.url} - \${new Date().toISOString()}\`</span>);
+    <span class="function">next</span>(); <span class="comment">// Pass control to the next middleware</span>
+});
+
+<span class="comment">// 2. Built-in middleware</span>
+app.<span class="function">use</span>(express.<span class="function">json</span>()); <span class="comment">// Parse JSON bodies</span>
+app.<span class="function">use</span>(express.<span class="function">urlencoded</span>({ extended: <span class="keyword">true</span> })); <span class="comment">// Parse URL-encoded bodies</span>
+app.<span class="function">use</span>(express.<span class="function">static</span>(<span class="string">'public'</span>)); <span class="comment">// Serve static files</span>
+
+<span class="comment">// 3. Route-specific middleware</span>
+app.<span class="function">get</span>(<span class="string">'/admin'</span>, (req, res, next) => {
+    <span class="keyword">if</span> (!req.<span class="variable">headers</span>.<span class="variable">authorization</span>) {
+        <span class="keyword">return</span> res.<span class="function">status</span>(401).<span class="function">json</span>({ error: <span class="string">'Unauthorized'</span> });
+    }
+    <span class="function">next</span>();
+}, (req, res) => {
+    res.<span class="function">json</span>({ message: <span class="string">'Admin access granted'</span> });
+});
+
+<span class="comment">// 4. Error-handling middleware (4 parameters)</span>
+app.<span class="function">use</span>((err, req, res, next) => {
+    <span class="function">console</span>.<span class="function">error</span>(err.<span class="variable">stack</span>);
+    res.<span class="function">status</span>(500).<span class="function">json</span>({
+        <span class="variable">error</span>: <span class="string">'Something went wrong!'</span>,
+        <span class="variable">message</span>: process.<span class="variable">env</span>.<span class="variable">NODE_ENV</span> === <span class="string">'development'</span> ? err.<span class="variable">message</span> : <span class="string">'Internal Server Error'</span>
+    });
+});
+
+<span class="comment">// 5. Third-party middleware</span>
+<span class="keyword">const</span> cors = <span class="function">require</span>(<span class="string">'cors'</span>);
+<span class="keyword">const</span> morgan = <span class="function">require</span>(<span class="string">'morgan'</span>);
+app.<span class="function">use</span>(<span class="function">cors</span>());
+app.<span class="function">use</span>(<span class="function">morgan</span>(<span class="string">'combined'</span>));</div>
+</div>
+`
+        },
+
+        '22. File Uploads (Multer)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-upload"></i> File Uploads with Multer</h3>
+    <p><strong>Multer</strong> is a middleware for handling multipart/form-data, primarily used for file uploads.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> multer = <span class="function">require</span>(<span class="string">'multer'</span>);
+<span class="keyword">const</span> path = <span class="function">require</span>(<span class="string">'path'</span>);
+
+<span class="comment">// Storage configuration</span>
+<span class="keyword">const</span> storage = multer.<span class="function">diskStorage</span>({
+    <span class="variable">destination</span>: (req, file, cb) => {
+        cb(<span class="keyword">null</span>, <span class="string">'uploads/'</span>);
+    },
+    <span class="variable">filename</span>: (req, file, cb) => {
+        cb(<span class="keyword">null</span>, Date.<span class="function">now</span>() + path.<span class="function">extname</span>(file.<span class="variable">originalname</span>));
+    }
+});
+
+<span class="comment">// File filter</span>
+<span class="keyword">const</span> fileFilter = (req, file, cb) => {
+    <span class="keyword">const</span> allowedTypes = [<span class="string">'image/jpeg'</span>, <span class="string">'image/png'</span>, <span class="string">'image/gif'</span>];
+    <span class="keyword">if</span> (allowedTypes.<span class="function">includes</span>(file.<span class="variable">mimetype</span>)) {
+        cb(<span class="keyword">null</span>, <span class="keyword">true</span>);
+    } <span class="keyword">else</span> {
+        cb(<span class="keyword">new</span> <span class="keyword">Error</span>(<span class="string">'Invalid file type'</span>), <span class="keyword">false</span>);
+    }
+};
+
+<span class="keyword">const</span> upload = <span class="function">multer</span>({
+    <span class="variable">storage</span>: storage,
+    <span class="variable">limits</span>: { <span class="variable">fileSize</span>: 1024 * 1024 * 5 }, <span class="comment">// 5MB</span>
+    <span class="variable">fileFilter</span>: fileFilter
+});
+
+<span class="comment">// Single file upload</span>
+app.<span class="function">post</span>(<span class="string">'/upload'</span>, upload.<span class="function">single</span>(<span class="string">'file'</span>), (req, res) => {
+    <span class="keyword">if</span> (!req.<span class="variable">file</span>) {
+        <span class="keyword">return</span> res.<span class="function">status</span>(400).<span class="function">json</span>({ error: <span class="string">'No file uploaded'</span> });
+    }
+    res.<span class="function">json</span>({
+        <span class="variable">message</span>: <span class="string">'File uploaded successfully'</span>,
+        <span class="variable">file</span>: {
+            <span class="variable">filename</span>: req.<span class="variable">file</span>.<span class="variable">filename</span>,
+            <span class="variable">originalName</span>: req.<span class="variable">file</span>.<span class="variable">originalname</span>,
+            <span class="variable">size</span>: req.<span class="variable">file</span>.<span class="variable">size</span>
+        }
+    });
+});
+
+<span class="comment">// Multiple files upload</span>
+app.<span class="function">post</span>(<span class="string">'/uploads'</span>, upload.<span class="function">array</span>(<span class="string">'files'</span>, 5), (req, res) => {
+    res.<span class="function">json</span>({
+        <span class="variable">message</span>: <span class="string">'Files uploaded successfully'</span>,
+        <span class="variable">files</span>: req.<span class="variable">files</span>.<span class="function">map</span>(f => ({
+            <span class="variable">filename</span>: f.<span class="variable">filename</span>,
+            <span class="variable">originalName</span>: f.<span class="variable">originalname</span>,
+            <span class="variable">size</span>: f.<span class="variable">size</span>
+        }))
+    });
+});</div>
+</div>
+`
+        },
+
+        '23. WebSockets (Socket.io)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-bolt"></i> WebSockets with Socket.io</h3>
+    <p><strong>Socket.io</strong> enables real-time bidirectional communication between client and server.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> http = <span class="function">require</span>(<span class="string">'http'</span>);
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> socketIo = <span class="function">require</span>(<span class="string">'socket.io'</span>);
+
+<span class="keyword">const</span> app = <span class="function">express</span>();
+<span class="keyword">const</span> server = http.<span class="function">createServer</span>(app);
+<span class="keyword">const</span> io = <span class="function">socketIo</span>(server, {
+    <span class="variable">cors</span>: { <span class="variable">origin</span>: <span class="string">'*'</span> }
+});
+
+<span class="comment">// Socket connection handling</span>
+io.<span class="function">on</span>(<span class="string">'connection'</span>, (socket) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'New client connected:'</span>, socket.<span class="variable">id</span>);
+
+    <span class="comment">// Welcome message</span>
+    socket.<span class="function">emit</span>(<span class="string">'welcome'</span>, {
+        <span class="variable">message</span>: <span class="string">'Welcome to the server!'</span>,
+        <span class="variable">timestamp</span>: <span class="keyword">new</span> <span class="keyword">Date</span>().<span class="function">toISOString</span>()
+    });
+
+    <span class="comment">// Handle incoming messages</span>
+    socket.<span class="function">on</span>(<span class="string">'message'</span>, (data) => {
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Received message:'</span>, data);
+
+        <span class="comment">// Broadcast to all clients</span>
+        io.<span class="function">emit</span>(<span class="string">'broadcast'</span>, {
+            <span class="variable">from</span>: socket.<span class="variable">id</span>,
+            <span class="variable">message</span>: data.<span class="variable">text</span>,
+            <span class="variable">timestamp</span>: <span class="keyword">new</span> <span class="keyword">Date</span>().<span class="function">toISOString</span>()
+        });
+    });
+
+    <span class="comment">// Handle disconnection</span>
+    socket.<span class="function">on</span>(<span class="string">'disconnect'</span>, () => {
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Client disconnected:'</span>, socket.<span class="variable">id</span>);
+        io.<span class="function">emit</span>(<span class="string">'userDisconnected'</span>, socket.<span class="variable">id</span>);
+    });
+});
+
+server.<span class="function">listen</span>(3000, () => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Server running on port 3000'</span>);
+});</div>
+</div>
+`
+        },
+
+        '24. SQL Databases (PostgreSQL, MySQL)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-table"></i> SQL Databases</h3>
+    <p>Node.js works with SQL databases using drivers or ORMs like Sequelize, TypeORM, Knex.</p>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-database"></i> PostgreSQL with pg</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> { Pool } = <span class="function">require</span>(<span class="string">'pg'</span>);
+
+<span class="keyword">const</span> pool = <span class="keyword">new</span> <span class="function">Pool</span>({
+    <span class="variable">user</span>: process.<span class="variable">env</span>.<span class="variable">DB_USER</span>,
+    <span class="variable">host</span>: process.<span class="variable">env</span>.<span class="variable">DB_HOST</span>,
+    <span class="variable">database</span>: process.<span class="variable">env</span>.<span class="variable">DB_NAME</span>,
+    <span class="variable">password</span>: process.<span class="variable">env</span>.<span class="variable">DB_PASSWORD</span>,
+    <span class="variable">port</span>: 5432
+});
+
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">getUsers</span>() {
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> result = <span class="keyword">await</span> pool.<span class="function">query</span>(<span class="string">'SELECT * FROM users'</span>);
+        <span class="keyword">return</span> result.<span class="variable">rows</span>;
+    } <span class="keyword">catch</span> (error) {
+        <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Database error:'</span>, error);
+        <span class="keyword">throw</span> error;
+    }
+}
+
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">createUser</span>(name, email) {
+    <span class="keyword">const</span> result = <span class="keyword">await</span> pool.<span class="function">query</span>(
+        <span class="string">'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *'</span>,
+        [name, email]
+    );
+    <span class="keyword">return</span> result.<span class="variable">rows</span>[0];
+}</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-sequelize"></i> Sequelize ORM</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> { Sequelize, DataTypes } = <span class="function">require</span>(<span class="string">'sequelize'</span>);
+
+<span class="keyword">const</span> sequelize = <span class="keyword">new</span> <span class="function">Sequelize</span>({
+    <span class="variable">dialect</span>: <span class="string">'postgres'</span>,
+    <span class="variable">host</span>: process.<span class="variable">env</span>.<span class="variable">DB_HOST</span>,
+    <span class="variable">username</span>: process.<span class="variable">env</span>.<span class="variable">DB_USER</span>,
+    <span class="variable">password</span>: process.<span class="variable">env</span>.<span class="variable">DB_PASSWORD</span>,
+    <span class="variable">database</span>: process.<span class="variable">env</span>.<span class="variable">DB_NAME</span>
+});
+
+<span class="keyword">const</span> User = sequelize.<span class="function">define</span>(<span class="string">'User'</span>, {
+    <span class="variable">name</span>: { <span class="variable">type</span>: DataTypes.<span class="variable">STRING</span>, <span class="variable">allowNull</span>: <span class="keyword">false</span> },
+    <span class="variable">email</span>: { <span class="variable">type</span>: DataTypes.<span class="variable">STRING</span>, <span class="variable">unique</span>: <span class="keyword">true</span> }
+});
+
+<span class="keyword">await</span> sequelize.<span class="function">sync</span>();
+<span class="keyword">const</span> users = <span class="keyword">await</span> User.<span class="function">findAll</span>();
+<span class="keyword">const</span> user = <span class="keyword">await</span> User.<span class="function">create</span>({ name: <span class="string">'John'</span>, email: <span class="string">'john@test.com'</span> });</div>
+</div>
+`
+        },
+
+        '25. Email Services (Nodemailer)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-envelope"></i> Email with Nodemailer</h3>
+    <p><strong>Nodemailer</strong> is a module for sending emails from Node.js applications.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> nodemailer = <span class="function">require</span>(<span class="string">'nodemailer'</span>);
+
+<span class="comment">// Create transporter</span>
+<span class="keyword">const</span> transporter = nodemailer.<span class="function">createTransport</span>({
+    <span class="variable">host</span>: process.<span class="variable">env</span>.<span class="variable">SMTP_HOST</span> || <span class="string">'smtp.gmail.com'</span>,
+    <span class="variable">port</span>: process.<span class="variable">env</span>.<span class="variable">SMTP_PORT</span> || 587,
+    <span class="variable">secure</span>: <span class="keyword">false</span>,
+    <span class="variable">auth</span>: {
+        <span class="variable">user</span>: process.<span class="variable">env</span>.<span class="variable">SMTP_USER</span>,
+        <span class="variable">pass</span>: process.<span class="variable">env</span>.<span class="variable">SMTP_PASS</span>
+    }
+});
+
+<span class="comment">// Send email</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">sendEmail</span>(to, subject, html) {
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> info = <span class="keyword">await</span> transporter.<span class="function">sendMail</span>({
+            <span class="variable">from</span>: <span class="string">'"My App" <noreply@example.com>'</span>,
+            <span class="variable">to</span>: to,
+            <span class="variable">subject</span>: subject,
+            <span class="variable">html</span>: html,
+            <span class="variable">text</span>: html.<span class="function">replace</span>(/<[^>]*>/g, <span class="string">''</span>) <span class="comment">// Plain text version</span>
+        });
+
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Email sent:'</span>, info.<span class="variable">messageId</span>);
+        <span class="keyword">return</span> { success: <span class="keyword">true</span>, messageId: info.<span class="variable">messageId</span> };
+    } <span class="keyword">catch</span> (error) {
+        <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Email error:'</span>, error);
+        <span class="keyword">throw</span> error;
+    }
+}
+
+<span class="comment">// Usage</span>
+<span class="keyword">await</span> <span class="function">sendEmail</span>(
+    <span class="string">'user@example.com'</span>,
+    <span class="string">'Welcome to Our App!'</span>,
+    <span class="string">'<h1>Welcome!</h1><p>Thank you for signing up.</p>'</span>
+);</div>
+</div>
+`
+        },
+
+        '26. Logging (Winston, Morgan)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-file-alt"></i> Logging with Winston</h3>
+    <p><strong>Winston</strong> is a popular logging library with support for multiple transports.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> winston = <span class="function">require</span>(<span class="string">'winston'</span>);
+
+<span class="keyword">const</span> logger = winston.<span class="function">createLogger</span>({
+    <span class="variable">level</span>: process.<span class="variable">env</span>.<span class="variable">LOG_LEVEL</span> || <span class="string">'info'</span>,
+    <span class="variable">format</span>: winston.<span class="function">format</span>.<span class="function">combine</span>(
+        winston.<span class="function">format</span>.<span class="function">timestamp</span>(),
+        winston.<span class="function">format</span>.<span class="function">json</span>()
+    ),
+    <span class="variable">transports</span>: [
+        <span class="comment">// File transport for errors</span>
+        <span class="keyword">new</span> winston.<span class="function">transports</span>.<span class="function">File</span>({
+            <span class="variable">filename</span>: <span class="string">'logs/error.log'</span>,
+            <span class="variable">level</span>: <span class="string">'error'</span>,
+            <span class="variable">maxsize</span>: 10485760, <span class="comment">// 10MB</span>
+            <span class="variable">maxFiles</span>: 5
+        }),
+        <span class="comment">// File transport for all logs</span>
+        <span class="keyword">new</span> winston.<span class="function">transports</span>.<span class="function">File</span>({
+            <span class="variable">filename</span>: <span class="string">'logs/combined.log'</span>,
+            <span class="variable">maxsize</span>: 10485760,
+            <span class="variable">maxFiles</span>: 5
+        }),
+        <span class="comment">// Console transport for development</span>
+        <span class="keyword">new</span> winston.<span class="function">transports</span>.<span class="function">Console</span>({
+            <span class="variable">format</span>: winston.<span class="function">format</span>.<span class="function">simple</span>()
+        })
+    ]
+});
+
+<span class="comment">// Logging methods</span>
+logger.<span class="function">info</span>(<span class="string">'Server started'</span>, { <span class="variable">port</span>: 3000 });
+logger.<span class="function">warn</span>(<span class="string">'Low memory warning'</span>, { <span class="variable">memory</span>: <span class="string">'80%'</span> });
+logger.<span class="function">error</span>(<span class="string">'Database connection failed'</span>, { <span class="variable">error</span>: err });</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-http"></i> Morgan HTTP Logger</h3>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> morgan = <span class="function">require</span>(<span class="string">'morgan'</span>);
+
+<span class="comment">// Stream to Winston</span>
+<span class="keyword">const</span> stream = {
+    <span class="function">write</span>: (message) => logger.<span class="function">info</span>(message.<span class="function">trim</span>())
+};
+
+app.<span class="function">use</span>(<span class="function">morgan</span>(<span class="string">'combined'</span>, { <span class="variable">stream</span>: stream }));
+
+<span class="comment">// Or simple console logging</span>
+app.<span class="function">use</span>(<span class="function">morgan</span>(<span class="string">'dev'</span>));</div>
+</div>
+`
+        },
+
+        '27. Background Jobs (Bull)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-clock"></i> Background Jobs with Bull</h3>
+    <p><strong>Bull</strong> is a Redis-based queue system for handling background jobs and processing.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> Queue = <span class="function">require</span>(<span class="string">'bull'</span>);
+
+<span class="comment">// Create a queue</span>
+<span class="keyword">const</span> emailQueue = <span class="keyword">new</span> <span class="function">Queue</span>(<span class="string">'email queue'</span>, {
+    <span class="variable">redis</span>: {
+        <span class="variable">host</span>: <span class="string">'localhost'</span>,
+        <span class="variable">port</span>: 6379
+    }
+});
+
+<span class="comment">// Add a job</span>
+<span class="keyword">const</span> job = <span class="keyword">await</span> emailQueue.<span class="function">add</span>(
+    {
+        <span class="variable">to</span>: <span class="string">'user@example.com'</span>,
+        <span class="variable">subject</span>: <span class="string">'Welcome'</span>,
+        <span class="variable">body</span>: <span class="string">'Thank you for joining!'</span>
+    },
+    {
+        <span class="variable">attempts</span>: 3,           <span class="comment">// Retry 3 times on failure</span>
+        <span class="variable">delay</span>: 5000,            <span class="comment">// 5 second delay</span>
+        <span class="variable">removeOnComplete</span>: <span class="keyword">true</span>  <span class="comment">// Remove completed jobs</span>
+    }
+);
+
+<span class="comment">// Process jobs</span>
+emailQueue.<span class="function">process</span>(<span class="keyword">async</span> (job) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Processing job:'</span>, job.<span class="variable">id</span>, job.<span class="variable">data</span>);
+
+    <span class="comment">// Simulate work</span>
+    <span class="keyword">await</span> <span class="function">sendEmail</span>(job.<span class="variable">data</span>.<span class="variable">to</span>, job.<span class="variable">data</span>.<span class="variable">subject</span>, job.<span class="variable">data</span>.<span class="variable">body</span>);
+
+    <span class="keyword">return</span> { success: <span class="keyword">true</span> };
+});
+
+<span class="comment">// Event listeners</span>
+emailQueue.<span class="function">on</span>(<span class="string">'completed'</span>, (job, result) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Job completed:'</span>, job.<span class="variable">id</span>, result);
+});
+
+emailQueue.<span class="function">on</span>(<span class="string">'failed'</span>, (job, err) => {
+    <span class="function">console</span>.<span class="function">error</span>(<span class="string">'Job failed:'</span>, job.<span class="variable">id</span>, err);
+});
+
+emailQueue.<span class="function">on</span>(<span class="string">'progress'</span>, (job, progress) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Job progress:'</span>, job.<span class="variable">id</span>, progress);
+});</div>
+</div>
+`
+        },
+
+        '28. Rate Limiting & Compression': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-tachometer-alt"></i> Rate Limiting</h3>
+    <p>Rate limiting protects your API from abuse and prevents DoS attacks.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> rateLimit = <span class="function">require</span>(<span class="string">'express-rate-limit'</span>);
+
+<span class="comment">// General rate limiter</span>
+<span class="keyword">const</span> limiter = <span class="function">rateLimit</span>({
+    <span class="variable">windowMs</span>: 15 * 60 * 1000, <span class="comment">// 15 minutes</span>
+    <span class="variable">max</span>: 100, <span class="comment">// 100 requests per window</span>
+    <span class="variable">message</span>: {
+        <span class="variable">error</span>: <span class="string">'Too many requests, please try again later.'</span>
+    },
+    <span class="variable">standardHeaders</span>: <span class="keyword">true</span>, <span class="comment">// Return rate limit info in headers</span>
+    <span class="variable">legacyHeaders</span>: <span class="keyword">false</span>
+});
+
+app.<span class="function">use</span>(<span class="string">'/api'</span>, limiter);
+
+<span class="comment">// Stricter for authentication routes</span>
+<span class="keyword">const</span> authLimiter = <span class="function">rateLimit</span>({
+    <span class="variable">windowMs</span>: 15 * 60 * 1000,
+    <span class="variable">max</span>: 5, <span class="comment">// Only 5 login attempts</span>
+    <span class="variable">skipSuccessfulRequests</span>: <span class="keyword">true</span>
+});
+
+app.<span class="function">use</span>(<span class="string">'/api/auth/login'</span>, authLimiter);</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-compress-alt"></i> Compression</h3>
+    <p>Compression reduces bandwidth usage and speeds up response times.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> compression = <span class="function">require</span>(<span class="string">'compression'</span>);
+
+app.<span class="function">use</span>(<span class="function">compression</span>({
+    <span class="variable">level</span>: 6, <span class="comment">// 1-9 (higher = more compression, slower)</span>
+    <span class="variable">threshold</span>: 1024, <span class="comment">// Only compress responses > 1KB</span>
+    <span class="variable">filter</span>: (req, res) => {
+        <span class="comment">// Custom filter to skip compression for certain responses</span>
+        <span class="keyword">if</span> (req.<span class="variable">headers</span>[<span class="string">'x-no-compression'</span>]) {
+            <span class="keyword">return</span> <span class="keyword">false</span>;
+        }
+        <span class="keyword">return</span> compression.<span class="function">filter</span>(req, res);
+    }
+}));</div>
+</div>
+`
+        },
+
+        '29. API Documentation (Swagger)': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-book"></i> API Documentation with Swagger/OpenAPI</h3>
+    <p><strong>Swagger</strong> provides interactive API documentation using OpenAPI specification.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> swaggerJsdoc = <span class="function">require</span>(<span class="string">'swagger-jsdoc'</span>);
+<span class="keyword">const</span> swaggerUi = <span class="function">require</span>(<span class="string">'swagger-ui-express'</span>);
+
+<span class="comment">// Swagger configuration</span>
+<span class="keyword">const</span> options = {
+    <span class="variable">definition</span>: {
+        <span class="variable">openapi</span>: <span class="string">'3.0.0'</span>,
+        <span class="variable">info</span>: {
+            <span class="variable">title</span>: <span class="string">'My API'</span>,
+            <span class="variable">version</span>: <span class="string">'1.0.0'</span>,
+            <span class="variable">description</span>: <span class="string">'REST API documentation'</span>
+        },
+        <span class="variable">servers</span>: [
+            {
+                <span class="variable">url</span>: <span class="string">'http://localhost:3000'</span>,
+                <span class="variable">description</span>: <span class="string">'Development server'</span>
+            },
+            {
+                <span class="variable">url</span>: <span class="string">'https://api.example.com'</span>,
+                <span class="variable">description</span>: <span class="string">'Production server'</span>
+            }
+        ],
+        <span class="variable">components</span>: {
+            <span class="variable">securitySchemes</span>: {
+                <span class="variable">bearerAuth</span>: {
+                    <span class="variable">type</span>: <span class="string">'http'</span>,
+                    <span class="variable">scheme</span>: <span class="string">'bearer'</span>,
+                    <span class="variable">bearerFormat</span>: <span class="string">'JWT'</span>
+                }
+            }
+        }
+    },
+    <span class="variable">apis</span>: [<span class="string">'./routes/*.js'</span>] <span class="comment">// Path to API docs</span>
+};
+
+<span class="keyword">const</span> specs = <span class="function">swaggerJsdoc</span>(options);
+
+<span class="comment">// Serve Swagger UI</span>
+app.<span class="function">use</span>(<span class="string">'/api-docs'</span>, swaggerUi.<span class="variable">serve</span>, swaggerUi.<span class="function">setup</span>(specs));
+
+<span class="comment">// In routes file</span>
+<span class="comment">/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */</span></div>
+</div>
+`
+        },
+
+        '30. GraphQL with Node.js': {
+            content: `
+<div class="note-section">
+    <h3><i class="fas fa-project-diagram"></i> GraphQL with Apollo Server</h3>
+    <p><strong>GraphQL</strong> is a query language for APIs that allows clients to request exactly the data they need.</p>
+    <div class="code-block"><span class="lang-tag">JavaScript</span>
+<span class="keyword">const</span> { ApolloServer, gql } = <span class="function">require</span>(<span class="string">'apollo-server-express'</span>);
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+
+<span class="keyword">const</span> app = <span class="function">express</span>();
+
+<span class="comment">// Type definitions (schema)</span>
+<span class="keyword">const</span> typeDefs = <span class="function">gql</span>\`
+    type User {
+        id: ID!
+        name: String!
+        email: String!
+        age: Int
+        posts: [Post]
+    }
+
+    type Post {
+        id: ID!
+        title: String!
+        content: String!
+        author: User
+    }
+
+    type Query {
+        users: [User]
+        user(id: ID!): User
+        posts: [Post]
+        post(id: ID!): Post
+    }
+
+    type Mutation {
+        createUser(name: String!, email: String!, age: Int): User
+        createPost(title: String!, content: String!, authorId: ID!): Post
+        updateUser(id: ID!, name: String, email: String): User
+        deleteUser(id: ID!): Boolean
+    }
+
+    type Subscription {
+        userCreated: User
+    }
+\`;
+
+<span class="comment">// Resolvers</span>
+<span class="keyword">const</span> resolvers = {
+    <span class="variable">Query</span>: {
+        <span class="function">users</span>: () => User.<span class="function">find</span>(),
+        <span class="function">user</span>: (_, { id }) => User.<span class="function">findById</span>(id),
+        <span class="function">posts</span>: () => Post.<span class="function">find</span>(),
+        <span class="function">post</span>: (_, { id }) => Post.<span class="function">findById</span>(id)
+    },
+    <span class="variable">Mutation</span>: {
+        <span class="function">createUser</span>: (_, { name, email, age }) => {
+            <span class="keyword">return</span> User.<span class="function">create</span>({ name, email, age });
+        },
+        <span class="function">createPost</span>: (_, { title, content, authorId }) => {
+            <span class="keyword">return</span> Post.<span class="function">create</span>({ title, content, author: authorId });
+        },
+        <span class="function">updateUser</span>: (_, { id, name, email }) => {
+            <span class="keyword">return</span> User.<span class="function">findByIdAndUpdate</span>(id, { name, email }, { new: <span class="keyword">true</span> });
+        },
+        <span class="function">deleteUser</span>: <span class="keyword">async</span> (_, { id }) => {
+            <span class="keyword">await</span> User.<span class="function">findByIdAndDelete</span>(id);
+            <span class="keyword">return</span> <span class="keyword">true</span>;
+        }
+    },
+    <span class="variable">User</span>: {
+        <span class="function">posts</span>: (parent) => Post.<span class="function">find</span>({ <span class="variable">author</span>: parent.<span class="variable">id</span> })
+    },
+    <span class="variable">Post</span>: {
+        <span class="function">author</span>: (parent) => User.<span class="function">findById</span>(parent.<span class="variable">author</span>)
+    }
+};
+
+<span class="comment">// Create Apollo Server</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">startServer</span>() {
+    <span class="keyword">const</span> server = <span class="keyword">new</span> <span class="function">ApolloServer</span>({
+        <span class="variable">typeDefs</span>: typeDefs,
+        <span class="variable">resolvers</span>: resolvers,
+        <span class="variable">context</span>: ({ req }) => ({
+            <span class="variable">user</span>: <span class="function">getUserFromToken</span>(req.<span class="variable">headers</span>.<span class="variable">authorization</span>)
+        }),
+        <span class="variable">playground</span>: <span class="keyword">true</span>, <span class="comment">// Enable GraphQL Playground</span>
+        <span class="variable">introspection</span>: process.<span class="variable">env</span>.<span class="variable">NODE_ENV</span> !== <span class="string">'production'</span>
+    });
+
+    <span class="keyword">await</span> server.<span class="function">start</span>();
+    server.<span class="function">applyMiddleware</span>({ <span class="variable">app</span>: app, <span class="variable">path</span>: <span class="string">'/graphql'</span> });
+
+    app.<span class="function">listen</span>(3000, () => {
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'🚀 GraphQL server running at http://localhost:3000/graphql'</span>);
+    });
+}
+
+<span class="function">startServer</span>();</div>
+</div>
+<div class="note-section">
+    <h3><i class="fas fa-code"></i> GraphQL Client Query Example</h3>
+    <div class="code-block"><span class="lang-tag">GraphQL</span>
+<span class="comment"># Query to get users with their posts</span>
+query {
+    users {
+        id
+        name
+        email
+        posts {
+            id
+            title
+            content
+        }
+    }
+}
+
+<span class="comment"># Mutation to create a user</span>
+mutation {
+    createUser(name: "John Doe", email: "john@test.com", age: 30) {
+        id
+        name
+        email
+    }
+}</div>
+</div>
+`
+        }
+
+    };
+
+    // RENDER ENGINE
+    const topicNav = document.getElementById('topicNav');
+    const topicTitle = document.getElementById('topicTitle');
+    const topicBadge = document.getElementById('topicBadge');
+    const notesContent = document.getElementById('notesContent');
+    const progressFill = document.getElementById('progressFill');
+
+    const topicNames = Object.keys(NOTES);
+    let activeTopic = topicNames[0];
+
+    function renderNav() {
+        const label = topicNav.querySelector('.label');
+        topicNav.innerHTML = '';
+        topicNav.appendChild(label);
+        topicNames.forEach(name => {
+            const btn = document.createElement('button');
+            btn.className = 'topic-btn' + (name === activeTopic ? ' active' : '');
+            let displayName = name;
+            if (name.length > 40) displayName = name.substring(0, 37) + '...';
+            btn.textContent = displayName;
+            btn.title = name;
+            btn.dataset.topic = name;
+            btn.addEventListener('click', () => {
+                activeTopic = name;
+                renderNav();
+                renderContent(name);
+            });
+            topicNav.appendChild(btn);
+        });
+    }
+
+    function renderContent(topicName) {
+        const data = NOTES[topicName];
+        if (!data) {
+            notesContent.innerHTML = '<p>Topic not found.</p>';
+            return;
+        }
+        topicTitle.textContent = topicName;
+        topicBadge.textContent = 'Complete Notes';
+        notesContent.innerHTML = data.content;
+
+        const total = topicNames.length;
+        const current = topicNames.indexOf(topicName) + 1;
+        const progress = Math.round((current / total) * 100);
+        progressFill.style.width = progress + '%';
+        progressFill.title = progress + '% complete';
+    }
+
+    renderNav();
+    renderContent(activeTopic);
+</script>
+</body>
+</html>

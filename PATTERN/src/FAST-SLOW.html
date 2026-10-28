@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast &amp; Slow Pointers — Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#0a0e17;
+            --bg-panel:#0e1420;
+            --bg-card:#121927;
+            --bg-cell:#1a2333;
+            --border:#212c40;
+            --border-soft:#182236;
+            --text: #878080;
+            --text-dim:#8f9bb0;
+            --text-faint:#5a6579;
+            --teal:#4fd8c4;
+            --teal-dim:rgba(79,216,196,0.14);
+            --amber:#f6ad55;
+            --amber-dim:rgba(246,173,85,0.14);
+            --violet:#b394f6;
+            --violet-dim:rgba(179,148,246,0.14);
+            --green:#4ade80;
+            --red:#f87171;
+            --font-d:'Space Grotesk',sans-serif;
+            --font-b:'Inter',sans-serif;
+            --font-m:'JetBrains Mono',monospace;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:
+                    radial-gradient(ellipse 900px 500px at 85% -10%, rgba(246,173,85,0.07), transparent),
+                    radial-gradient(ellipse 700px 500px at 0% 30%, rgba(79,216,196,0.07), transparent),
+                    var(--bg);
+            color:var(--text);font-family:var(--font-b);padding:3rem 1.5rem 6rem;line-height:1.6;
+        }
+        .wrap{max-width:1180px;margin:0 auto;}
+        ::selection{background:var(--teal-dim);color:var(--teal);}
+
+        .hero{padding:2.5rem 0 3rem;border-bottom:1px solid var(--border-soft);margin-bottom:3rem;}
+        .eyebrow{font-family:var(--font-m);font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);display:flex;align-items:center;gap:10px;margin-bottom:1.1rem;}
+        .eyebrow::before{content:"";width:22px;height:1px;background:var(--amber);}
+        .hero h1{font-family:var(--font-d);font-weight:700;font-size:clamp(2.2rem,5vw,3.4rem);letter-spacing:-0.02em;margin-bottom:0.9rem;}
+        .hero h1 span{color:var(--text-faint);}
+        .hero p.lede{font-size:1.1rem;color:var(--text-dim);max-width:660px;margin-bottom:1.8rem;}
+        .stat-row{display:flex;flex-wrap:wrap;gap:1.1rem;}
+        .stat{font-family:var(--font-m);font-size:0.82rem;color:var(--text-dim);border:1px solid var(--border);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;background:var(--bg-panel);}
+        .stat b{color:var(--text);font-weight:600;}
+
+        .sec{margin:4rem 0 1.6rem;}
+        .sec-num{font-family:var(--font-m);color:var(--text-faint);font-size:0.85rem;}
+        .sec h2{font-family:var(--font-d);font-weight:600;font-size:1.7rem;margin-top:0.3rem;}
+        .sec .desc{color:var(--text-dim);margin-top:0.5rem;max-width:700px;font-size:0.98rem;}
+
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;}
+
+        .concept-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.5rem;margin-top:1.5rem;}
+        .concept-text ul{margin:0.9rem 0 0 1.1rem;color:var(--text-dim);}
+        .concept-text ul li{margin-bottom:0.55rem;}
+        .concept-text ul li b{color:var(--text);}
+        .callout{margin-top:1.1rem;padding:0.9rem 1.1rem;border-radius:10px;background:var(--amber-dim);border:1px solid rgba(246,173,85,0.25);font-size:0.92rem;}
+        .callout b{color:var(--amber);}
+        .tortoise-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1rem 0;}
+        .legend{display:flex;gap:1.4rem;font-family:var(--font-m);font-size:0.8rem;color:var(--text-dim);}
+        .legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;}
+
+        /* ---------- SIGNAL TABLE ---------- */
+        .signal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem;}
+        .signal-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;border-left:3px solid var(--amber);}
+        .signal-card h4{font-family:var(--font-d);font-size:1.02rem;margin-bottom:0.4rem;}
+        .signal-card p{font-size:0.88rem;color:var(--text-dim);}
+
+        /* ---------- STEP-BY-STEP APPLY ---------- */
+        .apply-steps{display:flex;flex-direction:column;gap:0.9rem;margin-top:1.5rem;}
+        .apply-step{display:flex;gap:1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;}
+        .apply-step .snum{font-family:var(--font-d);font-weight:700;font-size:1.3rem;color:var(--amber);flex-shrink:0;width:28px;}
+        .apply-step .scontent p{font-size:0.92rem;color:var(--text-dim);margin-bottom:0.5rem;}
+        .apply-step code, .apply-step pre{font-family:var(--font-m);font-size:0.84rem;color:var(--teal);background:var(--bg-panel);padding:2px 8px;border-radius:6px;}
+        .apply-step pre{display:block;padding:0.8rem 1rem;white-space:pre-wrap;line-height:1.6;border:1px solid var(--border-soft);}
+
+        /* ---------- VISUALIZER ---------- */
+        .viz{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;margin-top:1.5rem;}
+        .viz-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;margin-bottom:1.6rem;}
+        .viz-head .name{font-family:var(--font-d);font-size:1.15rem;}
+        .viz-head .sub{font-family:var(--font-m);font-size:0.8rem;color:var(--text-faint);margin-top:2px;}
+        .viz-controls{display:flex;gap:8px;}
+        .btn{font-family:var(--font-m);font-size:0.82rem;border:1px solid var(--border);background:var(--bg-panel);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s ease;}
+        .btn:hover{border-color:var(--amber);color:var(--amber);}
+        .btn:disabled{opacity:0.35;cursor:not-allowed;}
+        .btn:disabled:hover{border-color:var(--border);color:var(--text);}
+        .btn.primary{background:var(--amber);color:#241505;border-color:var(--amber);font-weight:600;}
+        .btn.primary:hover{color:#241505;filter:brightness(1.1);}
+
+        .chain-stage{position:relative;overflow-x:auto;padding:2.6rem 0.5rem 1rem;}
+        .chain-inner{position:relative;}
+        .chain-svg{position:absolute;top:0;left:0;pointer-events:none;}
+        .node{
+            position:absolute;width:52px;height:52px;border-radius:50%;background:var(--bg-cell);
+            border:2px solid var(--border);display:flex;align-items:center;justify-content:center;
+            font-family:var(--font-m);font-weight:700;font-size:1rem;color:var(--text-dim);
+            transition:background .25s ease,border-color .25s ease,color .25s ease;
+        }
+        .node-idx{position:absolute;font-family:var(--font-m);font-size:0.65rem;color:var(--text-faint);text-align:center;width:52px;}
+        .pointer-marker{position:absolute;text-align:center;font-family:var(--font-m);font-size:0.72rem;font-weight:700;transition:left .35s cubic-bezier(.4,0,.2,1);}
+        .pointer-marker .tag{display:inline-block;padding:2px 8px;border-radius:6px;}
+        .pointer-marker .stem{width:1px;height:10px;background:var(--text-faint);margin:2px auto 0;}
+
+        .viz-log{margin-top:1.4rem;padding:1rem 1.2rem;background:var(--bg-panel);border:1px solid var(--border-soft);border-radius:10px;font-family:var(--font-m);font-size:0.87rem;min-height:44px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.6rem;}
+        .viz-log .step-count{color:var(--text-faint);font-size:0.78rem;}
+        .viz-log .msg b{color:var(--amber);}
+        .viz-log.done{border-color:rgba(74,222,128,0.35);background:rgba(74,222,128,0.08);}
+        .viz-log.done .msg b{color:var(--green);}
+        .viz-log.phase2 .msg b{color:var(--violet);}
+
+        /* ---------- BENEFITS / USE CASE TABLES ---------- */
+        .pair-tables{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.5rem;}
+        .table-card table{width:100%;border-collapse:collapse;font-size:0.87rem;}
+        .table-card th{text-align:left;font-family:var(--font-m);font-size:0.7rem;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-faint);padding:8px 10px;border-bottom:1px solid var(--border);}
+        .table-card td{padding:11px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-dim);}
+        .table-card tr:last-child td{border-bottom:none;}
+        .table-card td.lbl{font-family:var(--font-d);color:var(--text);font-weight:600;white-space:nowrap;}
+
+        /* ---------- PROBLEM GROUPS ---------- */
+        .group-head{display:flex;align-items:center;gap:12px;margin:3rem 0 1.2rem;}
+        .group-dot{width:10px;height:10px;border-radius:50%;}
+        .group-head h3{font-family:var(--font-d);font-size:1.3rem;}
+        .group-head .count{font-family:var(--font-m);font-size:0.78rem;color:var(--text-faint);border:1px solid var(--border);padding:3px 10px;border-radius:20px;}
+        .problem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.1rem;}
+        .problem-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;border-left:3px solid var(--border);transition:transform .2s ease;}
+        .problem-card:hover{transform:translateY(-2px);}
+        .problem-card.g1{border-left-color:var(--amber);}
+        .problem-card.g2{border-left-color:var(--teal);}
+        .problem-card.g3{border-left-color:var(--violet);}
+        .problem-card .phead{display:flex;justify-content:space-between;align-items:flex-start;gap:0.6rem;}
+        .problem-card .pnum{font-family:var(--font-m);font-size:0.75rem;color:var(--text-faint);}
+        .problem-card .pname{font-family:var(--font-d);font-size:1.03rem;margin-top:2px;}
+        .problem-card .plc{font-family:var(--font-m);font-size:0.66rem;background:var(--bg-panel);border:1px solid var(--border);color:var(--text-dim);padding:3px 10px;border-radius:20px;white-space:nowrap;}
+        .problem-card .pdesc{color:var(--text-dim);font-size:0.87rem;margin:0.7rem 0;}
+        .problem-card .papproach{background:var(--bg-panel);border-radius:8px;padding:0.7rem 0.9rem;font-size:0.84rem;color:var(--text-dim);border:1px solid var(--border-soft);margin-bottom:0.6rem;}
+        .problem-card .papproach b{color:var(--text);}
+        .problem-card .ppitfall{font-size:0.81rem;color:#f8b4ac;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:8px;padding:0.6rem 0.85rem;}
+        .problem-card .ppitfall b{color:var(--red);}
+
+        /* ---------- MISTAKES ---------- */
+        .mistake-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem;}
+        .mistake{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;border-left:3px solid var(--red);}
+        .mistake .mtitle{font-family:var(--font-m);font-weight:600;color:#f8b4ac;font-size:0.9rem;margin-bottom:0.4rem;}
+        .mistake p{font-size:0.87rem;color:var(--text-dim);}
+        .mistake .fix{margin-top:0.5rem;font-size:0.85rem;color:var(--green);}
+
+        /* ---------- CHECKLIST ---------- */
+        .progress-wrap{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;}
+        .progress-bar{flex:1;height:8px;background:var(--bg-panel);border-radius:20px;overflow:hidden;border:1px solid var(--border);}
+        .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--amber),var(--violet));transition:width .3s ease;}
+        .progress-label{font-family:var(--font-m);font-size:0.82rem;color:var(--text-dim);white-space:nowrap;}
+        .checklist{display:flex;flex-direction:column;gap:0.5rem;}
+        .check-item{display:flex;align-items:center;gap:12px;padding:0.7rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;cursor:pointer;user-select:none;transition:border-color .15s ease,background .15s ease;}
+        .check-item:hover{border-color:var(--text-faint);}
+        .check-item.done{border-color:rgba(74,222,128,0.35);background:rgba(74,222,128,0.06);}
+        .check-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--text-faint);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--bg);}
+        .check-item.done .check-box{background:var(--green);border-color:var(--green);}
+        .check-item span.label{font-size:0.92rem;color:var(--text-dim);}
+        .check-item.done span.label{color:var(--text);text-decoration:line-through;text-decoration-color:var(--text-faint);}
+        .check-item .tier{margin-left:auto;font-family:var(--font-m);font-size:0.7rem;color:var(--text-faint);}
+
+        footer{text-align:center;margin-top:4rem;color:var(--text-faint);font-size:0.85rem;font-family:var(--font-m);}
+
+        @media(max-width:960px){
+            .concept-grid{grid-template-columns:1fr;}
+            .pair-tables{grid-template-columns:1fr;}
+            .mistake-grid{grid-template-columns:1fr;}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- ============ HERO ============ -->
+    <div class="hero">
+        <div class="eyebrow">Algorithm Notes · Linked Lists &amp; Sequences</div>
+        <h1>Fast &amp; Slow Pointers <span>— Floyd's Tortoise and Hare</span></h1>
+        <p class="lede">Two pointers move through the same structure at different speeds. If the structure loops back on itself, the faster one eventually laps the slower one — that meeting is the entire trick. No hashmap, no extra memory, just a speed difference.</p>
+        <div class="stat-row">
+            <div class="stat">⏱ <b>O(n)</b> time</div>
+            <div class="stat">💾 <b>O(1)</b> space</div>
+            <div class="stat"><b>slow</b> +1 step</div>
+            <div class="stat"><b>fast</b> +2 steps</div>
+            <div class="stat"><b>15</b> problems</div>
+        </div>
+    </div>
+
+    <!-- ============ 1. CORE IDEA ============ -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>Why speed difference detects a cycle</h2>
+        <p class="desc">This is not the same "fast &amp; slow" as array compaction problems — there, slow marks a write position. Here, both pointers genuinely traverse the structure, just at different rates. That's what makes a loop detectable.</p>
+    </div>
+    <div class="concept-grid">
+        <div class="card concept-text">
+            <p>Picture a circular running track. If two runners start at the same point and one runs twice as fast, the faster runner will eventually lap the slower one — they <b>must</b> meet again, because the gap between them shrinks by exactly 1 step every round.</p>
+            <ul>
+                <li>If the structure is <b>linear</b> (no cycle), fast simply reaches the end first — <code>fast == null</code> — and slow never catches up to anything.</li>
+                <li>If the structure <b>loops</b>, fast enters the loop, slow enters the loop, and because fast gains on slow by 1 position per step inside the loop, they are guaranteed to land on the same node within one full loop length.</li>
+                <li>Once they meet, you know a cycle exists — but not where it starts. That needs a second phase (see step 4 below).</li>
+            </ul>
+            <div class="callout"><b>Why this works with O(1) space:</b> a hashmap-based cycle check stores every visited node — O(n) space. Fast &amp; slow needs only two pointers, because the meeting point itself is the signal, not a lookup.</div>
+        </div>
+        <div class="card">
+            <div class="tortoise-panel">
+                <div id="concept-chain"></div>
+                <div class="legend">
+                    <span><span class="dot" style="background:var(--teal)"></span>slow (+1)</span>
+                    <span><span class="dot" style="background:var(--amber)"></span>fast (+2)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 2. RECOGNIZE ============ -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>How to recognize when this pattern applies</h2>
+        <p class="desc">Four signals, and you rarely need more than one to be confident.</p>
+    </div>
+    <div class="signal-grid">
+        <div class="signal-card"><h4>Repetition</h4><p>You're repeatedly transforming or traversing values — linked list traversal, or a number chain like digit-square-sum.</p></div>
+        <div class="signal-card"><h4>Cycle possibility</h4><p>The structure or transformation could loop back on itself — a cycle in a linked list, or a repeating number sequence.</p></div>
+        <div class="signal-card"><h4>Need for a midpoint</h4><p>You need the middle element in a single pass, without knowing the length ahead of time.</p></div>
+        <div class="signal-card"><h4>O(1) space required</h4><p>The problem explicitly rules out extra memory — fast &amp; slow uses none beyond the two pointers.</p></div>
+    </div>
+
+    <!-- ============ 3. APPLY STEP BY STEP ============ -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>Applying the pattern</h2>
+    </div>
+    <div class="apply-steps">
+        <div class="apply-step">
+            <div class="snum">1</div>
+            <div class="scontent"><p><b>Initialize</b> both pointers at the start.</p><pre>slow = head;
+fast = head;</pre></div>
+        </div>
+        <div class="apply-step">
+            <div class="snum">2</div>
+            <div class="scontent"><p><b>Traverse</b> — move slow one step, fast two, and stop the moment fast can't take a full 2-step move.</p><pre>while (fast != null &amp;&amp; fast.next != null) {
+  slow = slow.next;
+  fast = fast.next.next;
+}</pre></div>
+        </div>
+        <div class="apply-step">
+            <div class="snum">3</div>
+            <div class="scontent"><p><b>Check the meeting point</b> after each move (not just at the end).</p><p>If <code>slow == fast</code> at any point → a cycle exists. If <code>fast</code> or <code>fast.next</code> hits <code>null</code> first → no cycle, list simply ends.</p></div>
+        </div>
+        <div class="apply-step">
+            <div class="snum">4</div>
+            <div class="scontent"><p><b>Add goal-specific logic</b> on top of the base traversal:</p><p>• <b>Cycle start:</b> once slow and fast meet, reset slow to head and move both 1 step at a time — they meet again exactly at the cycle's entry node.<br>• <b>Middle:</b> when the loop ends, slow is sitting on the middle node.<br>• <b>Number transformations (e.g. Happy Number):</b> treat "apply the transform function" as the "next" movement — everything else is identical.</p></div>
+        </div>
+    </div>
+
+    <!-- ============ 4. VISUALIZERS ============ -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>Watch it run — three real traces</h2>
+        <p class="desc">The first one runs both phases: detecting that a cycle exists, then finding exactly where it begins.</p>
+    </div>
+
+    <!-- Visualizer 1: Cycle detection + start -->
+    <div class="viz">
+        <div class="viz-head">
+            <div><div class="name">Linked List Cycle I &amp; II — Detect, then find the start</div><div class="sub">1 → 2 → 3 → 4 → 5 → back to node 3</div></div>
+            <div class="viz-controls"><button class="btn" id="v1-reset">Reset</button><button class="btn primary" id="v1-next">Next step →</button></div>
+        </div>
+        <div class="chain-stage"><div class="chain-inner" id="v1-stage"></div></div>
+        <div class="viz-log" id="v1-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v1-count">Step 0 / 5</span></div>
+    </div>
+
+    <!-- Visualizer 2: Middle of list -->
+    <div class="viz">
+        <div class="viz-head">
+            <div><div class="name">Middle of the Linked List — no cycle</div><div class="sub">1 → 2 → 3 → 4 → 5 → null</div></div>
+            <div class="viz-controls"><button class="btn" id="v2-reset">Reset</button><button class="btn primary" id="v2-next">Next step →</button></div>
+        </div>
+        <div class="chain-stage"><div class="chain-inner" id="v2-stage"></div></div>
+        <div class="viz-log" id="v2-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v2-count">Step 0 / 2</span></div>
+    </div>
+
+    <!-- Visualizer 3: Happy Number -->
+    <div class="viz">
+        <div class="viz-head">
+            <div><div class="name">Happy Number — cycle in a number transformation</div><div class="sub">n = 2, transform: sum of squares of digits</div></div>
+            <div class="viz-controls"><button class="btn" id="v3-reset">Reset</button><button class="btn primary" id="v3-next">Next step →</button></div>
+        </div>
+        <div class="chain-stage"><div class="chain-inner" id="v3-stage"></div></div>
+        <div class="viz-log" id="v3-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v3-count">Step 0 / 8</span></div>
+    </div>
+
+    <!-- ============ 5. BENEFITS + USE CASES ============ -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Why it's worth reaching for</h2>
+    </div>
+    <div class="pair-tables">
+        <div class="card table-card">
+            <table>
+                <thead><tr><th>Benefit</th><th>Why</th></tr></thead>
+                <tbody>
+                <tr><td class="lbl">O(n) time</td><td>Linear traversal, no nested loops</td></tr>
+                <tr><td class="lbl">O(1) space</td><td>Only two pointers — no hashmap or extra storage</td></tr>
+                <tr><td class="lbl">Non-destructive</td><td>Works on the original structure without altering it</td></tr>
+                <tr><td class="lbl">Midpoint in one pass</td><td>No need to count length first, then traverse again</td></tr>
+                <tr><td class="lbl">Elegant cycle detection</td><td>Finds loop existence and entry point without marking nodes</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card table-card">
+            <table>
+                <thead><tr><th>Use case</th><th>What to observe</th></tr></thead>
+                <tbody>
+                <tr><td class="lbl">Detect cycle</td><td>Traverse nodes, check if slow == fast</td></tr>
+                <tr><td class="lbl">Find loop start</td><td>After meeting, reset slow to head, move both by 1</td></tr>
+                <tr><td class="lbl">Find middle</td><td>Stop when fast == null (or fast.next == null)</td></tr>
+                <tr><td class="lbl">Happy Number</td><td>Apply the transform function repeatedly as "next"</td></tr>
+                <tr><td class="lbl">Circular array loop</td><td>Move with (i + nums[i]) % n, apply cycle logic</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============ 6. PROBLEMS ============ -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>All 15 problems</h2>
+        <p class="desc">Grouped by what the fast &amp; slow traversal is actually being used to accomplish.</p>
+    </div>
+
+    <div class="group-head"><div class="group-dot" style="background:var(--amber)"></div><h3>Group A — Cycle Detection Core</h3><span class="count">7 problems</span></div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <div class="group-head"><div class="group-dot" style="background:var(--teal)"></div><h3>Group B — Midpoint-Based</h3><span class="count">6 problems</span></div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <div class="group-head"><div class="group-dot" style="background:var(--violet)"></div><h3>Group C — Gap &amp; Variant Techniques</h3><span class="count">2 problems</span></div>
+    <div class="problem-grid" id="group-c"></div>
+
+    <!-- ============ 7. MISTAKES ============ -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>Mistakes that show up again and again</h2>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Checking only `fast != null`</div>
+            <p>You also need <code>fast.next != null</code> in the loop condition — otherwise <code>fast.next.next</code> throws when fast lands on the last node.</p>
+            <div class="fix">Fix: <b>while (fast != null &amp;&amp; fast.next != null)</b>, always both.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Resetting the wrong pointer to find the cycle start</div>
+            <p>After slow and fast meet, people sometimes reset <b>fast</b> to head instead of slow, or move both 2 steps instead of 1 in phase two.</p>
+            <div class="fix">Fix: reset <b>slow</b> to head, keep fast at the meeting point, move <b>both by 1</b> step until they meet again.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Off-by-one on "middle" for even-length lists</div>
+            <p>A 4-node list has two valid "middles" — which one you land on depends on whether you check <code>fast.next</code> or <code>fast.next.next</code> in the loop guard.</p>
+            <div class="fix">Fix: know which convention the problem wants (lower vs. upper middle) and match your loop condition to it.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Forgetting the transform can immediately cycle to itself</div>
+            <p>In Happy Number and similar problems, some inputs reach a fixed point (like 1 → 1) rather than a longer loop — treat that as a valid (length-1) cycle, not a bug.</p>
+            <div class="fix">Fix: don't special-case "no change" — let the same slow/fast logic catch it naturally.</div>
+        </div>
+    </div>
+
+    <!-- ============ 8. MASTERY PATH ============ -->
+    <div class="sec">
+        <div class="sec-num">08</div>
+        <h2>Suggested practice order</h2>
+        <p class="desc">Click a problem once you can solve it without re-reading the approach note.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 15 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <footer>Fast &amp; Slow Pointers · Mastery Notes — problems from LeetCode &amp; GeeksforGeeks</footer>
+</div>
+
+<script>
+    const CELL = 52, GAP = 46, STEP = CELL + GAP;
+
+    function buildChain(container, values, opts){
+        opts = opts || {};
+        container.innerHTML = "";
+        const n = values.length;
+        const width = (n-1)*STEP + CELL;
+        const height = 130;
+        container.style.width = width + "px";
+        container.style.height = height + "px";
+
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS,"svg");
+        svg.setAttribute("class","chain-svg");
+        svg.setAttribute("width", width);
+        svg.setAttribute("height", height + 40);
+        svg.setAttribute("viewBox", `0 0 ${width} ${height+40}`);
+
+        const defs = document.createElementNS(svgNS,"defs");
+        defs.innerHTML = `<marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5a6579"/></marker>`;
+        svg.appendChild(defs);
+
+        const cy = 46;
+        for(let i=0;i<n-1;i++){
+            if(opts.hideForwardArrow && opts.hideForwardArrow===i) continue;
+            const x1 = i*STEP + CELL, x2 = (i+1)*STEP;
+            const line = document.createElementNS(svgNS,"line");
+            line.setAttribute("x1",x1);line.setAttribute("y1",cy);
+            line.setAttribute("x2",x2-4);line.setAttribute("y2",cy);
+            line.setAttribute("stroke","#5a6579");line.setAttribute("stroke-width","1.5");
+            line.setAttribute("marker-end","url(#arrow)");
+            svg.appendChild(line);
+        }
+        if(opts.cycleTo !== undefined && opts.cycleTo !== null){
+            const from = n-1, to = opts.cycleTo;
+            const x1 = from*STEP + CELL/2, x2 = to*STEP + CELL/2;
+            const path = document.createElementNS(svgNS,"path");
+            const midY = cy + 62;
+            path.setAttribute("d", `M ${x1} ${cy+CELL/2} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${cy+CELL/2+2}`);
+            path.setAttribute("fill","none");
+            path.setAttribute("stroke","var(--amber)");
+            path.setAttribute("stroke-width","1.5");
+            path.setAttribute("stroke-dasharray","4 3");
+            path.setAttribute("marker-end","url(#arrow)");
+            svg.appendChild(path);
+        }
+        container.appendChild(svg);
+
+        values.forEach((v,i)=>{
+            const node = document.createElement("div");
+            node.className = "node";
+            node.id = container.id + "-node-" + i;
+            node.style.left = (i*STEP) + "px";
+            node.style.top = (cy-CELL/2) + "px";
+            node.textContent = v;
+            container.appendChild(node);
+
+            const idx = document.createElement("div");
+            idx.className = "node-idx";
+            idx.style.left = (i*STEP) + "px";
+            idx.style.top = (cy+CELL/2+10) + "px";
+            idx.textContent = opts.showNull && i===n-1 && opts.cycleTo==null ? "→ null" : "";
+            container.appendChild(idx);
+        });
+    }
+
+    function setNodeStates(container, states){
+        states.forEach((st,i)=>{
+            const node = document.getElementById(container.id + "-node-" + i);
+            if(!node) return;
+            node.style.background = "var(--bg-cell)";
+            node.style.borderColor = "var(--border)";
+            node.style.color = "var(--text-dim)";
+            if(st === 'teal'){node.style.background="var(--teal-dim)";node.style.borderColor="var(--teal)";node.style.color="var(--teal)";}
+            if(st === 'amber'){node.style.background="var(--amber-dim)";node.style.borderColor="var(--amber)";node.style.color="var(--amber)";}
+            if(st === 'violet'){node.style.background="var(--violet-dim)";node.style.borderColor="var(--violet)";node.style.color="var(--violet)";}
+            if(st === 'green'){node.style.background="rgba(74,222,128,0.18)";node.style.borderColor="var(--green)";node.style.color="var(--green)";}
+        });
+    }
+
+    function placePointers(container, pointers){
+        container.querySelectorAll(".pointer-marker").forEach(el=>el.remove());
+        pointers.forEach(p=>{
+            const m = document.createElement("div");
+            m.className = "pointer-marker";
+            m.style.left = (p.index*STEP) + "px";
+            m.style.width = CELL+"px";
+            m.style.top = p.above ? "-30px" : "104px";
+            m.innerHTML = p.above
+                ? `<span class="tag" style="background:var(--${p.color}-dim);color:var(--${p.color});border:1px solid var(--${p.color})">${p.label}</span><div class="stem" style="background:var(--${p.color})"></div>`
+                : `<div class="stem" style="background:var(--${p.color})"></div><span class="tag" style="background:var(--${p.color}-dim);color:var(--${p.color});border:1px solid var(--${p.color})">${p.label}</span>`;
+            container.appendChild(m);
+        });
+    }
+
+    /* ============ Concept mini diagram ============ */
+    (function(){
+        const el = document.getElementById("concept-chain");
+        el.style.position = "relative";
+        buildChain(el, [1,2,3,4,5], {cycleTo:2});
+        setNodeStates(el, [null,null,'violet',null,null]);
+        placePointers(el, [{index:0,label:'S/F start',color:'teal',above:true}]);
+    })();
+
+    /* ============ Visualizer 1: Cycle detect + find start ============ */
+    (function(){
+        const values = [1,2,3,4,5];
+        const stage = document.getElementById("v1-stage");
+        stage.style.position = "relative";
+        buildChain(stage, values, {cycleTo:2});
+
+        const steps = [
+            {slow:1,fast:2,msg:`Move 1 → slow: 0→1 (value 2), fast: 0→2 (value 3)`, phase:1},
+            {slow:2,fast:4,msg:`Move 2 → slow: 1→2 (value 3), fast: 2→4 (value 5)`, phase:1},
+            {slow:3,fast:3,msg:`Move 3 → slow: 2→3 (value 4), fast: 4→(cycle)→3 (value 4) → slow == fast → cycle confirmed`, phase:1, meet:true},
+            {slow:0,fast:3,msg:`Phase 2 → reset slow to head (index 0), fast stays at meeting point (index 3)`, phase:2, resetShow:true},
+            {slow:2,fast:2,msg:`Move both by 1 until they meet → slow: 0→1→2, fast: 3→4→(cycle)→2 → meet at index 2 (value 3) = cycle start`, phase:2, done:true},
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v1-next"), resetBtn = document.getElementById("v1-reset");
+        const log = document.getElementById("v1-log"), count = document.getElementById("v1-count");
+
+        function render(){
+            if(i < 0){
+                setNodeStates(stage, values.map(()=>null));
+                placePointers(stage, [{index:0,label:'S',color:'teal',above:true},{index:0,label:'F',color:'amber',above:false}]);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            const states = values.map((_,idx)=> idx===s.slow && idx===s.fast ? 'green' : (idx===s.slow ? 'teal' : (idx===s.fast ? 'amber' : null)));
+            setNodeStates(stage, states);
+            const pts = [{index:s.slow,label:'S',color:'teal',above:true}];
+            if(s.fast !== s.slow) pts.push({index:s.fast,label:'F',color:'amber',above:false});
+            else pts.push({index:s.fast,label:'F',color:'amber',above:false});
+            placePointers(stage, pts);
+            log.className = s.done ? "viz-log done" : (s.phase===2 ? "viz-log phase2" : "viz-log");
+            log.innerHTML = `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if(s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", ()=>{ if(i<steps.length-1){ i++; render(); } });
+        resetBtn.addEventListener("click", ()=>{ i=-1; render(); });
+        render();
+    })();
+
+    /* ============ Visualizer 2: Middle of list ============ */
+    (function(){
+        const values = [1,2,3,4,5];
+        const stage = document.getElementById("v2-stage");
+        stage.style.position = "relative";
+        buildChain(stage, values, {showNull:true});
+
+        const steps = [
+            {slow:1,fast:2,msg:`fast != null and fast.next != null → move: slow 0→1, fast 0→2`},
+            {slow:2,fast:4,msg:`fast != null and fast.next != null → move: slow 1→2, fast 2→4`, next2:true, done:true},
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v2-next"), resetBtn = document.getElementById("v2-reset");
+        const log = document.getElementById("v2-log"), count = document.getElementById("v2-count");
+
+        function render(){
+            if(i < 0){
+                setNodeStates(stage, values.map(()=>null));
+                placePointers(stage, [{index:0,label:'S',color:'teal',above:true},{index:0,label:'F',color:'amber',above:false}]);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            const states = values.map((_,idx)=> idx===s.slow ? 'teal' : (idx===s.fast ? 'amber':null));
+            setNodeStates(stage, states);
+            placePointers(stage, [{index:s.slow,label:'S',color:'teal',above:true},{index:s.fast,label:'F',color:'amber',above:false}]);
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = s.done
+                ? `<span class="msg">${s.msg} → fast.next is null → stop → <b>middle = index 2, value 3</b></span>`
+                : `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if(s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", ()=>{ if(i<steps.length-1){ i++; render(); } });
+        resetBtn.addEventListener("click", ()=>{ i=-1; render(); });
+        render();
+    })();
+
+    /* ============ Visualizer 3: Happy Number ============ */
+    (function(){
+        const seq = [2,4,16,37,58,89,145,42,20];
+        const stage = document.getElementById("v3-stage");
+        stage.style.position = "relative";
+        buildChain(stage, seq, {});
+
+        // t: iteration, slow index = t, fast index = 2t (capped, wraps conceptually into cycle — shown via value match)
+        const steps = [
+            {t:1,slowV:4,fastV:16,msg:`t=1 → slow = f(2) = 4, fast = f(f(2)) = 16 → not equal`},
+            {t:2,slowV:16,fastV:58,msg:`t=2 → slow = f(4) = 16, fast = f(f(16)) = 58 → not equal`},
+            {t:3,slowV:37,fastV:145,msg:`t=3 → slow = f(16) = 37, fast = f(f(58)) = 145 → not equal`},
+            {t:4,slowV:58,fastV:20,msg:`t=4 → slow = f(37) = 58, fast = f(f(145)) = 20 → not equal`},
+            {t:5,slowV:89,fastV:16,msg:`t=5 → slow = f(58) = 89, fast = f(f(20)) = 16 (cycle repeats) → not equal`},
+            {t:6,slowV:145,fastV:58,msg:`t=6 → slow = f(89) = 145, fast = 58 → not equal`},
+            {t:7,slowV:42,fastV:145,msg:`t=7 → slow = f(145) = 42, fast = 145 → not equal`},
+            {t:8,slowV:20,fastV:20,msg:`t=8 → slow = f(42) = 20, fast = 20 → slow == fast → cycle detected`, done:true},
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v3-next"), resetBtn = document.getElementById("v3-reset");
+        const log = document.getElementById("v3-log"), count = document.getElementById("v3-count");
+
+        function valToIndex(v){ return seq.indexOf(v); }
+
+        function render(){
+            if(i < 0){
+                setNodeStates(stage, seq.map(()=>null));
+                placePointers(stage, [{index:0,label:'S',color:'teal',above:true},{index:0,label:'F',color:'amber',above:false}]);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin. f(n) = sum of squares of digits.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            const si = valToIndex(s.slowV), fi = valToIndex(s.fastV);
+            const states = seq.map((_,idx)=> (idx===si && idx===fi) ? 'green' : (idx===si ? 'teal' : (idx===fi ? 'amber':null)));
+            setNodeStates(stage, states);
+            placePointers(stage, [{index:si,label:'S',color:'teal',above:true},{index:fi,label:'F',color:'amber',above:false}]);
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = s.done
+                ? `<span class="msg">${s.msg} → meeting value 20 ≠ 1 → <b>2 is not a happy number</b></span>`
+                : `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if(s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", ()=>{ if(i<steps.length-1){ i++; render(); } });
+        resetBtn.addEventListener("click", ()=>{ i=-1; render(); });
+        render();
+    })();
+
+    /* ============ Problem data ============ */
+    const problems = {
+        a: [
+            {num:"LC 141",name:"Linked List Cycle",tag:"detect",desc:"Determine whether a linked list has a cycle.",approach:"Standard slow/fast traversal. If they meet, there's a cycle; if fast hits null, there isn't.",pitfall:"Checking only `fast != null` and forgetting `fast.next != null`, causing a null-pointer error.",complexity:"O(n) · O(1)"},
+            {num:"LC 142",name:"Linked List Cycle II",tag:"find start",desc:"Return the node where the cycle begins, or null if there is none.",approach:"Detect the meeting point first, then reset slow to head and advance both by 1 step until they meet again — that node is the cycle's start.",pitfall:"Moving fast by 2 steps in phase two instead of 1 — the math for finding the start only works with equal, single-step movement.",complexity:"O(n) · O(1)"},
+            {num:"LC 202",name:"Happy Number",tag:"number cycle",desc:"Determine whether repeatedly summing the squares of a number's digits eventually reaches 1.",approach:"Treat 'apply the digit-square-sum function' as the traversal step. Run slow/fast until they meet; if the meeting value is 1, it's happy.",pitfall:"Assuming any repeat means 'not happy' without checking if the repeated value is exactly 1 (a happy number cycles at 1→1).",complexity:"O(log n) · O(1)"},
+            {num:"LC 287",name:"Find the Duplicate Number",tag:"array cycle",desc:"Find the one duplicate number in an array of n+1 integers in range [1,n], without modifying the array.",approach:"Treat the array as a linked list where index i points to index nums[i]. A duplicate value creates a cycle — apply Floyd's algorithm the same way as Linked List Cycle II.",pitfall:"Trying to sort or use a set first — both violate the O(1) space / no-modification constraints the problem is testing.",complexity:"O(n) · O(1)"},
+            {num:"LC 457",name:"Circular Array Loop",tag:"array + direction",desc:"Determine if the array has a cycle where all elements in the cycle move in the same direction.",approach:"Move with next(i) = (i + nums[i]) % n (handling negative wraparound). Apply slow/fast per starting index, but also validate every element in the loop shares the same sign.",pitfall:"Forgetting to reject single-element 'cycles' (a node pointing to itself), which the problem explicitly disallows.",complexity:"O(n) · O(1)"},
+            {num:"GFG",name:"Detect Cycle in Circular Linked List",tag:"custom",desc:"Same cycle-detection idea applied to a linked list that's intentionally circular by design.",approach:"Identical traversal to Linked List Cycle — the only difference is the cycle is expected, so you're often confirming structure rather than searching for a bug.",pitfall:"Assuming 'circular by design' means you can skip the null checks — a malformed circular list can still break traversal.",complexity:"O(n) · O(1)"},
+            {num:"GFG",name:"Detect Loop Length",tag:"cycle length",desc:"Once a cycle is confirmed, find how many nodes are in the loop.",approach:"After slow and fast meet, keep one pointer fixed and advance the other, counting steps until it returns to the fixed pointer.",pitfall:"Starting the count from the head instead of from the meeting point — length must be measured strictly within the loop.",complexity:"O(n) · O(1)"},
+        ],
+        b: [
+            {num:"LC 876",name:"Middle of the Linked List",tag:"midpoint",desc:"Return the middle node of a singly linked list in one pass.",approach:"Run slow/fast until fast reaches the end. Slow lands on the middle (upper middle for even-length lists, by LeetCode's convention).",pitfall:"Traversing once to count length, then again to reach the middle — technically correct but defeats the one-pass point of the pattern.",complexity:"O(n) · O(1)"},
+            {num:"LC 234",name:"Palindrome Linked List",tag:"palindrome",desc:"Check whether a linked list reads the same forwards and backwards.",approach:"Find the middle with slow/fast, reverse the second half in place, then compare the two halves with a standard two-pointer walk.",pitfall:"Forgetting to restore the list's original structure afterward if the problem expects it unmodified.",complexity:"O(n) · O(1)"},
+            {num:"LC 143",name:"Reorder List",tag:"rearrange",desc:"Reorder a list from L0→L1→…→Ln to L0→Ln→L1→Ln-1→… in place.",approach:"Find the middle, reverse the second half, then merge the two halves by alternating nodes.",pitfall:"Not disconnecting the first half from the second before reversing — leftover links can create an accidental cycle.",complexity:"O(n) · O(1)"},
+            {num:"LC 2096",name:"Merge in Between Linked Lists",tag:"splice",desc:"Remove a range of nodes from one list and splice in another list in their place.",approach:"Use pointer advancement (a fast/slow-style walk with a fixed gap) to locate the boundary nodes, then relink.",pitfall:"Off-by-one when locating the node just before the removal range versus the node at the range's start.",complexity:"O(n) · O(1)"},
+            {num:"GFG",name:"Find Middle of Circular Linked List",tag:"midpoint variant",desc:"Same midpoint idea, applied to a list that loops back to its head.",approach:"Slow/fast traversal with the stopping condition adjusted to detect 'back at head' instead of 'hit null'.",pitfall:"Using the standard `fast.next == null` stop condition, which never triggers on a circular list — causes an infinite loop.",complexity:"O(n) · O(1)"},
+            {num:"LC 148",name:"Sort List (Merge Sort)",tag:"midpoint split",desc:"Sort a linked list using merge sort, which requires repeatedly splitting the list in half.",approach:"Use slow/fast to find the midpoint at each recursive level, split the list there, sort each half, then merge.",pitfall:"Not cutting the link between the two halves after finding the midpoint — merge sort needs two genuinely separate lists.",complexity:"O(n log n) · O(log n) recursion"},
+        ],
+        c: [
+            {num:"LC 19",name:"Remove Nth Node From End",tag:"fixed gap",desc:"Remove the n-th node from the end of a list in one pass.",approach:"Advance a fast pointer n steps ahead first, then move both pointers together — when fast hits the end, slow is right before the node to remove.",pitfall:"Off-by-one on how far ahead to advance fast initially — easy to remove the wrong node by one position.",complexity:"O(n) · O(1)"},
+            {num:"LC 160",name:"Intersection of Two Linked Lists",tag:"cycle trick",desc:"Find the node where two linked lists intersect, without extra space.",approach:"Not literally fast/slow, but the same family: walk both lists, and when one hits the end, redirect it to the other list's head. The pointers meet at the intersection because the combined path lengths equalize.",pitfall:"Assuming you need to compute list lengths first — the redirect trick makes that unnecessary.",complexity:"O(n+m) · O(1)"},
+        ]
+    };
+
+    function renderProblems(groupId, cls, arr){
+        const container = document.getElementById(groupId);
+        arr.forEach(p=>{
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            card.innerHTML = `
+      <div class="phead"><div><div class="pnum">${p.num}</div><div class="pname">${p.name}</div></div><div class="plc">${p.tag}</div></div>
+      <div class="pdesc">${p.desc}</div>
+      <div class="papproach"><b>Approach —</b> ${p.approach}</div>
+      <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+    `;
+            container.appendChild(card);
+        });
+    }
+    renderProblems("group-a","g1",problems.a);
+    renderProblems("group-b","g2",problems.b);
+    renderProblems("group-c","g3",problems.c);
+
+    /* ============ Mastery checklist ============ */
+    const allProblems = [
+        {n:"LC 141 Linked List Cycle", tier:"start here"},
+        {n:"LC 876 Middle of the Linked List", tier:"start here"},
+        {n:"LC 202 Happy Number", tier:"start here"},
+        {n:"LC 142 Linked List Cycle II", tier:"core"},
+        {n:"LC 19 Remove Nth Node From End", tier:"core"},
+        {n:"LC 234 Palindrome Linked List", tier:"core"},
+        {n:"LC 287 Find the Duplicate Number", tier:"core"},
+        {n:"LC 160 Intersection of Two Linked Lists", tier:"core"},
+        {n:"GFG Find Middle of Circular Linked List", tier:"stretch"},
+        {n:"GFG Detect Loop Length", tier:"stretch"},
+        {n:"LC 143 Reorder List", tier:"stretch"},
+        {n:"LC 457 Circular Array Loop", tier:"stretch"},
+        {n:"LC 148 Sort List (Merge Sort)", tier:"hard"},
+        {n:"LC 2096 Merge in Between Linked Lists", tier:"hard"},
+        {n:"GFG Detect Cycle in Circular Linked List", tier:"hard"},
+    ];
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress(){
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done/allProblems.length*100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+    allProblems.forEach(p=>{
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", ()=>{ item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>

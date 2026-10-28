@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Java Mastery · 50 Topics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #f6f8fc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --primary: #e11d48;
+            --primary-light: #fce7f3;
+            --primary-dark: #be123c;
+            --success: #22c55e;
+            --success-light: #f0fdf4;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --purple: #8b5cf6;
+            --purple-light: #ede9fe;
+            --blue: #3b82f6;
+            --blue-light: #dbeafe;
+            --orange: #f59e0b;
+            --orange-light: #fef3c7;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+            --font-code: 'Fira Code', monospace;
+        }
+        body.dark {
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #1e293b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #1e293b;
+            --primary: #fb7185;
+            --primary-light: #1a0a0a;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+        .app { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 380px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.2rem 1rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            flex-shrink: 0;
+            transition: background 0.3s, border 0.3s;
+            z-index: 10;
+        }
+        .sidebar-brand {
+            font-weight: 800;
+            font-size: 1.3rem;
+            padding: 0 0.5rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+        .sidebar-brand i { font-size: 1.6rem; }
+        .sidebar-stats {
+            display: flex;
+            gap: 6px;
+            padding: 0 0.5rem 1rem;
+            flex-wrap: wrap;
+        }
+        .sidebar-stats .stat {
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        body.dark .sidebar-stats .stat { background: #1a0a0a; color: #fb7185; }
+        .sidebar-search {
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+            position: relative;
+        }
+        .sidebar-search input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.2s;
+            color: var(--text);
+        }
+        .sidebar-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(225,29,72,0.2); }
+        .sidebar-search .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .topic-list {
+            list-style: none;
+            padding: 0 0.2rem;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+        .topic-list li {
+            padding: 4px 10px;
+            margin: 1px 0;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+        .topic-list li:hover { background: var(--border-light); }
+        .topic-list li.active {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+        body.dark .topic-list li.active { background: var(--primary); color: #0f172a; }
+        .topic-list li .badge {
+            margin-left: auto;
+            font-size: 0.45rem;
+            padding: 1px 8px;
+            border-radius: 30px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .topic-list li .badge.core { background: var(--primary-light); color: var(--primary-dark); }
+        .topic-list li .badge.advanced { background: var(--purple-light); color: #6d28d9; }
+        .topic-list li .badge.oop { background: var(--blue-light); color: #1d4ed8; }
+        .topic-list li .badge.done { background: var(--success-light); color: #166534; }
+        body.dark .topic-list li .badge.core { background: #1a0a0a; color: #fb7185; }
+        body.dark .topic-list li .badge.advanced { background: #1a1a2a; color: #a78bfa; }
+        body.dark .topic-list li .badge.oop { background: #0a1a2a; color: #60a5fa; }
+        body.dark .topic-list li .badge.done { background: #0f2a1a; color: #4ade80; }
+        .topic-list li .num { opacity: 0.4; font-size: 0.55rem; min-width: 20px; }
+
+        .progress-track {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .progress-track .bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .progress-track .bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .main {
+            flex: 1;
+            padding: 2rem 2.5rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-width: 0;
+            width: 100%;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .top-bar .breadcrumb {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .top-bar .breadcrumb span { color: var(--text-secondary); }
+        .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .top-actions button {
+            background: var(--border-light);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .top-actions button:hover { background: var(--border); }
+        body.dark .top-actions button { background: #334155; color: #e2e8f0; }
+        .top-actions button.primary { background: var(--primary); color: #fff; }
+        .top-actions button.primary:hover { background: var(--primary-dark); }
+
+        .topic-detail {
+            background: var(--bg-card);
+            padding: 2rem 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: background 0.3s, border 0.3s;
+        }
+        .topic-detail h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .topic-detail .sub {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .topic-detail .sub .tag {
+            font-size: 0.65rem;
+            padding: 2px 12px;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        .topic-detail .section {
+            margin: 1.8rem 0 0.8rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topic-detail p, .topic-detail li { line-height: 1.8; color: var(--text-secondary); }
+        .topic-detail ul, .topic-detail .code-box {
+            background: var(--border-light);
+            padding: 1.2rem 1.8rem;
+            border-radius: var(--radius-sm);
+            margin: 0.8rem 0;
+        }
+        .topic-detail ul li { margin: 4px 0; }
+        .code-box {
+            font-family: var(--font-code);
+            white-space: pre-wrap;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem 1.5rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .box {
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+        .box.tip { background: var(--primary-light); border-color: var(--primary); }
+        .box.mistake { background: var(--danger-light); border-color: var(--danger); }
+        .box.success { background: var(--success-light); border-color: var(--success); }
+        .box.purple { background: var(--purple-light); border-color: var(--purple); }
+        .box.blue { background: var(--blue-light); border-color: var(--blue); }
+        .box.orange { background: var(--orange-light); border-color: var(--orange); }
+        body.dark .box.tip { background: #1a0a0a; border-color: #fb7185; }
+        body.dark .box.mistake { background: #2d1a1a; border-color: #f87171; }
+        body.dark .box.success { background: #0f2a1a; border-color: #4ade80; }
+        body.dark .box.purple { background: #1a1a2a; border-color: #a78bfa; }
+        body.dark .box.blue { background: #0a1a2a; border-color: #60a5fa; }
+        body.dark .box.orange { background: #1a1a0a; border-color: #fbbf24; }
+        .box strong { color: var(--text); }
+
+        .keypoints { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.8rem 0; }
+        .keypoints span {
+            background: var(--border-light);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-family: var(--font-code);
+        }
+        body.dark .keypoints span { background: #334155; }
+
+        .related-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0.8rem 0;
+        }
+        .related-topics span {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            background: var(--border-light);
+            cursor: pointer;
+            transition: 0.15s;
+            color: var(--text-secondary);
+        }
+        .related-topics span:hover { background: var(--primary); color: #fff; }
+        body.dark .related-topics span:hover { background: var(--primary); color: #0f172a; }
+
+        @media (max-width: 820px) {
+            .app { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .topic-list { max-height: 250px; }
+            .main { padding: 1.2rem; }
+            .topic-detail { padding: 1.5rem; }
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--border-light); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        body.dark ::-webkit-scrollbar-track { background: #1e293b; }
+        body.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><i class="fab fa-java"></i> Java Mastery</div>
+        <div class="sidebar-stats">
+            <span class="stat" id="statTotal">📚 50 Topics</span>
+            <span class="stat" id="statDone">✅ 0 Done</span>
+            <span class="stat" id="statCore">⭐ 0 Core</span>
+            <span class="stat" id="statAdv">🚀 0 Advanced</span>
+        </div>
+        <div class="sidebar-search">
+            <span class="search-icon"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" placeholder="Search 50 topics..." />
+        </div>
+        <ul class="topic-list" id="topicList"></ul>
+        <div class="progress-track" id="progressTrack">
+            📌 0 / 50 mastered
+            <div class="bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+    </aside>
+    <main class="main">
+        <div class="top-bar">
+            <div class="breadcrumb"><i class="fas fa-coffee"></i> / <span id="breadcrumbTopic">Java</span></div>
+            <div class="top-actions">
+                <button id="markDoneBtn"><i class="fas fa-check-circle"></i> Mark Done</button>
+                <button id="cheatSheetToggle"><i class="fas fa-list-check"></i> Cheat Sheet</button>
+                <button id="themeToggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+        <div class="topic-detail" id="topicDetail"></div>
+    </main>
+</div>
+<script>
+    // ---- 50 JAVA TOPICS ----
+    var topics = [
+        // Core Java (0-24)
+        "JVM Architecture",
+        "JRE vs JDK vs JVM",
+        "Java Memory Management",
+        "Garbage Collection",
+        "Primitive Data Types",
+        "Operators in Java",
+        "Control Flow Statements",
+        "Object-Oriented Programming",
+        "Classes and Objects",
+        "Constructors",
+        "Inheritance",
+        "Polymorphism",
+        "Abstraction",
+        "Encapsulation",
+        "Interfaces",
+        "Abstract Classes",
+        "Packages and Imports",
+        "Access Modifiers",
+        "Non-Access Modifiers",
+        "Methods in Java",
+        "Method Overloading",
+        "Method Overriding",
+        "String Handling",
+        "StringBuilder vs StringBuffer",
+        "Wrapper Classes",
+        // Advanced Java (25-49)
+        "Exception Handling",
+        "Checked vs Unchecked Exceptions",
+        "Collections Framework",
+        "ArrayList vs LinkedList",
+        "HashMap vs Hashtable",
+        "Set Implementations",
+        "Queue and Deque",
+        "Generics",
+        "Lambda Expressions",
+        "Stream API",
+        "Optional Class",
+        "Date and Time API",
+        "File I/O",
+        "Serialization",
+        "Threads and Concurrency",
+        "Synchronization",
+        "Executor Framework",
+        "Atomic Variables",
+        "Annotations",
+        "Reflection API",
+        "JDBC",
+        "JPA and Hibernate",
+        "Spring Framework",
+        "Maven vs Gradle",
+        "Design Patterns"
+    ];
+
+    // ---- COMPLETE DATA FOR ALL 50 TOPICS ----
+    var topicData = {};
+
+    // Core topics (0-24)
+    topicData[0] = {
+        desc: "JVM (Java Virtual Machine) executes Java bytecode. It provides runtime environment, memory management, and platform independence.",
+        example: "JVM runs compiled .class files. Each OS has its own JVM implementation.",
+        diagram: "JVM ARCHITECTURE:\n+-----------------------+\n|  Class Loader         |\n|  (Loads .class files) |\n+-----------------------+\n           ↓\n+-----------------------+\n|  Runtime Data Area    |\n|  +-----------------+  |\n|  | Method Area     |  |\n|  | Heap            |  |\n|  | Stack           |  |\n|  | PC Registers    |  |\n|  | Native Method   |  |\n|  +-----------------+  |\n+-----------------------+\n           ↓\n+-----------------------+\n|  Execution Engine     |\n|  (Interpreter/JIT)    |\n+-----------------------+",
+        adv: "✅ Platform independent\n✅ Automatic memory management\n✅ Security\n✅ Performance (JIT)",
+        dis: "❌ Memory overhead\n❌ Startup time\n❌ Limited direct hardware access",
+        use: "Enterprise applications, Android, Web applications",
+        interview: "Q: JVM Architecture?\nA: Class Loader, Runtime Data Area (Heap, Stack, Method Area), Execution Engine.",
+        cheat: "• Class Loader: Loads .class\n• Heap: Objects\n• Stack: Primitives, references",
+        keypoints: ["JVM", "Bytecode", "Heap", "Stack"],
+        related: [1, 2, 3],
+        category: "core"
+    };
+    topicData[1] = {
+        desc: "JRE (Java Runtime Environment) provides libraries and JVM. JDK (Java Development Kit) includes JRE + development tools.",
+        example: "JDK contains javac (compiler), jar, javadoc. JRE only runs compiled code.",
+        diagram: "JDK (Development)\n+-----------------+\n|  JRE            |\n|  +-----------+  |\n|  | JVM       |  |\n|  | Libraries |  |\n|  +-----------+  |\n|  Tools (javac)  |\n+-----------------+\n\nJRE (Runtime)\n+-----------------+\n|  JVM            |\n|  Libraries      |\n+-----------------+",
+        adv: "✅ JDK: Full development\n✅ JRE: Lightweight runtime",
+        dis: "❌ JDK: Large size\n❌ JRE: Cannot compile",
+        use: "JDK: Development\nJRE: Production runtime",
+        interview: "Q: JVM vs JRE vs JDK?\nA: JVM executes code, JRE = JVM + libraries, JDK = JRE + dev tools.",
+        cheat: "• JDK: Dev kit\n• JRE: Runtime\n• JVM: Executes",
+        keypoints: ["JDK", "JRE", "JVM"],
+        related: [0, 2, 3],
+        category: "core"
+    };
+    topicData[2] = {
+        desc: "Java Memory Management handles object allocation and deallocation automatically.",
+        example: "Heap stores objects, Stack stores primitives and references.",
+        diagram: "MEMORY MANAGEMENT:\n+------------------+\n|  HEAP            |\n|  +------------+  |\n|  | Objects    |  |\n|  | Arrays     |  |\n|  +------------+  |\n+------------------+\n+------------------+\n|  STACK           |\n|  +------------+  |\n|  | Primitives |  |\n|  | References |  |\n|  +------------+  |\n+------------------+\n+------------------+\n|  METHOD AREA     |\n|  (Class data)    |\n+------------------+",
+        adv: "✅ Automatic GC\n✅ No manual memory management\n✅ Safe",
+        dis: "❌ GC pauses\n❌ Memory leaks possible\n❌ Control limited",
+        use: "All Java applications",
+        interview: "Q: Memory Management in Java?\nA: Heap for objects, Stack for primitives/references, GC handles cleanup.",
+        cheat: "• Heap: Objects\n• Stack: Primitives\n• GC: Automatic",
+        keypoints: ["Heap", "Stack", "GC"],
+        related: [0, 1, 3],
+        category: "core"
+    };
+    topicData[3] = {
+        desc: "Garbage Collection automatically reclaims memory from unreachable objects.",
+        example: "Objects with no references are eligible for GC.",
+        diagram: "GC ALGORITHMS:\n1. Mark and Sweep\n2. Generational\n\nGENERATIONS:\nYoung → Old → Permanent\n\nGC Types:\n- Serial (single thread)\n- Parallel (throughput)\n- CMS (low pause)\n- G1 (balanced)",
+        adv: "✅ Automatic\n✅ Prevents memory leaks\n✅ Safe",
+        dis: "❌ Pause times\n❌ Unpredictable\n❌ Overhead",
+        use: "All Java applications",
+        interview: "Q: Garbage Collection?\nA: Automatically frees unreachable objects. Generational GC is most common.",
+        cheat: "• Young Gen: New objects\n• Old Gen: Long-lived\n• GC Types: Serial, Parallel, CMS, G1",
+        keypoints: ["GC", "Generational", "Mark-Sweep"],
+        related: [0, 2, 4],
+        category: "core"
+    };
+    topicData[4] = {
+        desc: "Primitive Data Types are built-in types: byte, short, int, long, float, double, char, boolean.",
+        example: "int x = 10; double d = 3.14; boolean flag = true;",
+        diagram: "PRIMITIVE TYPES:\n+---------+---------+\n| Type    | Size    |\n+---------+---------+\n| byte    | 1 byte  |\n| short   | 2 bytes |\n| int     | 4 bytes |\n| long    | 8 bytes |\n| float   | 4 bytes |\n| double  | 8 bytes |\n| char    | 2 bytes |\n| boolean | 1 bit   |\n+---------+---------+",
+        adv: "✅ Fast\n✅ Memory efficient\n✅ Simple",
+        dis: "❌ Fixed size\n❌ No OOP features",
+        use: "All Java programs",
+        interview: "Q: Primitives in Java?\nA: byte, short, int, long, float, double, char, boolean.",
+        cheat: "• int: 4 bytes\n• double: 8 bytes\n• boolean: true/false",
+        keypoints: ["int", "double", "boolean", "char"],
+        related: [5, 10, 24],
+        category: "core"
+    };
+    topicData[5] = {
+        desc: "Operators in Java include arithmetic, relational, logical, bitwise, assignment, and ternary.",
+        example: "int sum = 10 + 20; boolean result = (a > b) && (c < d);",
+        diagram: "OPERATORS:\n1. Arithmetic: + - * / %\n2. Relational: == != > < >= <=\n3. Logical: && || !\n4. Bitwise: & | ^ ~ << >>\n5. Assignment: = += -= *= /=\n6. Ternary: condition ? true : false",
+        adv: "✅ Complete set\n✅ Type-safe\n✅ Standard",
+        dis: "❌ Precedence issues\n❌ Type coercion",
+        use: "All Java programs",
+        interview: "Q: Java operators?\nA: Arithmetic, Relational, Logical, Bitwise, Assignment, Ternary.",
+        cheat: "• + - * / %: Arithmetic\n• && || !: Logical\n• ? :: Ternary",
+        keypoints: ["Arithmetic", "Logical", "Ternary"],
+        related: [4, 6, 10],
+        category: "core"
+    };
+    topicData[6] = {
+        desc: "Control Flow Statements control program execution flow: if, if-else, switch, for, while, do-while.",
+        example: "if (condition) { } else { } for (int i = 0; i < 10; i++) { }",
+        diagram: "CONTROL FLOW:\n1. Conditional: if, if-else, switch\n2. Loops: for, while, do-while\n3. Branching: break, continue, return\n4. Exception: try-catch-finally",
+        adv: "✅ Flexible\n✅ Readable\n✅ Structured",
+        dis: "❌ Nested complexity\n❌ Switch limitations",
+        use: "All Java programs",
+        interview: "Q: Control Flow?\nA: Conditional statements, loops, branching, and exception handling.",
+        cheat: "• if: Conditional\n• for/while: Loops\n• break: Exit",
+        keypoints: ["if", "for", "while", "switch"],
+        related: [5, 7, 18],
+        category: "core"
+    };
+    topicData[7] = {
+        desc: "Object-Oriented Programming (OOP) principles: Encapsulation, Inheritance, Polymorphism, Abstraction.",
+        example: "Class defines blueprint. Object is instance.",
+        diagram: "OOP PRINCIPLES:\n1. ENCAPSULATION: Data hiding\n   +-----------------+\n   | Private fields  |\n   | Public methods  |\n   +-----------------+\n\n2. INHERITANCE: IS-A relationship\n   Parent → Child\n\n3. POLYMORPHISM: Multiple forms\n   Method overloading & overriding\n\n4. ABSTRACTION: Hide complexity\n   Abstract classes & interfaces",
+        adv: "✅ Reusability\n✅ Maintainability\n✅ Scalability",
+        dis: "❌ Complexity\n❌ Overhead\n❌ Learning curve",
+        use: "Enterprise applications, Frameworks",
+        interview: "Q: OOP Principles?\nA: Encapsulation, Inheritance, Polymorphism, Abstraction.",
+        cheat: "• Encapsulation: Data hiding\n• Inheritance: IS-A\n• Polymorphism: Multiple forms",
+        keypoints: ["Encapsulation", "Inheritance", "Polymorphism", "Abstraction"],
+        related: [8, 10, 11],
+        category: "core"
+    };
+    topicData[8] = {
+        desc: "Classes are blueprints for objects. Objects are instances of classes.",
+        example: "class Car { String model; int year; } Car myCar = new Car();",
+        diagram: "CLASS STRUCTURE:\n+-----------------+\n|  CLASS          |\n|  +-----------+  |\n|  | Fields    |  |\n|  | Methods   |  |\n|  | Construct-|  |\n|  | ors      |  |\n|  +-----------+  |\n+-----------------+\n\nOBJECT:\n+-----------------+\n|  Instance 1     |\n|  Instance 2     |\n+-----------------+",
+        adv: "✅ Organized\n✅ Reusable\n✅ Encapsulated",
+        dis: "❌ Verbose\n❌ Complexity",
+        use: "All OOP programs",
+        interview: "Q: Class vs Object?\nA: Class is blueprint. Object is instance with actual values.",
+        cheat: "• Class: Template\n• Object: Instance\n• new: Constructor",
+        keypoints: ["Class", "Object", "new"],
+        related: [7, 9, 10],
+        category: "core"
+    };
+    topicData[9] = {
+        desc: "Constructors initialize objects. Default constructor provided if none defined.",
+        example: "class Car { Car(String model) { this.model = model; } }",
+        diagram: "CONSTRUCTOR TYPES:\n1. Default (no args)\n2. Parameterized\n3. Copy\n4. Chaining (this())\n5. Private (singleton)",
+        adv: "✅ Initialization\n✅ Overloading\n✅ Chaining",
+        dis: "❌ No return type\n❌ Can't be inherited",
+        use: "All classes",
+        interview: "Q: Constructors?\nA: Special methods for object initialization. Overloaded and chained.",
+        cheat: "• Default: No args\n• Parameterized: With args\n• Chaining: this()",
+        keypoints: ["Constructor", "Default", "Parameterized"],
+        related: [8, 10, 11],
+        category: "core"
+    };
+    topicData[10] = {
+        desc: "Inheritance allows a class to inherit fields and methods from a parent class.",
+        example: "class Animal { } class Dog extends Animal { }",
+        diagram: "INHERITANCE:\nAnimal (Parent)\n  ↓\nDog (Child)\n\nTypes:\n1. Single: A → B\n2. Multilevel: A → B → C\n3. Hierarchical: A → B, A → C",
+        adv: "✅ Code reuse\n✅ Method overriding\n✅ Polymorphism",
+        dis: "❌ Tight coupling\n❌ Fragile base class",
+        use: "OOP patterns, Frameworks",
+        interview: "Q: Inheritance?\nA: Child class inherits from parent. Use 'extends' keyword.",
+        cheat: "• extends: Inheritance\n• super: Parent\n• override: Child method",
+        keypoints: ["extends", "super", "override"],
+        related: [7, 8, 11],
+        category: "core"
+    };
+    topicData[11] = {
+        desc: "Polymorphism means 'many forms'. Method overloading (compile-time) and method overriding (runtime).",
+        example: "Overloading: add(int a, int b) vs add(double a, double b)\nOverriding: Animal.speak() → Dog.speak()",
+        diagram: "POLYMORPHISM:\n1. COMPILE-TIME (Overloading)\n   add(int, int)\n   add(double, double)\n\n2. RUNTIME (Overriding)\n   Animal a = new Dog();\n   a.speak(); // Dog's speak",
+        adv: "✅ Flexibility\n✅ Reusability\n✅ Extensibility",
+        dis: "❌ Complexity\n❌ Performance overhead",
+        use: "OOP patterns, Frameworks",
+        interview: "Q: Polymorphism?\nA: Many forms. Overloading (compile-time) and Overriding (runtime).",
+        cheat: "• Overloading: Same name, different args\n• Overriding: Child redefines parent",
+        keypoints: ["Overloading", "Overriding", "Runtime"],
+        related: [7, 10, 20],
+        category: "core"
+    };
+    topicData[12] = {
+        desc: "Abstraction hides implementation details and shows only essential features.",
+        example: "Abstract class Vehicle { abstract void start(); } Car implements start.",
+        diagram: "ABSTRACTION:\n+-----------------+\n|  Abstract Class |\n|  +-----------+  |\n|  | abstract  |  |\n|  | methods   |  |\n|  | concrete  |  |\n|  | methods   |  |\n|  +-----------+  |\n+-----------------+\n        ↓\n+-----------------+\n|  Concrete Class |\n|  Implements     |\n|  abstract       |\n|  methods        |\n+-----------------+",
+        adv: "✅ Hides complexity\n✅ Defines contract\n✅ Reusable",
+        dis: "❌ More code\n❌ Complexity",
+        use: "Frameworks, APIs, Design patterns",
+        interview: "Q: Abstraction?\nA: Hide implementation. Use abstract classes and interfaces.",
+        cheat: "• Abstract: Incomplete\n• Interface: Contract\n• Implementation: Concrete",
+        keypoints: ["Abstract", "Interface", "Implementation"],
+        related: [7, 14, 15],
+        category: "core"
+    };
+    topicData[13] = {
+        desc: "Encapsulation bundles data and methods within a class, hiding internal state.",
+        example: "Private fields + public getters/setters.",
+        diagram: "ENCAPSULATION:\n+-----------------+\n|  CLASS          |\n|  +-----------+  |\n|  | Private   |  |\n|  | fields    |  |\n|  +-----------+  |\n|  +-----------+  |\n|  | Public    |  |\n|  | getters/  |  |\n|  | setters   |  |\n|  +-----------+  |\n+-----------------+",
+        adv: "✅ Data hiding\n✅ Controlled access\n✅ Maintainability",
+        dis: "❌ More code\n❌ Performance overhead",
+        use: "All OOP programs",
+        interview: "Q: Encapsulation?\nA: Bundle data + methods, hide internal state. Use private fields + public methods.",
+        cheat: "• Private: Hidden\n• Public: Accessible\n• Getters/Setters: Control",
+        keypoints: ["Encapsulation", "Private", "Getters"],
+        related: [7, 8, 17],
+        category: "core"
+    };
+    topicData[14] = {
+        desc: "Interfaces define contracts that classes implement. All methods are abstract by default.",
+        example: "interface Drawable { void draw(); } class Circle implements Drawable",
+        diagram: "INTERFACE:\n+-----------------+\n|  INTERFACE      |\n|  +-----------+  |\n|  | abstract  |  |\n|  | methods   |  |\n|  | constants |  |\n|  +-----------+  |\n+-----------------+\n        ↓\n+-----------------+\n|  CLASS          |\n|  implements     |\n|  interface      |\n|  (provides body)|\n+-----------------+",
+        adv: "✅ Contract\n✅ Multiple inheritance\n✅ Loose coupling",
+        dis: "❌ No state\n❌ No method bodies (default/static exceptions)",
+        use: "APIs, Frameworks, Design patterns",
+        interview: "Q: Interfaces?\nA: Contract that classes implement. Supports multiple inheritance.",
+        cheat: "• interface: Contract\n• implements: Implementation\n• default: Method body",
+        keypoints: ["Interface", "implements", "Contract"],
+        related: [7, 12, 15],
+        category: "core"
+    };
+    topicData[15] = {
+        desc: "Abstract classes can have both abstract and concrete methods. Cannot be instantiated.",
+        example: "abstract class Animal { abstract void speak(); void eat() { } }",
+        diagram: "ABSTRACT CLASS:\n+-----------------+\n|  ABSTRACT       |\n|  CLASS          |\n|  +-----------+  |\n|  | abstract  |  |\n|  | methods   |  |\n|  | concrete  |  |\n|  | methods   |  |\n|  | fields    |  |\n|  +-----------+  |\n+-----------------+",
+        adv: "✅ Partial implementation\n✅ State\n✅ Reuse",
+        dis: "❌ Single inheritance\n❌ Cannot instantiate",
+        use: "Base classes, Frameworks",
+        interview: "Q: Abstract Class vs Interface?\nA: Abstract can have state/body. Interface is pure contract (mostly).",
+        cheat: "• abstract: Partial implementation\n• extends: Inheritance",
+        keypoints: ["Abstract", "Concrete", "extends"],
+        related: [7, 12, 14],
+        category: "core"
+    };
+    topicData[16] = {
+        desc: "Packages group related classes. Imports allow using classes from other packages.",
+        example: "package com.example; import java.util.*;",
+        diagram: "PACKAGE STRUCTURE:\ncom\n  ↓\nexample\n  ↓\nmodel\n  ↓\nUser.java\n\nimport java.util.ArrayList;\nimport java.util.List;\n\nStatic import:\nimport static java.lang.Math.*;",
+        adv: "✅ Organized\n✅ Namespace control\n✅ Access control",
+        dis: "❌ Verbose imports\n❌ Conflicts",
+        use: "All Java projects",
+        interview: "Q: Packages and Imports?\nA: Packages organize code. Imports bring classes from other packages.",
+        cheat: "• package: Group classes\n• import: Bring in classes\n• *: All classes",
+        keypoints: ["Package", "Import", "Namespace"],
+        related: [8, 17, 18],
+        category: "core"
+    };
+    topicData[17] = {
+        desc: "Access modifiers control visibility: public, protected, default (package), private.",
+        example: "public class MyClass { private int x; protected void method() { } }",
+        diagram: "ACCESS MODIFIERS:\n+---------+---------+---------+---------+\n| Modifier| Class   | Package | Subclass| World   |\n+---------+---------+---------+---------+---------+\n| public  | ✅      | ✅      | ✅      | ✅      |\n| protect | ✅      | ✅      | ✅      | ❌      |\n| default | ✅      | ✅      | ❌      | ❌      |\n| private | ✅      | ❌      | ❌      | ❌      |\n+---------+---------+---------+---------+---------+",
+        adv: "✅ Encapsulation\n✅ Control\n✅ Security",
+        dis: "❌ Complexity\n❌ Overuse",
+        use: "All classes",
+        interview: "Q: Access modifiers?\nA: public, protected, default (package), private.",
+        cheat: "• private: Class only\n• default: Package only\n• protected: Package + subclasses\n• public: All",
+        keypoints: ["public", "private", "protected", "default"],
+        related: [7, 13, 18],
+        category: "core"
+    };
+    topicData[18] = {
+        desc: "Non-access modifiers: static, final, abstract, synchronized, volatile, transient, native.",
+        example: "static int count; final int MAX = 100; synchronized void method() { }",
+        diagram: "NON-ACCESS MODIFIERS:\n1. static: Class-level\n2. final: Constant/No override\n3. abstract: Incomplete\n4. synchronized: Thread-safe\n5. volatile: Visibility\n6. transient: No serialize\n7. native: Native method",
+        adv: "✅ Additional behavior\n✅ Control\n✅ Performance",
+        dis: "❌ Complexity\n❌ Overuse",
+        use: "All Java programs",
+        interview: "Q: Non-access modifiers?\nA: static, final, abstract, synchronized, volatile, transient, native.",
+        cheat: "• static: Class-level\n• final: Constant\n• synchronized: Thread-safe",
+        keypoints: ["static", "final", "synchronized"],
+        related: [17, 19, 25],
+        category: "core"
+    };
+    topicData[19] = {
+        desc: "Methods define behavior. Can have parameters, return type, and access modifiers.",
+        example: "public int add(int a, int b) { return a + b; }",
+        diagram: "METHOD STRUCTURE:\n[Access] [Modifier] ReturnType Name(Params) {\n  // Body\n}\n\nExamples:\npublic void greet() { }\nprivate int calculate(int x) { }\npublic static void main(String[] args) { }",
+        adv: "✅ Modular\n✅ Reusable\n✅ Encapsulated",
+        dis: "❌ Overhead\n❌ Complexity",
+        use: "All Java programs",
+        interview: "Q: Methods in Java?\nA: Define behavior. Have access modifier, return type, name, parameters.",
+        cheat: "• void: No return\n• return: Value\n• params: Input",
+        keypoints: ["Method", "Return", "Parameter"],
+        related: [8, 18, 20],
+        category: "core"
+    };
+    topicData[20] = {
+        desc: "Method overloading allows multiple methods with same name but different parameters.",
+        example: "void print(int x) { } void print(String s) { }",
+        diagram: "OVERLOADING:\nadd(int a, int b)\nadd(int a, int b, int c)\nadd(double a, double b)\n\nRules:\n1. Different parameter count\n2. Different parameter types\n3. Different parameter order\n4. Return type doesn't matter",
+        adv: "✅ Flexibility\n✅ Clean API\n✅ Overloaded behavior",
+        dis: "❌ Confusing\n❌ Complexity",
+        use: "Utility classes, Builder pattern",
+        interview: "Q: Method Overloading?\nA: Same name, different parameters. Compile-time polymorphism.",
+        cheat: "• Overloading: Same name\n• Different params\n• Compile-time",
+        keypoints: ["Overload", "Compile-time", "Parameters"],
+        related: [11, 19, 21],
+        category: "core"
+    };
+    topicData[21] = {
+        desc: "Method overriding allows subclass to provide specific implementation of parent method.",
+        example: "class Animal { void speak() { } } class Dog { @Override void speak() { } }",
+        diagram: "OVERRIDING:\nAnimal.speak()\n    ↓\nDog.speak() // Override\n\nRules:\n1. Same name, params\n2. Same return type (or covariant)\n3. Cannot be more restrictive\n4. @Override annotation",
+        adv: "✅ Polymorphism\n✅ Specific behavior\n✅ Extensibility",
+        dis: "❌ Complexity\n❌ Fragile base class",
+        use: "OOP, Frameworks",
+        interview: "Q: Method Overriding?\nA: Child provides specific implementation. Runtime polymorphism.",
+        cheat: "• Override: Child defines\n• @Override: Annotation\n• Runtime: Polymorphism",
+        keypoints: ["Override", "Runtime", "Polymorphism"],
+        related: [11, 20, 25],
+        category: "core"
+    };
+    topicData[22] = {
+        desc: "String handling in Java. Strings are immutable objects in the String pool.",
+        example: "String s1 = \"Hello\"; String s2 = new String(\"Hello\");",
+        diagram: "STRING POOL:\n+-----------------+\n|  String Pool    |\n|  +-----------+  |\n|  | \"Hello\"   |  |\n|  | \"World\"   |  |\n|  +-----------+  |\n+-----------------+\n\nString Methods:\nlength(), charAt(), substring(),\nindexOf(), toUpperCase(),\ntrim(), replace(), split(),\ncontains(), equals()",
+        adv: "✅ Immutable\n✅ String pool\n✅ Rich API",
+        dis: "❌ Performance (many operations)\n❌ Memory",
+        use: "All Java programs",
+        interview: "Q: String handling?\nA: Immutable. Uses string pool. Various methods for manipulation.",
+        cheat: "• Immutable: Cannot change\n• Pool: Reuse\n• Methods: length, substring, split",
+        keypoints: ["String", "Immutable", "Pool"],
+        related: [23, 24, 28],
+        category: "core"
+    };
+    topicData[23] = {
+        desc: "StringBuilder (mutable, not thread-safe) vs StringBuffer (mutable, thread-safe).",
+        example: "StringBuilder sb = new StringBuilder(\"Hello\"); sb.append(\" World\");",
+        diagram: "STRINGBUILDER vs STRINGBUFFER:\n+-----------------+-----------------+\n| StringBuilder   | StringBuffer    |\n+-----------------+-----------------+\n| Mutable         | Mutable         |\n| Not thread-safe | Thread-safe     |\n| Faster          | Slower          |\n| Use in single   | Use in multi-  |\n| thread          | thread          |\n+-----------------+-----------------+",
+        adv: "StringBuilder: Fast, Efficient\nStringBuffer: Safe, Thread-safe",
+        dis: "StringBuilder: Not thread-safe\nStringBuffer: Slower",
+        use: "StringBuilder: Single-thread\nStringBuffer: Multi-thread",
+        interview: "Q: StringBuilder vs StringBuffer?\nA: StringBuilder is faster but not thread-safe. StringBuffer is thread-safe.",
+        cheat: "• StringBuilder: Fast, not safe\n• StringBuffer: Safe, slower",
+        keypoints: ["StringBuilder", "StringBuffer", "Thread-safe"],
+        related: [22, 24, 25],
+        category: "core"
+    };
+    topicData[24] = {
+        desc: "Wrapper classes convert primitives to objects: Integer, Double, Boolean, etc.",
+        example: "Integer x = 10; int y = x.intValue();",
+        diagram: "WRAPPER CLASSES:\nPrimitive → Wrapper\nbyte → Byte\nshort → Short\nint → Integer\nlong → Long\nfloat → Float\ndouble → Double\nchar → Character\nboolean → Boolean\n\nAuto-boxing: int → Integer\ne.g., Integer x = 10;",
+        adv: "✅ Object features\n✅ Collections\n✅ Nullable",
+        dis: "❌ Overhead\n❌ Memory\n❌ Performance",
+        use: "Collections, Generics, APIs",
+        interview: "Q: Wrapper Classes?\nA: Convert primitives to objects. Auto-boxing/unboxing.",
+        cheat: "• Integer: int wrapper\n• Double: double wrapper\n• Autoboxing: Automatic",
+        keypoints: ["Wrapper", "Autoboxing", "Unboxing"],
+        related: [4, 10, 28],
+        category: "core"
+    };
+
+    // Advanced topics (25-49)
+    for (var i = 25; i < 50; i++) {
+        topicData[i] = {
+            desc: "Advanced Java concept with practical applications in enterprise development.",
+            example: "Practical example demonstrating this concept in action.",
+            diagram: "+-----------------------------------+\n|  Visual representation of this   |\n|  concept to help understanding   |\n+-----------------------------------+",
+            adv: "✅ Improves code quality\n✅ Better performance\n✅ Cleaner architecture",
+            dis: "❌ Learning curve\n❌ Can be overused\n❌ May affect readability",
+            use: "Enterprise development, Frameworks, Libraries",
+            interview: "Q: How would you explain this concept?\nA: Focus on practical applications and common use cases.",
+            cheat: "• Key point 1\n• Key point 2\n• Key point 3",
+            keypoints: ["Concept 1", "Concept 2", "Concept 3"],
+            related: [0, 1, 2],
+            category: "advanced"
+        };
+    }
+
+    // Override specific advanced topics with detailed data
+    var advancedDetails = {
+        25: { desc: "Exception Handling provides graceful error handling using try-catch-finally and throws.", example: "try { risky(); } catch (Exception e) { handle(); } finally { cleanup(); }", diagram: "EXCEPTION HIERARCHY:\nThrowable\n  ├── Error (unchecked)\n  └── Exception\n       ├── RuntimeException (unchecked)\n       └── Checked Exception\n\nKeywords:\ntry, catch, finally, throw, throws", adv: "✅ Graceful failure\n✅ Error recovery\n✅ Cleanup\n✅ Debugging", dis: "❌ Performance overhead\n❌ Verbose\n❌ Can hide issues", use: "All Java applications", interview: "Q: Exception Handling?\nA: try-catch-finally for handling exceptions. Checked vs unchecked.", cheat: "• try: Risky code\n• catch: Handle\n• finally: Cleanup\n• throw: Custom", keypoints: ["try/catch", "Checked", "Unchecked"], related: [18, 19, 26], category: "advanced" },
+        26: { desc: "Checked exceptions must be handled or declared. Unchecked exceptions (Runtime) don't force handling.", example: "IOException (checked) vs NullPointerException (unchecked).", diagram: "CHECKED vs UNCHECKED:\n+-----------------+-----------------+\n| Checked         | Unchecked       |\n+-----------------+-----------------+\n| Must handle     | Optional        |\n| Compile-time    | Runtime         |\n| IOException     | NullPointer     |\n| SQLException    | ArrayIndexOut   |\n| FileNotFound    | Arithmetic      |\n+-----------------+-----------------+", adv: "Checked: Safer, Enforced\nUnchecked: Flexible", dis: "Checked: Verbose\nUnchecked: Can be ignored", use: "Checked: I/O, DB\nUnchecked: Programming errors", interview: "Q: Checked vs Unchecked?\nA: Checked must be handled. Unchecked is optional (programming errors).", cheat: "• Checked: Compile-time\n• Unchecked: Runtime", keypoints: ["Checked", "Unchecked", "Runtime"], related: [25, 19, 20], category: "advanced" },
+        27: { desc: "Collections Framework provides data structures: List, Set, Queue, Map.", example: "List<String> list = new ArrayList<>(); Set<Integer> set = new HashSet<>();", diagram: "COLLECTIONS HIERARCHY:\nIterable\n  ├── Collection\n  │   ├── List\n  │   │   ├── ArrayList\n  │   │   └── LinkedList\n  │   ├── Set\n  │   │   ├── HashSet\n  │   │   └── TreeSet\n  │   └── Queue\n  │       ├── PriorityQueue\n  │       └── ArrayDeque\n  └── Map\n      ├── HashMap\n      ├── TreeMap\n      └── LinkedHashMap", adv: "✅ Rich API\n✅ Performance\n✅ Reusable", dis: "❌ Complexity\n❌ Overhead\n❌ Learning curve", use: "All Java programs", interview: "Q: Collections Framework?\nA: Interfaces and implementations for data structures: List, Set, Map, Queue.", cheat: "• List: Ordered\n• Set: Unique\n• Map: Key-value\n• Queue: FIFO", keypoints: ["List", "Set", "Map", "Queue"], related: [28, 29, 30], category: "advanced" },
+        28: { desc: "ArrayList (resizable array) vs LinkedList (doubly-linked list).", example: "ArrayList for random access. LinkedList for frequent insertions/deletions.", diagram: "ARRAYLIST vs LINKEDLIST:\n+-----------------+-----------------+\n| ArrayList       | LinkedList      |\n+-----------------+-----------------+\n| O(1) access     | O(n) access     |\n| O(n) insert     | O(1) insert     |\n| O(n) delete     | O(1) delete     |\n| Contiguous      | Non-contiguous  |\n| Less memory     | More memory     |\n+-----------------+-----------------+", adv: "ArrayList: Fast random access\nLinkedList: Fast insert/delete", dis: "ArrayList: Slow insert/delete\nLinkedList: Slow random access", use: "ArrayList: Get operations\nLinkedList: Insert/Delete", interview: "Q: ArrayList vs LinkedList?\nA: ArrayList fast access, LinkedList fast insert/delete.", cheat: "• ArrayList: Access O(1)\n• LinkedList: Insert O(1)", keypoints: ["ArrayList", "LinkedList", "Performance"], related: [27, 29, 30], category: "advanced" },
+        29: { desc: "HashMap (non-synchronized) vs Hashtable (synchronized). Also ConcurrentHashMap.", example: "Map<String, Integer> map = new HashMap<>();", diagram: "HASHMAP vs HASHTABLE:\n+-----------------+-----------------+\n| HashMap         | Hashtable       |\n+-----------------+-----------------+\n| Not sync        | Sync            |\n| Allows null     | No null         |\n| Fast            | Slower          |\n| Fail-fast       | Fail-fast       |\n| Use in single   | Use in multi-  |\n| thread          | thread          |\n+-----------------+-----------------+", adv: "HashMap: Fast, Flexible\nHashtable: Thread-safe", dis: "HashMap: Not thread-safe\nHashtable: Slower", use: "HashMap: Single-thread\nHashtable: Legacy, ConcurrentHashMap for modern", interview: "Q: HashMap vs Hashtable?\nA: HashMap not synchronized, allows null. Hashtable is synchronized.", cheat: "• HashMap: Not safe\n• Hashtable: Safe\n• ConcurrentHashMap: Better", keypoints: ["HashMap", "Hashtable", "Concurrent"], related: [27, 28, 30], category: "advanced" },
+        30: { desc: "Set implementations: HashSet (unordered), TreeSet (sorted), LinkedHashSet (ordered).", example: "Set<String> hashSet = new HashSet<>(); Set<String> treeSet = new TreeSet<>();", diagram: "SET IMPLEMENTATIONS:\n+-----------------+-----------------+-----------------+\n| HashSet         | TreeSet         | LinkedHashSet   |\n+-----------------+-----------------+-----------------+\n| O(1) operations | O(log n)        | O(1) operations |\n| Unordered       | Sorted          | Insertion order |\n| Fast            | Navigable       | Predictable     |\n| Uses hashCode   | Uses compare    | Uses hashCode   |\n+-----------------+-----------------+-----------------+", adv: "HashSet: Fast\nTreeSet: Sorted\nLinkedHashSet: Ordered", dis: "HashSet: No order\nTreeSet: Slower\nLinkedHashSet: Memory", use: "HashSet: Quick lookups\nTreeSet: Sorted data\nLinkedHashSet: Ordered iteration", interview: "Q: Set implementations?\nA: HashSet (fast), TreeSet (sorted), LinkedHashSet (ordered).", cheat: "• HashSet: Unordered\n• TreeSet: Sorted\n• LinkedHashSet: Insertion order", keypoints: ["HashSet", "TreeSet", "LinkedHashSet"], related: [27, 28, 29], category: "advanced" },
+        31: { desc: "Queue (FIFO) and Deque (double-ended) interfaces.", example: "Queue<Integer> queue = new LinkedList<>(); Deque<Integer> deque = new ArrayDeque<>();", diagram: "QUEUE vs DEQUE:\n+-----------------+-----------------+\n| Queue           | Deque           |\n+-----------------+-----------------+\n| FIFO            | Both ends       |\n| offer/poll      | offerFirst/Last |\n| element/peek    | peekFirst/Last  |\n+-----------------+-----------------+\n\nImplementations:\nQueue: LinkedList, PriorityQueue\nDeque: ArrayDeque, LinkedList", adv: "Queue: FIFO\nDeque: Both ends", dis: "Queue: Limited\nDeque: More complex", use: "Queue: BFS, Buffering\nDeque: Sliding window, Stack", interview: "Q: Queue and Deque?\nA: Queue is FIFO. Deque is double-ended (can add/remove both ends).", cheat: "• Queue: FIFO\n• Deque: Both ends", keypoints: ["Queue", "Deque", "FIFO"], related: [27, 28, 30], category: "advanced" },
+        32: { desc: "Generics provide type safety at compile time. Type parameters: <T>, <E>, <K,V>.", example: "class Box<T> { private T value; public T getValue() { return value; } }", diagram: "GENERICS:\n1. Type parameters: <T>\n2. Bounded: <T extends Number>\n3. Wildcards: ? extends, ? super\n4. Generic methods\n\nBenefits:\n- Type safety\n- No casting\n- Reusable code", adv: "✅ Type safety\n✅ No casting\n✅ Reusable\n✅ Compile-time check", dis: "❌ Type erasure\n❌ Complexity\n❌ Cannot use primitives", use: "Collections, Utility classes, APIs", interview: "Q: Generics?\nA: Type parameters provide compile-time type safety. Type erasure at runtime.", cheat: "• <T>: Type parameter\n• extends: Upper bound\n• ?: Wildcard", keypoints: ["Generics", "Type safety", "Erasure"], related: [27, 28, 29], category: "advanced" },
+        33: { desc: "Lambda expressions enable functional programming. (parameters) -> expression.", example: "List<Integer> list = Arrays.asList(1,2,3); list.forEach(n -> System.out.println(n));", diagram: "LAMBDA SYNTAX:\n(parameters) -> { body }\n\nExamples:\n(x) -> x * 2\n(x, y) -> x + y\n() -> 42\n\nFunctional Interfaces:\nPredicate<T>, Function<T,R>,\nConsumer<T>, Supplier<T>,", adv: "✅ Concise\n✅ Functional\n✅ Stream API\n✅ Readable", dis: "❌ Learning curve\n❌ Debugging hard\n❌ Performance overhead", use: "Streams, Functional programming, Event handling", interview: "Q: Lambda expressions?\nA: Anonymous functions enabling functional programming in Java.", cheat: "• (param) → expression\n• Functional Interfaces\n• Stream API", keypoints: ["Lambda", "Functional", "Stream"], related: [34, 35, 38], category: "advanced" },
+        34: { desc: "Stream API provides functional operations on collections: map, filter, reduce.", example: "list.stream().filter(x -> x > 0).map(x -> x*2).collect(Collectors.toList());", diagram: "STREAM OPERATIONS:\n1. Intermediate: map, filter, sorted, distinct\n2. Terminal: forEach, collect, reduce, count\n\nPipeline:\nSource → Intermediate → ... → Terminal\n\nParallel: parallelStream()", adv: "✅ Functional\n✅ Lazy\n✅ Parallel\n✅ Concise", dis: "❌ Learning curve\n❌ Debugging hard\n❌ Overhead", use: "Data processing, Collections", interview: "Q: Stream API?\nA: Functional operations on collections. map, filter, reduce, collect.", cheat: "• map: Transform\n• filter: Select\n• reduce: Aggregate\n• collect: Collect", keypoints: ["Stream", "map", "filter", "reduce"], related: [33, 35, 36], category: "advanced" },
+        35: { desc: "Optional class handles null values safely, avoiding NullPointerException.", example: "Optional<String> opt = Optional.ofNullable(value); opt.ifPresent(System.out::println);", diagram: "OPTIONAL METHODS:\n1. of(value) - non-null\n2. ofNullable(value) - nullable\n3. empty()\n4. isPresent()\n5. ifPresent(consumer)\n6. orElse(default)\n7. orElseGet(supplier)\n8. orElseThrow()", adv: "✅ Null safety\n✅ Explicit handling\n✅ Rich API", dis: "❌ Overhead\n❌ Complexity\n❌ Not for fields", use: "Return values, Optional parameters", interview: "Q: Optional class?\nA: Container for potentially null values. Prevents NullPointerException.", cheat: "• ofNullable: Nullable\n• orElse: Default\n• ifPresent: Consumer", keypoints: ["Optional", "Null safety", "orElse"], related: [22, 33, 34], category: "advanced" },
+        36: { desc: "Date and Time API (java.time) provides modern date/time handling.", example: "LocalDate date = LocalDate.now(); LocalDateTime dt = LocalDateTime.now();", diagram: "DATE/TIME API:\n1. LocalDate, LocalTime, LocalDateTime\n2. ZonedDateTime\n3. Instant (timestamp)\n4. Duration, Period\n5. DateTimeFormatter\n6. TemporalAdjusters\n\nOld API: Date, Calendar (deprecated)", adv: "✅ Immutable\n✅ Thread-safe\n✅ Clean API\n✅ Timezone support", dis: "❌ Learning curve\n❌ Compatibility", use: "All date/time operations", interview: "Q: Date and Time API?\nA: java.time provides modern, immutable date/time handling.", cheat: "• LocalDate: Date only\n• LocalDateTime: Date+Time\n• ZonedDateTime: With timezone", keypoints: ["LocalDate", "LocalDateTime", "Duration"], related: [22, 33, 34], category: "advanced" },
+        37: { desc: "File I/O operations using File, FileReader, FileWriter, BufferedReader, BufferedWriter.", example: "try (BufferedReader reader = new BufferedReader(new FileReader(\"file.txt\"))) { }", diagram: "FILE I/O:\n1. File (file/dir info)\n2. FileReader, FileWriter (character)\n3. FileInputStream, FileOutputStream (byte)\n4. BufferedReader, BufferedWriter (buffered)\n5. NIO: Path, Files, Channels\n\nTry-with-resources:\ntry (Resource r = new Resource()) { }", adv: "✅ Rich API\n✅ Buffered\n✅ NIO available\n✅ Try-with-resources", dis: "❌ Boilerplate\n❌ Error handling\n❌ Performance", use: "File reading/writing, Configuration, Logs", interview: "Q: File I/O in Java?\nA: Use FileReader/FileWriter or NIO. Try-with-resources for auto-close.", cheat: "• Reader/Writer: Text\n• Stream: Bytes\n• NIO: Modern", keypoints: ["File", "Reader", "Writer", "NIO"], related: [25, 26, 38], category: "advanced" },
+        38: { desc: "Serialization converts objects to bytes and back for persistence or transmission.", example: "class User implements Serializable { private static final long serialVersionUID = 1L; }", diagram: "SERIALIZATION:\nObject → Serialize → Bytes\nBytes → Deserialize → Object\n\n1. Serializable interface\n2. serialVersionUID\n3. transient fields (skip)\n4. Externalizable (custom)\n5. ObjectOutputStream/ObjectInputStream", adv: "✅ Persistence\n✅ Transmission\n✅ Standard", dis: "❌ Performance\n❌ Security\n❌ Versioning issues", use: "Caching, Network, Persistence", interview: "Q: Serialization?\nA: Convert object to bytes. Implement Serializable interface.", cheat: "• Serializable: Interface\n• transient: Skip\n• serialVersionUID: Version", keypoints: ["Serialization", "transient", "serialVersionUID"], related: [25, 37, 39], category: "advanced" },
+        39: { desc: "Threads and Concurrency enable multiple tasks to run in parallel.", example: "class MyThread extends Thread { public void run() { } }\nRunnable task = () -> { };", diagram: "THREADS:\n1. Thread class\n2. Runnable interface\n3. Callable interface\n\nThread States:\nNEW → RUNNABLE → BLOCKED → WAITING → TIMED_WAITING → TERMINATED\n\nSynchronization:\nsynchronized keyword, Lock interface", adv: "✅ Parallel processing\n✅ Responsiveness\n✅ Performance", dis: "❌ Complexity\n❌ Race conditions\n❌ Deadlocks", use: "Web servers, Async processing, UI", interview: "Q: Threads and Concurrency?\nA: Threads enable parallel execution. Use synchronized for shared data.", cheat: "• Thread: Run\n• Runnable: Task\n• synchronized: Protection", keypoints: ["Thread", "Runnable", "synchronized"], related: [40, 41, 42], category: "advanced" },
+        40: { desc: "Synchronization prevents data inconsistency when multiple threads access shared data.", example: "public synchronized void increment() { count++; }\nprivate Object lock = new Object();", diagram: "SYNCHRONIZATION:\n1. Synchronized methods\n2. Synchronized blocks\n3. Lock interface (ReentrantLock)\n4. Atomic classes\n\nDeadlock:\nTwo threads waiting for each other's locks\n\nAvoid:\n- Lock ordering\n- Timeout\n- ThreadLocal", adv: "✅ Thread-safe\n✅ Data consistency\n✅ Built-in", dis: "❌ Performance overhead\n❌ Deadlocks\n❌ Contention", use: "Shared data, Counters, Collections", interview: "Q: Synchronization?\nA: Controls access to shared data. Use synchronized keyword or Lock.", cheat: "• synchronized: Protection\n• Lock: More control\n• Deadlock: Prevent", keypoints: ["synchronized", "Lock", "Deadlock"], related: [39, 41, 42], category: "advanced" },
+        41: { desc: "Executor Framework manages thread pools. Executors, ExecutorService, ScheduledExecutorService.", example: "ExecutorService executor = Executors.newFixedThreadPool(10); executor.submit(() -> {});", diagram: "EXECUTOR FRAMEWORK:\n1. Executors.newFixedThreadPool(n)\n2. Executors.newCachedThreadPool()\n3. Executors.newSingleThreadExecutor()\n4. Executors.newScheduledThreadPool(n)\n\nsubmit(task) → Future\ninvokeAll(tasks)\nshutdown()\nshutdownNow()", adv: "✅ Thread management\n✅ Reuse\n✅ Control\n✅ Configurable", dis: "❌ Complexity\n❌ Resource management", use: "Async tasks, Batch processing, Scheduling", interview: "Q: Executor Framework?\nA: Manages thread pools. Submit tasks, get Future results.", cheat: "• FixedThreadPool: n threads\n• Cached: Dynamic\n• Single: One thread", keypoints: ["Executor", "Thread Pool", "Future"], related: [39, 40, 42], category: "advanced" },
+        42: { desc: "Atomic variables provide thread-safe operations without locks.", example: "AtomicInteger count = new AtomicInteger(0); count.incrementAndGet();", diagram: "ATOMIC CLASSES:\n1. AtomicInteger\n2. AtomicLong\n3. AtomicBoolean\n4. AtomicReference\n5. AtomicIntegerArray\n\nMethods:\nget(), set(), getAndSet(),\ncompareAndSet(), incrementAndGet(),\naddAndGet(), getAndAdd()", adv: "✅ Lock-free\n✅ Fast\n✅ Thread-safe", dis: "❌ Limited to single variable\n❌ ABA problem", use: "Counters, Statistics, Flags", interview: "Q: Atomic variables?\nA: Thread-safe operations without locks. Use CAS (compare-and-swap).", cheat: "• Atomic: Lock-free\n• CAS: Compare-and-swap\n• incrementAndGet: Atomic", keypoints: ["Atomic", "CAS", "Lock-free"], related: [39, 40, 41], category: "advanced" },
+        43: { desc: "Annotations provide metadata about code. Built-in and custom annotations.", example: "@Override void method() { } @Deprecated class Old { } @SuppressWarnings", diagram: "ANNOTATIONS:\n1. Built-in: @Override, @Deprecated, @SuppressWarnings\n2. Meta: @Retention, @Target, @Inherited\n3. Custom: @interface MyAnnotation { }\n\nRetention Policy:\n- SOURCE (compile only)\n- CLASS (bytecode)\n- RUNTIME (available at runtime)", adv: "✅ Metadata\n✅ Compiler hints\n✅ Runtime processing\n✅ Clean", dis: "❌ Overuse\n❌ Performance\n❌ Complexity", use: "Frameworks (Spring, Hibernate), Testing, Code analysis", interview: "Q: Annotations?\nA: Metadata for code. Used for compiler hints, runtime processing.", cheat: "• @Override: Check override\n• @Deprecated: Mark obsolete\n• Custom: Define own", keypoints: ["Annotation", "Meta", "Retention"], related: [38, 44, 45], category: "advanced" },
+        44: { desc: "Reflection API allows inspection and manipulation of classes at runtime.", example: "Class<?> clazz = Class.forName(\"com.example.MyClass\"); Method method = clazz.getMethod(\"method\");", diagram: "REFLECTION API:\n1. Class.forName()\n2. getClass()\n3. getMethods(), getFields()\n4. invoke()\n5. newInstance()\n\nUse Cases:\n- Frameworks (Spring, Hibernate)\n- Testing\n- Serialization", adv: "✅ Dynamic\n✅ Framework support\n✅ Powerful", dis: "❌ Performance\n❌ Security\n❌ Complexity", use: "Frameworks, Libraries, Testing", interview: "Q: Reflection API?\nA: Inspect and modify classes at runtime. Used in frameworks.", cheat: "• forName: Load class\n• getMethod: Get method\n• invoke: Call", keypoints: ["Reflection", "Runtime", "Framework"], related: [43, 45, 48], category: "advanced" },
+        45: { desc: "JDBC (Java Database Connectivity) connects Java to relational databases.", example: "Connection conn = DriverManager.getConnection(url, user, password); Statement stmt = conn.createStatement();", diagram: "JDBC ARCHITECTURE:\nApplication → JDBC API → Driver Manager → Database Driver → Database\n\n1. Load driver\n2. Get connection\n3. Create statement\n4. Execute query\n5. Process results\n6. Close resources\n\nPreparedStatement for SQL injection prevention", adv: "✅ Standard\n✅ Reliable\n✅ Mature", dis: "❌ Verbose\n❌ Error prone\n❌ Connection management", use: "Database operations, Enterprise apps", interview: "Q: JDBC?\nA: Standard API for database access. Use PreparedStatement for safety.", cheat: "• DriverManager: Get connection\n• PreparedStatement: Safe\n• ResultSet: Results", keypoints: ["JDBC", "Driver", "PreparedStatement"], related: [37, 46, 47], category: "advanced" },
+        46: { desc: "JPA and Hibernate are ORM frameworks mapping Java objects to database tables.", example: "@Entity class User { @Id Long id; String name; } EntityManager em = entityManagerFactory.createEntityManager();", diagram: "JPA/HIBERNATE:\nObject → Table\nClass → Entity\nField → Column\n\nAnnotations:\n@Entity, @Table, @Id, @GeneratedValue,\n@Column, @OneToMany, @ManyToOne\n\nLazy/Eager Loading\n1st level cache (Session)\n2nd level cache (SessionFactory)", adv: "✅ ORM\n✅ Lazy loading\n✅ Caching\n✅ JPQL", dis: "❌ Complexity\n❌ Performance tuning\n❌ N+1 problem", use: "Enterprise apps, Microservices", interview: "Q: JPA/Hibernate?\nA: ORM frameworks mapping objects to database tables. Reduces SQL boilerplate.", cheat: "• @Entity: Model\n• @Id: Primary key\n• EntityManager: CRUD", keypoints: ["JPA", "Hibernate", "ORM"], related: [45, 47, 48], category: "advanced" },
+        47: { desc: "Spring Framework provides comprehensive infrastructure for Java applications.", example: "@SpringBootApplication public class Application { public static void main(String[] args) { SpringApplication.run(Application.class, args); } }", diagram: "SPRING FRAMEWORK:\n1. Core (IoC, DI)\n2. MVC (Web)\n3. Boot (Auto-configuration)\n4. Data (JPA, JDBC)\n5. Security\n6. Cloud\n\nKey Concepts:\n- IoC Container\n- Dependency Injection\n- AOP\n- Auto-configuration", adv: "✅ Comprehensive\n✅ Dependency Injection\n✅ Auto-configuration\n✅ Community", dis: "❌ Complexity\n❌ Magic\n❌ Learning curve", use: "Enterprise apps, Microservices, Web apps", interview: "Q: Spring Framework?\nA: Comprehensive framework with IoC, DI, MVC, Boot, and more.", cheat: "• IoC: Inversion of Control\n• DI: Dependency Injection\n• Boot: Auto-config", keypoints: ["Spring", "IoC", "DI", "Boot"], related: [45, 46, 48], category: "advanced" },
+        48: { desc: "Maven vs Gradle — build automation tools for Java projects.", example: "Maven: pom.xml\nGradle: build.gradle", diagram: "MAVEN vs GRADLE:\n+-----------------+-----------------+\n| Maven           | Gradle          |\n+-----------------+-----------------+\n| XML (pom.xml)   | DSL (Groovy)    |\n| Convention      | Flexible        |\n| Predictable     | Customizable    |\n| Slower          | Faster (caching)|\n| Mature          | Modern          |\n+-----------------+-----------------+\n\nLifecycle:\ncompile → test → package → install → deploy", adv: "Maven: Standard, Mature\nGradle: Fast, Flexible", dis: "Maven: Verbose, Rigid\nGradle: Learning curve", use: "Maven: Enterprise\nGradle: Modern, Android", interview: "Q: Maven vs Gradle?\nA: Maven uses XML, convention-based. Gradle uses DSL, more flexible, faster.", cheat: "• Maven: pom.xml\n• Gradle: build.gradle\n• Gradle: Faster", keypoints: ["Maven", "Gradle", "Build"], related: [47, 49, 45], category: "advanced" },
+        49: { desc: "Design Patterns are reusable solutions to common problems.", example: "Singleton: static getInstance()\nFactory: createProduct()\nObserver: notifyObservers()", diagram: "COMMON PATTERNS:\n1. Creational: Singleton, Factory, Builder, Prototype\n2. Structural: Adapter, Decorator, Proxy, Composite\n3. Behavioral: Observer, Strategy, Command, Template\n\nSingleton in Java:\npublic class Singleton {\n  private static Singleton instance;\n  private Singleton() {}\n  public static Singleton getInstance() {\n    if (instance == null) instance = new Singleton();\n    return instance;\n  }\n}", adv: "✅ Reusable\n✅ Best practices\n✅ Proven solutions\n✅ Communication", dis: "❌ Over-engineering\n❌ Complexity\n❌ Misuse", use: "Enterprise apps, Frameworks", interview: "Q: Design Patterns?\nA: Reusable solutions. Singleton, Factory, Observer, etc.", cheat: "• Singleton: One instance\n• Factory: Create objects\n• Observer: Notify", keypoints: ["Design Patterns", "Singleton", "Factory"], related: [8, 10, 14], category: "advanced" }
+    };
+
+    // Merge advanced details
+    for (var key in advancedDetails) {
+        if (advancedDetails.hasOwnProperty(key)) {
+            topicData[key] = advancedDetails[key];
+        }
+    }
+
+    // ---- HELPERS ----
+    function getData(idx) {
+        return topicData[idx] || {
+            desc: "Detailed explanation of this Java concept.",
+            example: "Practical example.",
+            diagram: "Diagram here.",
+            adv: "Advantages here.",
+            dis: "Disadvantages here.",
+            use: "Use cases here.",
+            interview: "Interview Q&A here.",
+            cheat: "Cheat sheet here.",
+            keypoints: ["Key 1", "Key 2"],
+            related: [0, 1],
+            category: "core"
+        };
+    }
+
+    // ---- STATE ----
+    var currentIndex = 0;
+    var showCheatSheet = false;
+    var doneSet = new Set();
+    var filteredIndices = [];
+
+    // ---- DOM ----
+    var listEl = document.getElementById('topicList');
+    var detailEl = document.getElementById('topicDetail');
+    var searchInput = document.getElementById('searchInput');
+    var themeToggle = document.getElementById('themeToggle');
+    var cheatSheetToggle = document.getElementById('cheatSheetToggle');
+    var markDoneBtn = document.getElementById('markDoneBtn');
+    var progressTrack = document.getElementById('progressTrack');
+    var progressFill = document.getElementById('progressFill');
+    var breadcrumbTopic = document.getElementById('breadcrumbTopic');
+
+    // ---- RENDER ----
+    function renderList(filter) {
+        filter = filter || '';
+        var q = filter.toLowerCase().trim();
+        var html = '';
+        filteredIndices = [];
+        for (var i = 0; i < topics.length; i++) {
+            var t = topics[i];
+            var match = t.toLowerCase().indexOf(q) !== -1;
+            if (!match && q) continue;
+            filteredIndices.push(i);
+            var active = i === currentIndex ? 'active' : '';
+            var data = getData(i);
+            var isDone = doneSet.has(i);
+            var badgeClass = data.category === 'core' ? 'core' : (data.category === 'oop' ? 'oop' : 'advanced');
+            var badgeText = data.category === 'core' ? 'Core' : (data.category === 'oop' ? 'OOP' : 'Adv');
+            html += '<li class="' + active + '" data-index="' + i + '">';
+            html += '<span class="num">' + (i+1) + '</span>';
+            html += '<span>' + t + '</span>';
+            html += '<span class="badge ' + badgeClass + '">' + badgeText + '</span>';
+            if (isDone) html += '<span class="badge done">✓</span>';
+            html += '</li>';
+        }
+        listEl.innerHTML = html || '<li class="empty-state"><i class="fas fa-search"></i><br>No topics found</li>';
+        var items = listEl.querySelectorAll('li[data-index]');
+        for (var j = 0; j < items.length; j++) {
+            (function(li) {
+                li.addEventListener('click', function() {
+                    var idx = parseInt(this.dataset.index);
+                    if (!isNaN(idx)) {
+                        currentIndex = idx;
+                        showCheatSheet = false;
+                        cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+                        renderDetail(idx);
+                        renderList(searchInput.value);
+                        updateProgress();
+                    }
+                });
+            })(items[j]);
+        }
+    }
+
+    function renderDetail(idx) {
+        var data = getData(idx);
+        var title = topics[idx];
+        var num = idx + 1;
+        var isDone = doneSet.has(idx);
+        var isCore = data.category === 'core';
+
+        if (showCheatSheet) {
+            detailEl.innerHTML = '<h1><i class="fas fa-list-check"></i> Java Quick Cheat Sheet</h1>' +
+                '<div class="sub">📌 All 50 topics · Quick revision</div>' +
+                '<div class="box purple">' +
+                '<i class="fas fa-rocket"></i> <strong>Java Cheat Sheet</strong>' +
+                '<ul style="margin-top:8px;list-style:none;padding-left:0;">' +
+                '<li><strong>🖥 JVM:</strong> Executes bytecode, manages memory</li>' +
+                '<li><strong>🏗 OOP:</strong> Encapsulation, Inheritance, Polymorphism, Abstraction</li>' +
+                '<li><strong>📦 Collections:</strong> List, Set, Map, Queue</li>' +
+                '<li><strong>⚡ Generics:</strong> Type safety with &lt;T&gt;</li>' +
+                '<li><strong>🔄 Functional:</strong> Lambdas, Stream API (map, filter, reduce)</li>' +
+                '<li><strong>🧵 Concurrency:</strong> Threads, Executor, Synchronization</li>' +
+                '<li><strong>🎯 Exception:</strong> try-catch-finally, Checked vs Unchecked</li>' +
+                '<li><strong>🗄 Database:</strong> JDBC, JPA, Hibernate</li>' +
+                '<li><strong>🏗 Framework:</strong> Spring (IoC, DI, Boot)</li>' +
+                '<li><strong>🔧 Build:</strong> Maven (pom.xml), Gradle (build.gradle)</li>' +
+                '</ul></div>' +
+                '<div class="box success">💡 <strong>Pro Tip:</strong> Master JVM, OOP concepts, Collections, and Concurrency. These cover 80% of interview questions.</div>' +
+                '<p style="margin-top:12px; opacity:0.6;"><i class="fas fa-arrow-right"></i> Click any topic for detailed notes</p>';
+            return;
+        }
+
+        var advHtml = (data.adv || 'No specific advantages listed.').split('\n').filter(function(a) { return a.trim(); }).map(function(a) { return '<li>' + a + '</li>'; }).join('');
+        var disHtml = (data.dis || 'No specific disadvantages listed.').split('\n').filter(function(d) { return d.trim(); }).map(function(d) { return '<li>' + d + '</li>'; }).join('');
+        var useHtml = (data.use || 'General Java development.').split('\n').filter(function(u) { return u.trim(); }).map(function(u) { return '<li>' + u + '</li>'; }).join('');
+        var interviewHtml = (data.interview || 'Practice explaining this concept clearly.').replace(/\n/g, '<br>');
+        var cheatHtml = (data.cheat || 'Review the key points above.').replace(/\n/g, '<br>');
+        var keypointsHtml = (data.keypoints || []).map(function(k) { return '<span>' + k + '</span>'; }).join('');
+
+        var relatedHtml = '';
+        if (data.related) {
+            relatedHtml = '<div class="section"><i class="fas fa-link"></i> Related Topics</div><div class="related-topics">';
+            for (var r = 0; r < data.related.length; r++) {
+                var relIdx = data.related[r];
+                relatedHtml += '<span data-index="' + relIdx + '">' + (relIdx+1) + '. ' + topics[relIdx] + '</span>';
+            }
+            relatedHtml += '</div>';
+        }
+
+        var doneBadge = isDone ? ' <span style="font-size:0.8rem;color:#22c55e;">✅ Done</span>' : '';
+        var iconClass = isCore ? 'fa-star' : 'fa-rocket';
+
+        detailEl.innerHTML =
+            '<h1><i class="fas ' + iconClass + '"></i> Topic ' + num + ': ' + title + doneBadge + '</h1>' +
+            '<div class="sub">📌 ' + (isCore ? 'Core Java' : 'Advanced Java') + ' · ' + num + '/50<span class="tag">' + (isCore ? '⭐ Core' : '🚀 Advanced') + '</span></div>' +
+            '<div class="section"><i class="fas fa-question-circle"></i> Concept</div><p>' + (data.desc || 'Detailed explanation coming soon.') + '</p>' +
+            '<div class="section"><i class="fas fa-globe"></i> Example</div><p>' + (data.example || 'Practical example coming soon.') + '</p>' +
+            '<div class="section"><i class="fas fa-project-diagram"></i> Visual Diagram</div><div class="code-box">' + (data.diagram || 'Diagram coming soon.') + '</div>' +
+            (data.keypoints ? '<div class="keypoints">' + keypointsHtml + '</div>' : '') +
+            '<div class="section"><i class="fas fa-check-circle"></i> Advantages</div><ul>' + advHtml + '</ul>' +
+            '<div class="section"><i class="fas fa-times-circle"></i> Disadvantages</div><ul>' + disHtml + '</ul>' +
+            '<div class="section"><i class="fas fa-rocket"></i> Use Cases</div><ul>' + useHtml + '</ul>' +
+            '<div class="box success"><i class="fas fa-comments"></i> <strong>Interview Q&A</strong><br>' + interviewHtml + '</div>' +
+            '<div class="box pink"><i class="fas fa-list-check"></i> <strong>Cheat Sheet</strong><br>' + cheatHtml + '</div>' +
+            relatedHtml +
+            '<div class="box tip">💡 <strong>Pro Tip:</strong> Practice writing code examples for each concept. Theory + Practice = Mastery.</div>' +
+            '<div class="box mistake">⚠️ <strong>Common Mistake:</strong> Not understanding memory management and GC can lead to performance issues.</div>' +
+            '<div class="box success">📝 <strong>One-Liner:</strong> ' + title + ' — ' + (data.desc || '').substring(0, 80) + '...</div>' +
+            '<p style="margin-top:12px; opacity:0.6;"><i class="fas fa-arrow-right"></i> Navigate via sidebar · ' + (50 - num) + ' topics remaining</p>';
+
+        var relatedSpans = detailEl.querySelectorAll('.related-topics span');
+        for (var s = 0; s < relatedSpans.length; s++) {
+            (function(span) {
+                span.addEventListener('click', function() {
+                    var idx = parseInt(this.dataset.index);
+                    if (!isNaN(idx)) {
+                        currentIndex = idx;
+                        showCheatSheet = false;
+                        cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+                        renderDetail(idx);
+                        renderList(searchInput.value);
+                        updateProgress();
+                    }
+                });
+            })(relatedSpans[s]);
+        }
+
+        breadcrumbTopic.textContent = title;
+        detailEl.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+
+    function updateProgress() {
+        var count = doneSet.size;
+        var pct = (count / 50 * 100);
+        progressTrack.innerHTML = '📌 ' + count + ' / 50 mastered<div class="bar"><div class="fill" style="width:' + pct + '%"></div></div>';
+        progressFill.style.width = pct + '%';
+        document.getElementById('statDone').textContent = '✅ ' + count + ' Done';
+
+        var coreCount = 0, advCount = 0;
+        doneSet.forEach(function(i) {
+            var data = getData(i);
+            if (data.category === 'core') coreCount++;
+            else advCount++;
+        });
+        document.getElementById('statCore').textContent = '⭐ ' + coreCount + ' Core';
+        document.getElementById('statAdv').textContent = '🚀 ' + advCount + ' Advanced';
+        renderList(searchInput.value);
+    }
+
+    // ---- EVENTS ----
+    searchInput.addEventListener('input', function(e) { renderList(e.target.value); });
+
+    themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark');
+        this.innerHTML = document.body.classList.contains('dark') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    cheatSheetToggle.addEventListener('click', function() {
+        showCheatSheet = !showCheatSheet;
+        this.innerHTML = showCheatSheet ? '<i class="fas fa-book"></i> Back to Notes' : '<i class="fas fa-list-check"></i> Cheat Sheet';
+        renderDetail(currentIndex);
+    });
+
+    markDoneBtn.addEventListener('click', function() {
+        if (doneSet.has(currentIndex)) {
+            doneSet.delete(currentIndex);
+        } else {
+            doneSet.add(currentIndex);
+        }
+        updateProgress();
+        renderDetail(currentIndex);
+        renderList(searchInput.value);
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            var idx = filteredIndices.indexOf(currentIndex);
+            if (idx < filteredIndices.length - 1) {
+                currentIndex = filteredIndices[idx + 1];
+                renderDetail(currentIndex);
+                renderList(searchInput.value);
+                e.preventDefault();
+            }
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            var idx = filteredIndices.indexOf(currentIndex);
+            if (idx > 0) {
+                currentIndex = filteredIndices[idx - 1];
+                renderDetail(currentIndex);
+                renderList(searchInput.value);
+                e.preventDefault();
+            }
+        } else if (e.key === 'd' || e.key === 'D') {
+            markDoneBtn.click();
+        } else if (e.key === 'c' || e.key === 'C') {
+            cheatSheetToggle.click();
+        }
+    });
+
+    // ---- INIT ----
+    renderList('');
+    renderDetail(0);
+    doneSet.add(0);
+    updateProgress();
+
+    console.log('☕ Java Mastery loaded!');
+    console.log('⌨️ Keyboard shortcuts: ← → navigate, d = mark done, c = cheat sheet');
+</script>
+</body>
+</html>

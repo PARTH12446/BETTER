@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Intervals · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e17;
+            color: #e8edf6;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem 4rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1180px; margin: 0 auto; }
+        ::selection { background: rgba(79,216,196,0.25); color: #4fd8c4; }
+
+        .hero { padding: 1.5rem 0 2.5rem; border-bottom: 1px solid #182236; margin-bottom: 2.5rem; }
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #4fd8c4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 24px; height: 1px; background: #4fd8c4; }
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            letter-spacing: -0.02em;
+            color: #e8edf6;
+        }
+        .hero h1 span { color: #5a6579; }
+        .hero .lede {
+            font-size: 1.05rem;
+            color: #8f9bb0;
+            max-width: 680px;
+            margin: 0.8rem 0 1.5rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #8f9bb0;
+            border: 1px solid #212c40;
+            border-radius: 8px;
+            padding: 6px 14px;
+            background: #0e1420;
+        }
+        .stat b { color: #e8edf6; font-weight: 600; }
+
+        .sec { margin: 3.5rem 0 1.2rem; }
+        .sec-num { font-family: 'JetBrains Mono', monospace; color: #5a6579; font-size: 0.8rem; }
+        .sec h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: #e8edf6;
+            margin-top: 0.2rem;
+        }
+        .sec .desc {
+            color: #8f9bb0;
+            margin-top: 0.5rem;
+            max-width: 700px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+            margin-top: 1.2rem;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .concept-text ul { margin: 0.8rem 0 0 1.2rem; color: #8f9bb0; }
+        .concept-text ul li { margin-bottom: 0.5rem; }
+        .concept-text ul li b { color: #e8edf6; }
+
+        .callout {
+            margin-top: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            background: rgba(79,216,196,0.08);
+            border: 1px solid rgba(79,216,196,0.2);
+            font-size: 0.92rem;
+            color: #e8edf6;
+        }
+        .callout b { color: #4fd8c4; }
+
+        .mini-array {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+        }
+        .interval-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #1a2333;
+            border: 1px solid #212c40;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #5a6579;
+        }
+        .interval-block .range {
+            color: #e8edf6;
+            font-weight: 600;
+        }
+        .interval-block.merged {
+            background: rgba(79,216,196,0.12);
+            border-color: #4fd8c4;
+        }
+        .interval-block.merged .range { color: #4fd8c4; }
+
+        .tree { display: flex; flex-direction: column; gap: 0; margin-top: 1.5rem; }
+        .tree-q {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            background: #0e1420;
+            border: 1px solid #212c40;
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .tree-q .q { color: #e8edf6; }
+        .tree-q .a { color: #5a6579; font-size: 0.8rem; }
+        .tree-arrow {
+            text-align: center;
+            color: #5a6579;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            padding: 4px 0;
+        }
+        .tree-result {
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .tree-result.t1 { background: rgba(79,216,196,0.08); border-color: rgba(79,216,196,0.3); color: #4fd8c4; }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .pattern-card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .pattern-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .pattern-card.p1::before { background: #4fd8c4; }
+        .pattern-card.p2::before { background: #f6ad55; }
+        .pattern-card.p3::before { background: #b394f6; }
+        .pattern-card .ptag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .pattern-card.p1 .ptag { color: #4fd8c4; }
+        .pattern-card.p2 .ptag { color: #f6ad55; }
+        .pattern-card.p3 .ptag { color: #b394f6; }
+        .pattern-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin: 0.4rem 0 0.6rem;
+            color: #e8edf6;
+        }
+        .pattern-card p { color: #8f9bb0; font-size: 0.9rem; margin-bottom: 0.8rem; }
+        .pattern-card ul { list-style: none; }
+        .pattern-card ul li {
+            font-size: 0.85rem;
+            color: #8f9bb0;
+            padding: 4px 0;
+            border-top: 1px solid #182236;
+        }
+        .pattern-card ul li:first-child { border-top: none; }
+        .pattern-card ul li b { color: #e8edf6; font-weight: 500; }
+
+        .viz {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-top: 1.5rem;
+        }
+        .viz-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.6rem;
+        }
+        .viz-head .name { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: #e8edf6; }
+        .viz-head .sub { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #5a6579; margin-top: 2px; }
+        .viz-controls { display: flex; gap: 8px; }
+        .btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            border: 1px solid #212c40;
+            background: #0e1420;
+            color: #e8edf6;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+        .btn:hover { border-color: #4fd8c4; color: #4fd8c4; }
+        .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .btn:disabled:hover { border-color: #212c40; color: #e8edf6; }
+        .btn.primary {
+            background: #4fd8c4;
+            color: #08130f;
+            border-color: #4fd8c4;
+            font-weight: 600;
+        }
+        .btn.primary:hover { filter: brightness(1.1); }
+
+        .interval-stage {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px 0;
+            min-height: 120px;
+        }
+        .interval-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 12px;
+            background: #0e1420;
+            border-radius: 8px;
+            border: 1px solid #182236;
+        }
+        .interval-row .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #5a6579;
+            min-width: 60px;
+        }
+        .interval-visual {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+        }
+        .interval-bar {
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #e8edf6;
+            transition: all .3s ease;
+            min-width: 20px;
+            padding: 0 4px;
+        }
+        .interval-bar.active {
+            background: rgba(79,216,196,0.2);
+            border: 1px solid #4fd8c4;
+        }
+        .interval-bar.merged {
+            background: rgba(79,216,196,0.35);
+            border: 1px solid #4fd8c4;
+            color: #4fd8c4;
+        }
+        .interval-bar.done {
+            background: rgba(74,222,128,0.15);
+            border: 1px solid #4ade80;
+            color: #4ade80;
+        }
+        .interval-bar.current {
+            background: rgba(246,173,85,0.2);
+            border: 1px solid #f6ad55;
+            color: #f6ad55;
+        }
+
+        .viz-log {
+            margin-top: 1.4rem;
+            padding: 1rem 1.2rem;
+            background: #0e1420;
+            border: 1px solid #182236;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #e8edf6;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .viz-log .step-count { color: #5a6579; font-size: 0.75rem; }
+        .viz-log .msg b { color: #4fd8c4; }
+        .viz-log.done { border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.06); }
+        .viz-log.done .msg b { color: #4ade80; }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+        }
+        .problem-card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid #212c40;
+            transition: border-color .2s ease, transform .2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: #4fd8c4; }
+        .problem-card.g2 { border-left-color: #f6ad55; }
+        .problem-card.g3 { border-left-color: #b394f6; }
+        .problem-card .phead { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+        .problem-card .pnum { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #5a6579; }
+        .problem-card .pname { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; color: #e8edf6; margin-top: 2px; }
+        .problem-card .plc {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            background: #0e1420;
+            border: 1px solid #212c40;
+            color: #8f9bb0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc { color: #8f9bb0; font-size: 0.85rem; margin: 0.6rem 0; }
+        .problem-card .papproach {
+            background: #0e1420;
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.82rem;
+            color: #8f9bb0;
+            border: 1px solid #182236;
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: #e8edf6; }
+        .problem-card .ppitfall {
+            font-size: 0.8rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.06);
+            border: 1px solid rgba(248,113,113,0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .ppitfall b { color: #f87171; }
+        .pfoot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+        .complexity { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #5a6579; }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .mistake {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid #f87171;
+        }
+        .mistake .mtitle { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #f8b4ac; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .mistake p { font-size: 0.85rem; color: #8f9bb0; }
+        .mistake .fix { margin-top: 0.5rem; font-size: 0.83rem; color: #4ade80; }
+        .mistake .fix b { font-family: 'JetBrains Mono', monospace; }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #0e1420;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #212c40;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4fd8c4, #b394f6);
+            transition: width .3s ease;
+        }
+        .progress-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #8f9bb0; white-space: nowrap; }
+        .checklist { display: flex; flex-direction: column; gap: 0.5rem; }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: #5a6579; }
+        .check-item.done { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid #5a6579;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: #0a0e17;
+        }
+        .check-item.done .check-box { background: #4ade80; border-color: #4ade80; }
+        .check-item span.label { font-size: 0.88rem; color: #8f9bb0; }
+        .check-item.done span.label { color: #e8edf6; text-decoration: line-through; text-decoration-color: #5a6579; }
+        .check-item .tier { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #5a6579; }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1.5rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #5a6579;
+            padding: 10px 14px;
+            border-bottom: 1px solid #212c40;
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #182236;
+            color: #8f9bb0;
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl { font-family: 'Space Grotesk', sans-serif; color: #e8edf6; font-weight: 600; }
+
+        footer { text-align: center; margin-top: 4rem; color: #5a6579; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+
+        @media (max-width: 960px) {
+            .concept-grid { grid-template-columns: 1fr; }
+            .pattern-grid { grid-template-columns: 1fr; }
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- ===== HERO ===== -->
+    <div class="hero">
+        <div class="eyebrow">Algorithm Notes · Arrays &amp; Strings</div>
+        <h1>Merge Intervals <span>— from recognition to mastery</span></h1>
+        <p class="lede">The merge intervals pattern is about processing ranges that overlap. The skill is knowing when to sort, how to merge, and recognizing interval-based problems across different domains.</p>
+        <div class="stat-row">
+            <div class="stat">⏱ <b>O(n log n)</b> time</div>
+            <div class="stat">💾 <b>O(n)</b> extra space</div>
+            <div class="stat"><b>16</b> problems</div>
+        </div>
+    </div>
+
+    <!-- ===== 1. CORE IDEA ===== -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What problem does this actually solve?</h2>
+        <p class="desc">A brute-force approach compares every pair of intervals — that's O(n²). The merge intervals pattern sorts intervals by start time and then makes a single pass to merge overlapping ones, achieving O(n log n).</p>
+    </div>
+
+    <div class="concept-grid">
+        <div class="card concept-text">
+            <p>The key steps are:</p>
+            <ul>
+                <li><b>Sort:</b> Sort intervals by their start time (and optionally end time).</li>
+                <li><b>Iterate:</b> Process each interval in order, comparing it with the last merged interval.</li>
+                <li><b>Merge:</b> If they overlap (<code>current.start ≤ last.end</code>), update the end to <code>max(last.end, current.end)</code>.</li>
+                <li><b>Add:</b> If they don't overlap, add the current interval as a new merged interval.</li>
+            </ul>
+            <div class="callout"><b>The one question that decides everything:</b> are you given intervals (ranges) and need to combine, find overlaps, or detect gaps? If yes, this pattern is your tool.</div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="mini-array" id="concept-array"></div>
+        </div>
+    </div>
+
+    <!-- ===== 2. DECISION TREE ===== -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>Identify the pattern before you write a line of code</h2>
+        <p class="desc">Ask these questions to determine if the merge intervals pattern applies.</p>
+    </div>
+    <div class="card">
+        <div class="tree">
+            <div class="tree-q"><span class="q">1. Are you given a collection of intervals or ranges (e.g., [start, end])?</span><span class="a">check first</span></div>
+            <div class="tree-arrow">yes ↓</div>
+            <div class="tree-q"><span class="q">2. Does the task involve merging, finding overlaps, detecting conflicts, or finding gaps between intervals?</span><span class="a">check second</span></div>
+            <div class="tree-arrow">yes ↓</div>
+            <div class="tree-result t1">→ Merge Intervals Pattern <span>sort by start, then process in order</span></div>
+        </div>
+    </div>
+
+    <div class="pattern-grid">
+        <div class="pattern-card p1">
+            <div class="ptag">Core Pattern</div>
+            <h3>Standard Merge</h3>
+            <p>Merge all overlapping intervals into one.</p>
+            <ul>
+                <li><b>Step 1:</b> Sort by start time</li>
+                <li><b>Step 2:</b> Initialize result with first interval</li>
+                <li><b>Step 3:</b> If current.start ≤ last.end, merge (update end)</li>
+                <li><b>Step 4:</b> Else, add as new interval</li>
+            </ul>
+        </div>
+        <div class="pattern-card p2">
+            <div class="ptag">Extended Pattern</div>
+            <h3>Interval Intersection</h3>
+            <p>Find overlaps between two sets of intervals.</p>
+            <ul>
+                <li><b>Step 1:</b> Use two pointers (i for A, j for B)</li>
+                <li><b>Step 2:</b> Find overlap: <code>start = max(A[i].start, B[j].start)</code></li>
+                <li><b>Step 3:</b> If <code>start ≤ min(A[i].end, B[j].end)</code>, add overlap</li>
+                <li><b>Step 4:</b> Move pointer of interval that ends first</li>
+            </ul>
+        </div>
+        <div class="pattern-card p3">
+            <div class="ptag">Common pitfall</div>
+            <h3>Wrong merge condition</h3>
+            <p>Using <code><</code> instead of <code>≤</code> for overlapping intervals.</p>
+            <ul>
+                <li><b>Wrong:</b> <code>if (current.start < last.end)</code> — misses adjacent intervals</li>
+                <li><b>Right:</b> <code>if (current.start ≤ last.end)</code> — includes touching intervals</li>
+                <li>Adjacent intervals [1,2] and [2,3] should merge to [1,3]</li>
+                <li>Always use ≤ for the overlap condition</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 3. INTERACTIVE VISUALIZER ===== -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>Watch the pattern run, one step at a time</h2>
+        <p class="desc">Step through a real trace. Each click is exactly one step — read the log line before you click again.</p>
+    </div>
+
+    <div class="viz">
+        <div class="viz-head">
+            <div>
+                <div class="name">56 · Merge Intervals</div>
+                <div class="sub">intervals = [[1,3], [2,6], [8,10], [15,18]]</div>
+            </div>
+            <div class="viz-controls">
+                <button class="btn" id="v1-reset">Reset</button>
+                <button class="btn primary" id="v1-next">Next step →</button>
+            </div>
+        </div>
+        <div class="interval-stage" id="v1-stage"></div>
+        <div class="viz-log" id="v1-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v1-count">Step 0 / 6</span></div>
+    </div>
+
+    <!-- ===== 4. PROBLEMS ===== -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>All 16 problems, with the pitfall that actually trips people up</h2>
+        <p class="desc">Each card includes the approach in plain terms and the one mistake that's most common on that exact problem.</p>
+    </div>
+
+    <div class="group-head"><div class="group-dot" style="background:#4fd8c4"></div><h3>Core Merge &amp; Insert</h3><span class="count">6 problems</span></div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <div class="group-head"><div class="group-dot" style="background:#f6ad55"></div><h3>Meeting &amp; Scheduling</h3><span class="count">4 problems</span></div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <div class="group-head"><div class="group-dot" style="background:#b394f6"></div><h3>Advanced &amp; Specialized</h3><span class="count">6 problems</span></div>
+    <div class="problem-grid" id="group-c"></div>
+
+    <!-- ===== 5. COMMON MISTAKES ===== -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Mistakes that show up across almost every problem</h2>
+        <p class="desc">If your merge intervals solution is wrong, it's very likely one of these three things.</p>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Wrong merge condition: using <code><</code> instead of <code>≤</code></div>
+            <p>Adjacent intervals [1,2] and [2,3] should be merged into [1,3]. Using <code><</code> would treat them as separate, missing the overlap at the boundary.</p>
+            <div class="fix">Fix: always use <b><code>current.start ≤ last.end</code></b> to merge overlapping or adjacent intervals.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Forgetting to sort by start time</div>
+            <p>If intervals are not sorted by start time, you can't make a single pass to merge them. Overlaps can only be detected after sorting.</p>
+            <div class="fix">Fix: always <b>sort by start time</b> first. If two intervals have the same start, sort by end time as well.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Not updating the end correctly during merge</div>
+            <p>When merging, you need to take <code>max(current.end, last.end)</code>. Some people incorrectly use <code>last.end = current.end</code>, which can shrink the merged interval.</p>
+            <div class="fix">Fix: update with <b><code>last.end = max(last.end, current.end)</code></b> to keep the larger range.</div>
+        </div>
+    </div>
+
+    <!-- ===== 6. MASTERY PATH ===== -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Suggested practice order</h2>
+        <p class="desc">Work top to bottom — each tier assumes you're comfortable with the one above it.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 16 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <!-- ===== 7. CHEAT SHEET ===== -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>Cheat sheet</h2>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Pattern</th><th>Key Operation</th><th>Common Problems</th></tr></thead>
+            <tbody>
+            <tr>
+                <td class="lbl" style="color:#4fd8c4">Standard Merge</td>
+                <td>Sort by start, merge when <code>current.start ≤ last.end</code></td>
+                <td>56, 57, 1288, 435, 452</td>
+            </tr>
+            <tr>
+                <td class="lbl" style="color:#f6ad55">Meeting Rooms</td>
+                <td>Track overlaps to find conflicts or free time</td>
+                <td>252, 253, 759, 986</td>
+            </tr>
+            <tr>
+                <td class="lbl" style="color:#b394f6">Advanced</td>
+                <td>Range modules, car pooling, sorted lists</td>
+                <td>715, 1094, 436, 228, 715, 986</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>Merge Intervals · Mastery Notes — all problems from LeetCode</footer>
+</div>
+
+<script>
+    /* ============================================================
+       Concept mini-array
+       ============================================================ */
+    (function(){
+        const el = document.getElementById("concept-array");
+        const intervals = [
+            { start: 1, end: 3 },
+            { start: 2, end: 6 },
+            { start: 8, end: 10 },
+            { start: 15, end: 18 }
+        ];
+        intervals.forEach((iv, idx) => {
+            const div = document.createElement("div");
+            div.className = "interval-block";
+            if (idx === 0) div.classList.add("merged");
+            div.innerHTML = `<div class="range">[${iv.start}, ${iv.end}]</div>`;
+            el.appendChild(div);
+        });
+    })();
+
+    /* ============================================================
+       Visualizer — Merge Intervals
+       ============================================================ */
+    (function(){
+        const intervals = [[1,3], [2,6], [8,10], [15,18]];
+        const stage = document.getElementById("v1-stage");
+        const steps = [
+            { merged: [], current: null, msg: "Sort intervals by start time: [[1,3], [2,6], [8,10], [15,18]]" },
+            { merged: [[1,3]], current: 1, msg: "Add first interval [1,3] to result" },
+            { merged: [[1,6]], current: 2, msg: "[2,6] overlaps [1,3] → merge to [1,6]" },
+            { merged: [[1,6], [8,10]], current: 3, msg: "[8,10] doesn't overlap [1,6] → add as new" },
+            { merged: [[1,6], [8,18]], current: 4, msg: "[15,18] overlaps [8,10] → merge to [8,18]" },
+            { merged: [[1,6], [8,18]], current: null, msg: "Done! Result: [[1,6], [8,18]]", done: true },
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v1-next");
+        const resetBtn = document.getElementById("v1-reset");
+        const log = document.getElementById("v1-log");
+        const count = document.getElementById("v1-count");
+
+        function render() {
+            if (i < 0) {
+                stage.innerHTML = `<div class="interval-row" style="color:#5a6579;justify-content:center;">Click <b>Next step</b> to begin.</div>`;
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            // Build the visual
+            let html = '';
+            // Show all intervals with labels
+            intervals.forEach((iv, idx) => {
+                const isMerged = s.merged.some(m => m[0] === iv[0] && m[1] === iv[1]);
+                const isCurrent = s.current === idx;
+                let cls = 'interval-bar';
+                if (isMerged) cls += ' done';
+                if (isCurrent) cls += ' current';
+                // Check if it's part of a merged group
+                const mergedInto = s.merged.find(m => iv[0] >= m[0] && iv[1] <= m[1]);
+                if (mergedInto && !isMerged) cls += ' merged';
+
+                html += `<div class="interval-row">
+                    <span class="label">[${iv[0]}, ${iv[1]}]</span>
+                    <div class="interval-visual">
+                        <div class="${cls}" style="flex:1;">${isMerged ? '✓ merged' : isCurrent ? '← processing' : ''}</div>
+                    </div>
+                </div>`;
+            });
+            // Show merged result
+            if (s.merged.length > 0) {
+                html += `<div class="interval-row" style="border-color:#4fd8c4;background:rgba(79,216,196,0.05);">
+                    <span class="label" style="color:#4fd8c4;">Result</span>
+                    <div class="interval-visual">
+                        ${s.merged.map(m => `<div class="interval-bar done" style="flex:1;margin:0 2px;">[${m[0]}, ${m[1]}]</div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            stage.innerHTML = html;
+
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if (s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", () => { if (i < steps.length - 1) { i++; render(); } });
+        resetBtn.addEventListener("click", () => { i = -1; render(); });
+        render();
+    })();
+
+    /* ============================================================
+       Problem data
+       ============================================================ */
+    const problems = {
+        a: [
+            { num: "56", name: "Merge Intervals", tag: "core", desc: "Merge all overlapping intervals.", approach: "Sort by start, then iterate and merge when current.start ≤ last.end.", pitfall: "Using < instead of ≤ for overlap condition — adjacent intervals [1,2] and [2,3] should merge.", complexity: "O(n log n) · O(n)" },
+            { num: "57", name: "Insert Interval", tag: "core", desc: "Insert a new interval into a sorted non-overlapping list and merge if needed.", approach: "Find position, merge with overlapping intervals, then concatenate.", pitfall: "Forgetting to handle the case where the new interval covers multiple existing intervals.", complexity: "O(n) · O(n)" },
+            { num: "1288", name: "Remove Covered Intervals", tag: "core", desc: "Remove intervals that are completely covered by another interval.", approach: "Sort by start (ascending) and end (descending), then track the max end seen so far.", pitfall: "Sorting by start only — need to sort by end descending to handle equal starts correctly.", complexity: "O(n log n) · O(1)" },
+            { num: "435", name: "Non-overlapping Intervals", tag: "core", desc: "Find the minimum number of intervals to remove to make all non-overlapping.", approach: "Sort by end, then greedily count non-overlapping intervals. Remove = total - count.", pitfall: "Sorting by start instead of end — this changes the greedy choice and leads to suboptimal results.", complexity: "O(n log n) · O(1)" },
+            { num: "452", name: "Minimum Number of Arrows to Burst Balloons", tag: "core", desc: "Find the minimum number of arrows needed to burst all balloons (intervals).", approach: "Sort by end, then greedily place arrows at the end of the current interval.", pitfall: "Sorting by start instead of end — the greedy choice of 'shoot at the earliest end' is optimal only when sorted by end.", complexity: "O(n log n) · O(1)" },
+            { num: "228", name: "Summary Ranges", tag: "core", desc: "Given a sorted array, return the summarizing ranges.", approach: "Iterate through the array, tracking the start of each consecutive run.", pitfall: "Not handling the last range correctly or forgetting to update start when a gap is found.", complexity: "O(n) · O(n)" },
+        ],
+        b: [
+            { num: "252", name: "Meeting Rooms", tag: "meeting", desc: "Check if a person can attend all meetings (no overlaps).", approach: "Sort by start time, then check if any meeting overlaps with the next one.", pitfall: "Using < instead of ≤ for overlap detection — meetings ending at 2 and starting at 2 don't conflict.", complexity: "O(n log n) · O(1)" },
+            { num: "253", name: "Meeting Rooms II", tag: "meeting", desc: "Find the minimum number of meeting rooms required.", approach: "Use a min-heap to track the end times of meetings currently using rooms.", pitfall: "Sorting by start but not updating the heap correctly — always push current.end and pop when start ≥ earliest end.", complexity: "O(n log n) · O(n)" },
+            { num: "759", name: "Employee Free Time", tag: "meeting", desc: "Find common free time for all employees.", approach: "Merge all intervals, then find gaps between merged intervals.", pitfall: "Not considering the start of the day (0) and end of the day (infinity) as possible free time boundaries.", complexity: "O(n log n) · O(n)" },
+            { num: "986", name: "Interval List Intersections", tag: "meeting", desc: "Find intersections between two lists of intervals.", approach: "Use two pointers, compute overlap: start = max(a.start, b.start), end = min(a.end, b.end).", pitfall: "Not moving the pointer of the interval that ends first — this can cause an infinite loop.", complexity: "O(n+m) · O(n+m)" },
+        ],
+        c: [
+            { num: "715", name: "Range Module", tag: "advanced", desc: "Design a data structure that supports adding/removing ranges and querying.", approach: "Use a balanced tree or TreeMap to maintain merged intervals.", pitfall: "Not handling merging when adding a range that overlaps multiple existing intervals.", complexity: "O(log n + k) · O(n)" },
+            { num: "1094", name: "Car Pooling", tag: "advanced", desc: "Check if a car with capacity can pick up and drop off all passengers.", approach: "Use a difference array (sweep line) to track passenger count at each location.", pitfall: "Forgetting that the car drops off passengers at the destination before picking up new ones.", complexity: "O(n + max_location) · O(max_location)" },
+            { num: "436", name: "Find Right Interval", tag: "advanced", desc: "For each interval, find the smallest start index of an interval that starts after it ends.", approach: "Sort intervals by start, then binary search for each interval's end.", pitfall: "Not storing the original index of each interval before sorting.", complexity: "O(n log n) · O(n)" },
+            { num: "759", name: "Employee Free Time (Hard)", tag: "advanced", desc: "Find the common free time intervals for all employees.", approach: "Merge all employee schedules, then find gaps between merged intervals.", pitfall: "Not handling the case where an employee has overlapping intervals within their own schedule.", complexity: "O(n log n) · O(n)" },
+            { num: "986", name: "Interval List Intersections (Hard)", tag: "advanced", desc: "Same as #5 but with more complex overlap handling.", approach: "Two pointer, compute overlap, move the one that ends first.", pitfall: "Using < instead of ≤ for overlap condition — adjacent intervals [1,2] and [2,3] should intersect at 2.", complexity: "O(n+m) · O(n+m)" },
+            { num: "715", name: "Range Module (Hard)", tag: "advanced", desc: "Full range module with add, remove, and query operations.", approach: "Use a TreeMap to maintain sorted intervals with merge on add and split on remove.", pitfall: "Not handling the case where removal splits an existing interval into two parts.", complexity: "O(log n + k) · O(n)" },
+        ]
+    };
+
+    function renderProblems(groupId, cls, arr) {
+        const container = document.getElementById(groupId);
+        arr.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            card.innerHTML = `
+                <div class="phead">
+                    <div><div class="pnum">LeetCode ${p.num}</div><div class="pname">${p.name}</div></div>
+                    <div class="plc">${p.tag}</div>
+                </div>
+                <div class="pdesc">${p.desc}</div>
+                <div class="papproach"><b>Approach —</b> ${p.approach}</div>
+                <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+                <div class="pfoot"><span class="complexity">${p.complexity}</span></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+    renderProblems("group-a", "g1", problems.a);
+    renderProblems("group-b", "g2", problems.b);
+    renderProblems("group-c", "g3", problems.c);
+
+    /* ============================================================
+       Mastery checklist
+       ============================================================ */
+    const allProblems = [
+        { n: "56 Merge Intervals", tier: "start here" },
+        { n: "252 Meeting Rooms", tier: "start here" },
+        { n: "228 Summary Ranges", tier: "start here" },
+        { n: "57 Insert Interval", tier: "core" },
+        { n: "1288 Remove Covered Intervals", tier: "core" },
+        { n: "435 Non-overlapping Intervals", tier: "core" },
+        { n: "452 Min Arrows to Burst Balloons", tier: "core" },
+        { n: "253 Meeting Rooms II", tier: "core" },
+        { n: "986 Interval List Intersections", tier: "stretch" },
+        { n: "759 Employee Free Time", tier: "stretch" },
+        { n: "715 Range Module", tier: "hard" },
+        { n: "1094 Car Pooling", tier: "stretch" },
+        { n: "436 Find Right Interval", tier: "stretch" },
+        { n: "986 Interval List Intersections (Hard)", tier: "hard" },
+        { n: "715 Range Module (Hard)", tier: "hard" },
+        { n: "759 Employee Free Time (Hard)", tier: "hard" },
+    ];
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress() {
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done / allProblems.length * 100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+
+    allProblems.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", () => { item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>

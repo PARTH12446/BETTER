@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node.js & Express.js · Question Bank</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f7fb;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+            color: #0b1e33;
+        }
+
+        .subhead {
+            color: #475569;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+            border-left: 4px solid #2563eb;
+            padding-left: 1rem;
+            background: #eef2ff;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.5;
+            padding: 0.75rem 1.25rem;
+        }
+
+        .topic-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1rem;
+            margin-bottom: 2.5rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            align-items: center;
+        }
+
+        .topic-grid span {
+            font-weight: 600;
+            color: #334155;
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .topic-btn {
+            background: transparent;
+            border: 1px solid #d1d9e6;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .topic-btn:hover {
+            background: #e6edf8;
+            border-color: #7c9bcf;
+            transform: translateY(-1px);
+        }
+
+        .topic-btn.active {
+            background: #1e3a6f;
+            border-color: #1e3a6f;
+            color: white;
+            box-shadow: 0 4px 8px rgba(30,58,111,0.2);
+        }
+
+        .question-section {
+            background: white;
+            border-radius: 28px;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            margin-top: 0.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0b1e33;
+        }
+
+        .section-header .badge {
+            background: #dbeafe;
+            color: #1e4a7a;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.7rem 1rem 0.7rem 1.2rem;
+            background: #fafcff;
+            border-radius: 14px;
+            border-left: 4px solid transparent;
+            transition: 0.15s;
+            line-height: 1.5;
+        }
+
+        .question-item:hover {
+            background: #f1f6fe;
+            border-left-color: #2563eb;
+        }
+
+        .q-number {
+            font-weight: 600;
+            color: #4b6a99;
+            min-width: 2rem;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .q-text {
+            color: #1e293b;
+            font-size: 0.98rem;
+        }
+
+        .q-text code {
+            background: #eef2f6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #1e3a5f;
+        }
+
+        .footer-note {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #dce2ec;
+            padding-top: 2rem;
+        }
+
+        .footer-note i {
+            color: #2563eb;
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .question-section { padding: 1.5rem; }
+            .topic-grid { padding: 0.75rem 1rem; gap: 0.5rem; }
+            .section-header h2 { font-size: 1.4rem; }
+            .question-item { padding: 0.5rem 0.7rem; }
+            .badge { display: none; }
+        }
+
+        /* scrollable topic row on small */
+        .topic-scroll {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 0.5rem;
+            padding: 0.25rem 0 0.75rem;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+        .topic-scroll::-webkit-scrollbar { height: 4px; }
+        .topic-scroll::-webkit-scrollbar-thumb { background: #b9c8e0; border-radius: 12px; }
+
+        .topic-btn {
+            white-space: nowrap;
+        }
+        .topic-grid {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+        .topic-grid .topic-btn {
+            flex: 0 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><i class="fas fa-node-js" style="color:#339933;"></i> Node.js · Express.js</h1>
+    <div class="subhead">
+        <i class="fas fa-list-check" style="margin-right: 0.6rem;"></i>
+        25 Node.js topics + 25 Express.js topics · 500+ questions to master backend
+    </div>
+
+    <!-- TOPIC FILTER / NAV -->
+    <div class="topic-grid" id="topicNav">
+        <span><i class="fas fa-tag"></i> Topics:</span>
+        <!-- JS will inject buttons -->
+    </div>
+
+    <!-- QUESTION DISPLAY -->
+    <div class="question-section" id="questionSection">
+        <div class="section-header">
+            <h2 id="topicTitle">Loading…</h2>
+            <span class="badge" id="questionCount">0 questions</span>
+        </div>
+        <div class="question-list" id="questionList">
+            <!-- dynamically rendered -->
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-brain"></i> Use as self-assessment · each topic contains 10 questions
+    </div>
+</div>
+
+<script>
+    // ----------------------------------------------------------------
+    // DATA: all topics + questions (exactly 10 per topic)
+    // ----------------------------------------------------------------
+    const TOPICS = {
+
+        // ----- NODE.JS (25 topics) -----
+        'Node.js Core Concepts': [
+            "What is Node.js and how does it differ from traditional server-side technologies?",
+            "Explain the event-driven architecture of Node.js.",
+            "What is the V8 engine and why does Node.js use it?",
+            "How does Node.js handle asynchronous operations despite being single-threaded?",
+            "What is the difference between blocking and non-blocking I/O?",
+            "Explain the Node.js event loop with a diagram.",
+            "What is the REPL in Node.js and how do you use it?",
+            "Why is Node.js considered lightweight and efficient?",
+            "What are the main features of Node.js that make it suitable for real-time applications?",
+            "How does Node.js handle multiple concurrent connections?"
+        ],
+        'Installation & Setup': [
+            "How do you install Node.js on different operating systems?",
+            "What is NVM and why is it useful in Node.js development?",
+            "What is the purpose of package.json file?",
+            "Explain the difference between npm and yarn.",
+            "How do you initialize a new Node.js project?",
+            "What is the difference between dependencies and devDependencies?",
+            "How do you update npm packages to their latest versions?",
+            "What is the purpose of package-lock.json?",
+            "How do you set up environment variables for Node.js applications?",
+            "What are the different ways to run a Node.js script?"
+        ],
+        'Core Modules (fs, path, http, os)': [
+            "How do you read and write files synchronously and asynchronously using fs module?",
+            "Explain the difference between fs.readFile and fs.createReadStream.",
+            "How do you join and resolve file paths using the path module?",
+            "Create an HTTP server using the http module and handle different routes.",
+            "How do you get system information using the os module?",
+            "What is the purpose of the url module and how do you parse URLs?",
+            "How do you create a simple event emitter using the events module?",
+            "Explain the difference between buffer and stream in Node.js.",
+            "How do you use the crypto module for hashing and encryption?",
+            "What is the child_process module and how do you spawn child processes?"
+        ],
+        'Module System': [
+            "Explain the difference between CommonJS and ES Modules in Node.js.",
+            "How do you export multiple functions from a module?",
+            "What is module caching and how does it work?",
+            "Explain the module wrapper function in Node.js.",
+            "How do you handle circular dependencies in Node.js modules?",
+            "What is the difference between require and import?",
+            "How do you create a custom module and publish it to npm?",
+            "Explain the module resolution algorithm in Node.js.",
+            "What is the purpose of the __dirname and __filename variables?",
+            "How do you use dynamic imports in Node.js?"
+        ],
+        'Event Loop': [
+            "Explain all phases of the Node.js event loop.",
+            "What is the difference between microtasks and macrotasks?",
+            "How does setImmediate differ from setTimeout?",
+            "What is process.nextTick and when should you use it?",
+            "Explain the order of execution of setTimeout, setImmediate, and process.nextTick.",
+            "How does the event loop handle I/O operations?",
+            "What happens when the event loop is blocked?",
+            "How can you optimize performance by understanding the event loop?",
+            "What is the difference between setImmediate and setTimeout with 0ms delay?",
+            "How does Node.js handle promises in the event loop?"
+        ],
+        'Asynchronous Programming': [
+            "What is callback hell and how do you avoid it?",
+            "Explain the difference between callbacks, promises, and async/await.",
+            "How do you handle errors in asynchronous code?",
+            "What is the purpose of Promise.all, Promise.race, and Promise.allSettled?",
+            "How do you convert a callback-based function to a promise-based one?",
+            "Explain how async/await works behind the scenes.",
+            "What is the difference between parallel and sequential execution of promises?",
+            "How do you handle multiple asynchronous operations with different completion times?",
+            "What is the unhandled rejection and how do you handle it?",
+            "How do you implement a retry mechanism for failed async operations?"
+        ],
+        'Streams & Buffers': [
+            "What are streams in Node.js and why are they important?",
+            "Explain the difference between readable, writable, duplex, and transform streams.",
+            "How do you create a readable stream from a file?",
+            "What is the purpose of the pipe method in streams?",
+            "How do you handle backpressure in streams?",
+            "Explain the difference between buffers and typed arrays.",
+            "How do you convert a buffer to a string and vice versa?",
+            "What is the purpose of the stream module?",
+            "How do you implement a custom transform stream?",
+            "What are the different events emitted by streams?"
+        ],
+        'File System Operations': [
+            "How do you read a large file efficiently in Node.js?",
+            "What is the difference between fs.readFileSync and fs.readFile?",
+            "How do you watch a directory for changes in Node.js?",
+            "Explain how to create, rename, and delete directories.",
+            "What is the difference between fs.writeFile and fs.appendFile?",
+            "How do you check if a file or directory exists in Node.js?",
+            "What are file descriptors and how do you use them?",
+            "How do you copy a file using streams?",
+            "What are the different file flags in Node.js (r, r+, w, w+, etc.)?",
+            "How do you handle file permissions in Node.js?"
+        ],
+        'NPM Package Management': [
+            "What is the difference between npm install and npm update?",
+            "Explain semantic versioning in npm (^1.2.3 vs ~1.2.3).",
+            "How do you publish a package to npm?",
+            "What is the purpose of the .npmrc file?",
+            "How do you create and use private npm packages?",
+            "What is npx and how is it different from npm?",
+            "How do you audit packages for security vulnerabilities?",
+            "What is the difference between local and global package installation?",
+            "How do you manage different package versions in a project?",
+            "What are peer dependencies and why are they important?"
+        ],
+        'Error Handling': [
+            "What are the different types of errors in Node.js?",
+            "How do you handle errors in synchronous code vs asynchronous code?",
+            "Explain the error-first callback pattern.",
+            "How do you handle uncaught exceptions in Node.js?",
+            "What are unhandled rejections and how do you handle them?",
+            "How do you create custom error classes in Node.js?",
+            "What is the domain module and why is it deprecated?",
+            "How do you implement global error handling in a Node.js application?",
+            "What is the difference between throw and reject?",
+            "How do you log errors effectively in production?"
+        ],
+        'Debugging': [
+            "How do you debug Node.js applications using Chrome DevTools?",
+            "What is the purpose of the --inspect flag in Node.js?",
+            "How do you use the debug module for logging?",
+            "Explain how to debug Node.js applications in VS Code.",
+            "What are the best practices for logging in Node.js?",
+            "How do you use console.log effectively for debugging?",
+            "What is the difference between console.log, console.error, and console.warn?",
+            "How do you use the built-in debugger in Node.js?",
+            "What is the purpose of the util.inspect method?",
+            "How do you analyze heap snapshots and memory leaks?"
+        ],
+        'Environment Variables': [
+            "How do you access environment variables in Node.js?",
+            "What is the purpose of the dotenv package?",
+            "How do you manage different environments (development, staging, production)?",
+            "What is NODE_ENV and why is it important?",
+            "How do you securely store sensitive information like API keys?",
+            "What are the best practices for environment configuration?",
+            "How do you validate environment variables in Node.js?",
+            "How do you load environment-specific configuration files?",
+            "What is the difference between process.env and dotenv?",
+            "How do you use environment variables in Docker containers?"
+        ],
+        'Cluster Module': [
+            "What is the cluster module and why is it useful?",
+            "How do you create a clustered Node.js application?",
+            "What is the difference between cluster and worker threads?",
+            "How does the master process manage worker processes?",
+            "What are the best practices for clustering?",
+            "How do you handle process failures in a cluster?",
+            "What is the difference between forking and spawning processes?",
+            "How do you implement zero-downtime deployments using clusters?",
+            "What is the role of the PM2 process manager in clustering?",
+            "How do you share state across worker processes?"
+        ],
+        'Security (Node.js)': [
+            "What are the common security vulnerabilities in Node.js applications?",
+            "How do you prevent SQL injection attacks in Node.js?",
+            "What is XSS and how do you prevent it?",
+            "How do you implement rate limiting in Node.js?",
+            "What is the purpose of helmet.js in Express applications?",
+            "How do you prevent CSRF attacks?",
+            "How do you securely store passwords in Node.js?",
+            "What is JWT and how do you use it for authentication?",
+            "How do you implement input validation and sanitization?",
+            "What are the best practices for securing Node.js applications?"
+        ],
+        'Performance Optimization': [
+            "How do you profile a Node.js application?",
+            "What are memory leaks and how do you detect them?",
+            "How do you implement caching in Node.js applications?",
+            "What is the difference between clustering and load balancing?",
+            "How do you optimize database queries in Node.js?",
+            "What is the purpose of the --max-old-space-size flag?",
+            "How do you implement gzip compression in Node.js?",
+            "What are the best practices for optimizing I/O operations?",
+            "How do you use connection pooling for databases?",
+            "What tools can you use for performance monitoring?"
+        ],
+        'Testing (Node.js)': [
+            "What are the different types of testing in Node.js?",
+            "How do you write unit tests using Jest?",
+            "What is the difference between Jest and Mocha?",
+            "How do you mock dependencies in Node.js tests?",
+            "How do you test asynchronous code in Node.js?",
+            "What is the purpose of the sinon library?",
+            "How do you implement integration testing for APIs?",
+            "What is the difference between stubs and mocks?",
+            "How do you test database operations in Node.js?",
+            "What is code coverage and how do you measure it?"
+        ],
+        'WebSockets': [
+            "What are WebSockets and how do they differ from HTTP?",
+            "How do you implement WebSockets using Socket.io?",
+            "What is the difference between Socket.io and ws library?",
+            "How do you handle rooms and namespaces in Socket.io?",
+            "How do you implement real-time chat using WebSockets?",
+            "What are the events emitted by WebSocket connections?",
+            "How do you handle disconnections and reconnections?",
+            "What is the purpose of the WebSocket handshake?",
+            "How do you secure WebSocket connections?",
+            "How do you broadcast messages to multiple clients?"
+        ],
+        'Database Integration (Node.js)': [
+            "How do you connect Node.js to MongoDB using Mongoose?",
+            "What is the difference between SQL and NoSQL databases?",
+            "How do you implement connection pooling with PostgreSQL?",
+            "What is the purpose of ORMs in Node.js?",
+            "How do you perform CRUD operations using Sequelize?",
+            "What are the advantages of using Mongoose over native MongoDB driver?",
+            "How do you handle database transactions in Node.js?",
+            "What is the difference between findOne and find in Mongoose?",
+            "How do you implement database migrations?",
+            "What are the best practices for database error handling?"
+        ],
+        'Authentication & Authorization': [
+            "What is JWT and how does it work?",
+            "How do you implement JWT authentication in Node.js?",
+            "What is the difference between authentication and authorization?",
+            "How do you implement OAuth 2.0 in Node.js?",
+            "What is Passport.js and why is it useful?",
+            "How do you store JWT tokens securely?",
+            "What is the difference between session-based and token-based authentication?",
+            "How do you implement role-based access control (RBAC)?",
+            "How do you handle password reset functionality?",
+            "What are the best practices for authentication in Node.js?"
+        ],
+        'Deployment (Node.js)': [
+            "What is PM2 and why is it used in production?",
+            "How do you deploy a Node.js application to AWS?",
+            "What is the role of Nginx in deploying Node.js applications?",
+            "How do you containerize a Node.js application using Docker?",
+            "What are environment variables and how do you set them in production?",
+            "How do you implement CI/CD for Node.js applications?",
+            "What are the best practices for logging in production?",
+            "How do you monitor Node.js applications in production?",
+            "What is the difference between horizontal and vertical scaling?",
+            "How do you handle SSL certificates in production?"
+        ],
+        'Express.js Core Concepts': [
+            "What is Express.js and why is it used?",
+            "How do you create a basic Express server?",
+            "Explain the request-response cycle in Express.",
+            "What is the app object in Express and what methods does it provide?",
+            "What is the request object and what properties does it contain?",
+            "What is the response object and what methods does it provide?",
+            "How do you handle different HTTP methods in Express?",
+            "What is the purpose of app.listen() method?",
+            "How do you set up middleware in Express?",
+            "What is the difference between Express and Node.js HTTP module?"
+        ],
+        'Routing (Express)': [
+            "How do you define routes in Express for GET, POST, PUT, and DELETE?",
+            "What are route parameters and how do you access them?",
+            "How do you handle query strings in Express routes?",
+            "What is route chaining in Express?",
+            "How do you separate routes into different files?",
+            "What is the Express.Router and why is it useful?",
+            "How do you use app.route() for route chaining?",
+            "What is the difference between app.get() and app.use()?",
+            "How do you handle 404 routes in Express?",
+            "What are the different ways to pass data between routes?"
+        ],
+        'Middleware (Express)': [
+            "What is middleware in Express?",
+            "Explain the difference between application-level and router-level middleware.",
+            "What are the built-in middleware functions in Express?",
+            "How do you create custom middleware?",
+            "What is the order of middleware execution?",
+            "How do you implement error-handling middleware?",
+            "What is the purpose of next() function in middleware?",
+            "How do you use third-party middleware in Express?",
+            "What is the difference between app.use() and app.METHOD()?",
+            "How do you conditionally apply middleware?"
+        ],
+        'Request Handling (Express)': [
+            "How do you access URL parameters in Express?",
+            "How do you access query string parameters?",
+            "How do you access the request body in Express?",
+            "What is the purpose of express.json() middleware?",
+            "How do you access request headers?",
+            "What is the difference between req.params and req.query?",
+            "How do you access cookies in Express?",
+            "What is the purpose of req.ip and req.hostname?",
+            "How do you handle file uploads in request body?",
+            "How do you access the request URL and original URL?"
+        ],
+        'Response Handling (Express)': [
+            "How do you send JSON responses in Express?",
+            "What is the difference between res.send() and res.json()?",
+            "How do you set HTTP status codes in responses?",
+            "How do you send files as response in Express?",
+            "What is the purpose of res.redirect()?",
+            "How do you set custom headers in response?",
+            "How do you download files using Express?",
+            "What is the difference between res.render() and res.sendFile()?",
+            "How do you set and clear cookies in Express?",
+            "How do you chain response methods in Express?"
+        ],
+        'Template Engines (Express)': [
+            "What are template engines in Express?",
+            "How do you set up EJS as a template engine?",
+            "What is the difference between EJS and Pug?",
+            "How do you pass data to templates in Express?",
+            "What are partials and how do you use them?",
+            "How do you implement layouts in EJS?",
+            "What is the purpose of res.render() method?",
+            "How do you use JavaScript in EJS templates?",
+            "What are the advantages of using template engines?",
+            "How do you render dynamic data in templates?"
+        ],
+        'Static Files (Express)': [
+            "How do you serve static files in Express?",
+            "What is the purpose of express.static() middleware?",
+            "How do you serve files from multiple directories?",
+            "What is a virtual path prefix and how do you use it?",
+            "How do you secure static file serving?",
+            "What is the difference between static and dynamic files?",
+            "How do you set cache headers for static files?",
+            "How do you serve a single HTML file in Express?",
+            "How do you handle 404 for static files?",
+            "What are the best practices for serving static assets?"
+        ],
+        'Error Handling (Express)': [
+            "How does Express handle errors by default?",
+            "How do you create custom error-handling middleware?",
+            "What is the difference between synchronous and asynchronous error handling?",
+            "How do you handle errors in async route handlers?",
+            "What is the purpose of the next() function in error handling?",
+            "How do you implement centralized error handling?",
+            "How do you handle 404 errors gracefully?",
+            "What are the best practices for error logging?",
+            "How do you return custom error responses?",
+            "How do you handle validation errors in Express?"
+        ],
+        'Session Management (Express)': [
+            "What is session management in Express?",
+            "How do you set up express-session middleware?",
+            "What is the purpose of cookie-parser?",
+            "How do you store session data?",
+            "What are the different session stores available?",
+            "How do you implement Redis for session storage?",
+            "How do you destroy a session in Express?",
+            "What is the difference between session and cookies?",
+            "How do you configure session options (secret, saveUninitialized, etc.)?",
+            "What are the security considerations for sessions?"
+        ],
+        'Authentication (Express)': [
+            "How do you implement JWT authentication in Express?",
+            "What is Passport.js and how do you use it?",
+            "How do you implement local strategy in Passport.js?",
+            "What is the difference between session-based and token-based authentication?",
+            "How do you protect routes with authentication middleware?",
+            "How do you implement OAuth 2.0 with Passport.js?",
+            "How do you hash passwords using bcrypt?",
+            "What is the purpose of the authorization header?",
+            "How do you implement refresh tokens?",
+            "What are the best practices for authentication in Express?"
+        ],
+        'Database Integration (Express)': [
+            "How do you connect Express to MongoDB using Mongoose?",
+            "How do you perform CRUD operations in Express with a database?",
+            "What is the difference between using an ORM and raw queries?",
+            "How do you handle database connection errors in Express?",
+            "What is the purpose of database models?",
+            "How do you implement relationships between models?",
+            "How do you perform pagination in Express API?",
+            "What is the difference between MongoDB and PostgreSQL in Express?",
+            "How do you implement database transactions?",
+            "What are the best practices for database integration?"
+        ],
+        'API Development (Express)': [
+            "What are RESTful APIs and how do you build them in Express?",
+            "How do you structure routes for an API?",
+            "What are the best practices for API versioning?",
+            "How do you implement pagination, filtering, and sorting?",
+            "What is the purpose of API documentation and how do you implement it?",
+            "How do you format API responses consistently?",
+            "What are the common HTTP status codes used in APIs?",
+            "How do you implement rate limiting for APIs?",
+            "What is the difference between REST and GraphQL?",
+            "How do you secure REST APIs?"
+        ],
+        'Validation (Express)': [
+            "What is input validation and why is it important?",
+            "How do you use express-validator for validation?",
+            "What is the difference between validation and sanitization?",
+            "How do you implement custom validators?",
+            "How do you validate query parameters and route parameters?",
+            "What is Joi and how do you use it for validation?",
+            "How do you handle validation errors in Express?",
+            "What are the best practices for input validation?",
+            "How do you validate nested objects and arrays?",
+            "What is the difference between client-side and server-side validation?"
+        ],
+        'File Upload (Express)': [
+            "How do you handle file uploads using Multer?",
+            "What is the difference between Multer and express-fileupload?",
+            "How do you configure Multer for single and multiple file uploads?",
+            "How do you validate file types and sizes?",
+            "How do you store uploaded files in cloud storage?",
+            "How do you implement progress tracking for file uploads?",
+            "How do you handle errors during file upload?",
+            "What is the difference between memory storage and disk storage?",
+            "How do you rename uploaded files?",
+            "What are the best practices for file upload security?"
+        ],
+        'CORS (Express)': [
+            "What is CORS and why is it important?",
+            "How do you enable CORS in Express?",
+            "How do you configure allowed origins for CORS?",
+            "What are preflight requests and how do they work?",
+            "How do you handle CORS for different environments?",
+            "What are the security implications of CORS?",
+            "How do you set custom CORS headers?",
+            "What is the purpose of the Access-Control-Allow-Origin header?",
+            "How do you restrict CORS to specific HTTP methods?",
+            "What are the alternative ways to handle CORS?"
+        ],
+        'Security (Express)': [
+            "What is Helmet.js and why is it used?",
+            "How do you prevent XSS attacks in Express?",
+            "How do you prevent CSRF attacks?",
+            "What is rate limiting and how do you implement it?",
+            "How do you sanitize user input?",
+            "What are the common security headers and how do you set them?",
+            "How do you protect against SQL injection?",
+            "What is the difference between helmet and CORS?",
+            "How do you implement HTTPS in Express?",
+            "What are the best practices for Express security?"
+        ],
+        'Logging (Express)': [
+            "What is Morgan and why is it used?",
+            "How do you implement logging using Winston?",
+            "What are the different log levels?",
+            "How do you write logs to files?",
+            "How do you implement structured logging?",
+            "What is the difference between access logs and error logs?",
+            "How do you format logs for readability?",
+            "How do you implement request logging in Express?",
+            "What are the best practices for logging in production?",
+            "How do you integrate logging with monitoring tools?"
+        ],
+        'Caching (Express)': [
+            "How do you implement caching in Express?",
+            "What is the difference between in-memory cache and Redis?",
+            "How do you implement Redis caching for API responses?",
+            "What is ETag and how does it work?",
+            "How do you set cache-control headers?",
+            "How do you implement database query caching?",
+            "What are the benefits of caching?",
+            "How do you handle cache invalidation?",
+            "What is the difference between caching and compression?",
+            "How do you implement a caching strategy for dynamic content?"
+        ],
+        'Compression (Express)': [
+            "What is gzip compression and how does it work?",
+            "How do you implement compression in Express?",
+            "What is the difference between gzip and Brotli?",
+            "How do you configure compression middleware?",
+            "What are the benefits of compression?",
+            "How do you set compression threshold?",
+            "What is the impact of compression on performance?",
+            "How do you handle compressed responses?",
+            "What are the best practices for compression?",
+            "How do you combine compression with caching?"
+        ],
+        'Testing Express Apps': [
+            "How do you write unit tests for Express routes?",
+            "What is Supertest and how do you use it?",
+            "How do you test middleware in Express?",
+            "How do you mock database operations in tests?",
+            "What is the difference between integration and unit tests?",
+            "How do you test error handling in Express?",
+            "How do you test authentication and authorization?",
+            "What are the best practices for testing Express apps?",
+            "How do you test API endpoints?",
+            "How do you achieve good test coverage?"
+        ],
+        'WebSockets with Express': [
+            "How do you integrate Socket.io with Express?",
+            "What is the difference between WebSocket and HTTP?",
+            "How do you handle real-time events?",
+            "What are rooms and namespaces in Socket.io?",
+            "How do you implement a chat application?",
+            "How do you broadcast messages to clients?",
+            "How do you handle disconnections and reconnections?",
+            "How do you authenticate WebSocket connections?",
+            "What are the best practices for real-time applications?",
+            "How do you scale Socket.io applications?"
+        ],
+        'Performance Optimization (Express)': [
+            "How do you implement clustering in Express?",
+            "How do you use compression for performance?",
+            "What is the impact of caching on performance?",
+            "How do you optimize database queries?",
+            "How do you implement connection pooling?",
+            "How do you profile Express applications?",
+            "What are the common performance bottlenecks?",
+            "How do you implement load balancing?",
+            "What are the best practices for performance optimization?",
+            "How do you monitor performance in production?"
+        ],
+        'Deployment (Express)': [
+            "How do you configure environment variables for production?",
+            "How do you use PM2 with Express?",
+            "How do you Dockerize an Express application?",
+            "How do you set up Nginx as a reverse proxy?",
+            "How do you configure SSL/HTTPS in Express?",
+            "How do you implement CI/CD for Express apps?",
+            "How do you monitor Express applications in production?",
+            "What are the best practices for logging in production?",
+            "How do you handle errors in production?",
+            "How do you scale Express applications in production?"
+        ],
+        'Project Structure (Express)': [
+            "What is the MVC pattern and how do you implement it in Express?",
+            "How do you organize routes, controllers, and models?",
+            "What are the best practices for folder structure?",
+            "How do you implement separation of concerns?",
+            "How do you structure configuration files?",
+            "What is the difference between services and controllers?",
+            "How do you organize middleware?",
+            "What are the benefits of a well-structured project?",
+            "How do you implement dependency injection?",
+            "What are the common project patterns in Express?"
+        ],
+        'Advanced Topics (Express)': [
+            "How do you implement microservices with Express?",
+            "What is GraphQL and how do you implement it with Express?",
+            "How do you implement event-driven architecture?",
+            "What is the purpose of message queues in Express?",
+            "How do you implement webhooks?",
+            "How do you implement server-sent events?",
+            "What are circuit breakers and how do you implement them?",
+            "How do you implement rate limiting strategies?",
+            "How do you handle large file uploads efficiently?",
+            "How do you implement real-time notifications?"
+        ]
+    };
+
+    // ---------- render ----------
+    const topicNav = document.getElementById('topicNav');
+    const topicTitle = document.getElementById('topicTitle');
+    const questionCount = document.getElementById('questionCount');
+    const questionList = document.getElementById('questionList');
+
+    const topicNames = Object.keys(TOPICS);
+    let activeTopic = topicNames[0];
+
+    function renderNav() {
+        // keep the "Topics:" label
+        const label = topicNav.querySelector('span');
+        topicNav.innerHTML = '';
+        topicNav.appendChild(label);
+        topicNames.forEach(name => {
+            const btn = document.createElement('button');
+            btn.className = 'topic-btn' + (name === activeTopic ? ' active' : '');
+            btn.textContent = name;
+            btn.dataset.topic = name;
+            btn.addEventListener('click', () => {
+                activeTopic = name;
+                renderNav();
+                renderQuestions(name);
+            });
+            topicNav.appendChild(btn);
+        });
+    }
+
+    function renderQuestions(topicName) {
+        const qs = TOPICS[topicName] || [];
+        topicTitle.textContent = topicName;
+        questionCount.textContent = qs.length + ' questions';
+
+        if (qs.length === 0) {
+            questionList.innerHTML = `<div style="padding:2rem;text-align:center;color:#64748b;">No questions for this topic.</div>`;
+            return;
+        }
+
+        let html = '';
+        qs.forEach((q, idx) => {
+            const num = idx + 1;
+            html += `
+                <div class="question-item">
+                    <span class="q-number">${num}.</span>
+                    <span class="q-text">${q}</span>
+                </div>
+            `;
+        });
+        questionList.innerHTML = html;
+    }
+
+    // init
+    renderNav();
+    renderQuestions(activeTopic);
+</script>
+</body>
+</html>

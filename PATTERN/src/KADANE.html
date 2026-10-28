@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kadane's Algorithm · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-panel: #0e1420;
+            --bg-card: #121927;
+            --bg-cell: #1a2333;
+            --border: #212c40;
+            --border-soft: #182236;
+            --text: #d8dee9;
+            --text-dim: #9aa9bb;
+            --text-faint: #5a6a7e;
+            --teal: #4fd8c4;
+            --teal-dim: rgba(79,216,196,0.14);
+            --amber: #f6ad55;
+            --amber-dim: rgba(246,173,85,0.14);
+            --violet: #b394f6;
+            --violet-dim: rgba(179,148,246,0.14);
+            --green: #4ade80;
+            --red: #f87171;
+            --pink: #f472b6;
+            --pink-dim: rgba(244,114,182,0.14);
+            --orange: #fb923c;
+            --orange-dim: rgba(251,146,60,0.14);
+            --font-d: 'Space Grotesk', sans-serif;
+            --font-b: 'Inter', sans-serif;
+            --font-m: 'JetBrains Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(ellipse 900px 500px at 15% -10%, rgba(79,216,196,0.06), transparent),
+            radial-gradient(ellipse 700px 500px at 100% 20%, rgba(179,148,246,0.05), transparent),
+            var(--bg);
+            color: var(--text);
+            font-family: var(--font-b);
+            padding: 2.5rem 1.5rem 5rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1200px; margin: 0 auto; }
+        ::selection { background: var(--teal-dim); color: var(--teal); }
+
+        .hero {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border-soft);
+            margin-bottom: 2.5rem;
+        }
+        .eyebrow {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--teal); }
+        .hero h1 {
+            font-family: var(--font-d);
+            font-weight: 700;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+        .hero h1 span { color: var(--text-faint); }
+        .hero p.lede {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin-bottom: 1.6rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-panel);
+        }
+        .stat b { color: var(--text); font-weight: 600; }
+
+        .sec {
+            margin: 3.5rem 0 1.4rem;
+        }
+        .sec-num {
+            font-family: var(--font-m);
+            color: var(--text-faint);
+            font-size: 0.8rem;
+        }
+        .sec h2 {
+            font-family: var(--font-d);
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--text);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .sec .desc {
+            color: var(--text-dim);
+            margin-top: 0.4rem;
+            max-width: 680px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .callout {
+            margin-top: 1rem;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            background: var(--teal-dim);
+            border: 1px solid rgba(79,216,196,0.25);
+            font-size: 0.92rem;
+            color: var(--text);
+        }
+        .callout b { color: var(--teal); }
+
+        .code-snippet {
+            background: #0d1a28;
+            color: #c8dfff;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-family: var(--font-m);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            margin: 0.6rem 0;
+        }
+        .code-snippet .comment { color: #6a8faa; }
+        .code-snippet .keyword { color: var(--violet); }
+        .code-snippet .string { color: var(--green); }
+        .code-snippet .type { color: var(--teal); }
+
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem 1.2rem;
+            margin-top: 0.4rem;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--bg-panel);
+            padding: 0.4rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.92rem;
+            border: 1px solid var(--border-soft);
+        }
+        .benefit-item i { color: var(--teal); width: 1.3rem; }
+
+        .variation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .variation-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .variation-grid { grid-template-columns: 1fr; }
+        }
+
+        .variation-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            border-top: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .variation-card:hover { transform: translateY(-2px); }
+        .variation-card.v1 { border-top-color: var(--teal); }
+        .variation-card.v2 { border-top-color: var(--amber); }
+        .variation-card.v3 { border-top-color: var(--violet); }
+        .variation-card.v4 { border-top-color: var(--pink); }
+
+        .variation-card .vname {
+            font-family: var(--font-d);
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+        .variation-card .vname .tag {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            color: var(--text-dim);
+            margin-left: 0.5rem;
+        }
+        .variation-card .vdesc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+        .variation-card .vcode {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem;
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin: 0.4rem 0;
+            overflow-x: auto;
+        }
+        .variation-card .vuse {
+            font-size: 0.8rem;
+            color: var(--text-faint);
+            margin-top: 0.4rem;
+        }
+        .variation-card .vuse b { color: var(--text); }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+            margin-top: 1.5rem;
+        }
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: var(--teal); }
+        .problem-card.g2 { border-left-color: var(--amber); }
+        .problem-card.g3 { border-left-color: var(--violet); }
+        .problem-card.g4 { border-left-color: var(--pink); }
+
+        .problem-card .phead {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .problem-card .pnum {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .problem-card .pname {
+            font-family: var(--font-d);
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-top: 2px;
+        }
+        .problem-card .pnum-id {
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            margin: 0.7rem 0;
+        }
+        .problem-card .papproach {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: var(--text); }
+        .problem-card .papproach .pattern-tag {
+            display: inline-block;
+            background: var(--teal-dim);
+            color: var(--teal);
+            padding: 0.1rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: var(--font-m);
+            margin-bottom: 0.4rem;
+        }
+        .problem-card .ppitfall {
+            font-size: 0.82rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            padding: 0.6rem 0.85rem;
+            margin-bottom: 0.7rem;
+        }
+        .problem-card .ppitfall b { color: var(--red); }
+        .pfoot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .complexity {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .diff-easy {
+            color: var(--green);
+            background: rgba(74,222,128,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-medium {
+            color: var(--amber);
+            background: rgba(246,173,85,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-hard {
+            color: var(--red);
+            background: rgba(248,113,113,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 2.5rem 0 1.2rem;
+        }
+        .group-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .group-head h3 {
+            font-family: var(--font-d);
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+        .group-head .count {
+            font-family: var(--font-m);
+            font-size: 0.78rem;
+            color: var(--text-faint);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 720px) {
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+        .mistake {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid var(--red);
+        }
+        .mistake .mtitle {
+            font-family: var(--font-m);
+            font-weight: 600;
+            color: #f8b4ac;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .mistake p {
+            font-size: 0.87rem;
+            color: var(--text-dim);
+        }
+        .mistake .fix {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--green);
+        }
+        .mistake .fix b { font-family: var(--font-m); }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-panel);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--teal), var(--violet));
+            transition: width 0.3s ease;
+        }
+        .progress-label {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: var(--text-faint); }
+        .check-item.done {
+            border-color: rgba(74,222,128,0.35);
+            background: rgba(74,222,128,0.06);
+        }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid var(--text-faint);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--bg);
+        }
+        .check-item.done .check-box {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .check-item span.label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .check-item.done span.label {
+            color: var(--text);
+            text-decoration: line-through;
+            text-decoration-color: var(--text-faint);
+        }
+        .check-item .tier {
+            margin-left: auto;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-soft);
+            color: var(--text-dim);
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl {
+            font-family: var(--font-d);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3.5rem;
+            color: var(--text-faint);
+            font-size: 0.8rem;
+            font-family: var(--font-m);
+            border-top: 1px solid var(--border-soft);
+            padding-top: 2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+        .inline-tag {
+            background: var(--border);
+            border-radius: 30px;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+        .meta-chip {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+        .recog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 720px) {
+            .recog-grid { grid-template-columns: 1fr; }
+        }
+        .recog-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-panel);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+        }
+        .recog-item .hint { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .recog-item .reason { color: var(--text-dim); font-size: 0.85rem; }
+        .recog-item i { color: var(--teal); width: 1.5rem; text-align: center; }
+
+        .viz-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .viz-table th {
+            background: var(--bg-card);
+            padding: 0.7rem 0.8rem;
+            text-align: center;
+            color: var(--text-dim);
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+        }
+        .viz-table td {
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-soft);
+            font-family: var(--font-m);
+            font-size: 0.82rem;
+        }
+        .viz-table tr:last-child td { border-bottom: none; }
+        .viz-table .highlight { color: var(--teal); font-weight: 600; }
+        .viz-table .highlight-gold { color: var(--amber); font-weight: 600; }
+        .viz-table .highlight-green { color: var(--green); font-weight: 600; }
+        .viz-table .highlight-red { color: var(--red); font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="eyebrow">Dynamic Programming · One Pass</div>
+        <h1>Kadane's Algorithm <span>— from recognition to mastery</span></h1>
+        <p class="lede">Kadane's Algorithm is a dynamic programming technique that finds the maximum sum of a contiguous subarray in O(n) time with O(1) space. Master the core algorithm and its variations to solve any maximum subarray problem.</p>
+        <div class="stat-row">
+            <div class="stat">⚡ <b>O(n)</b> time · <b>O(1)</b> space</div>
+            <div class="stat">📊 <b>4</b> core variations</div>
+            <div class="stat">🎯 <b>10</b> problems</div>
+            <div class="stat">💡 <b>DP</b> decision: extend or start fresh</div>
+        </div>
+    </div>
+
+    <!-- 1. WHAT IS KADANE'S ALGORITHM -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What is Kadane's Algorithm?</h2>
+        <p class="desc"><b>Kadane's Algorithm</b> is a dynamic programming technique used to find the <b>maximum sum of a contiguous subarray</b> in an array of integers (which may contain negative numbers). It was proposed by Jay Kadane in 1984 and runs in <b>O(n) time</b> with <b>O(1) space</b>.</p>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-code" style="margin-right:6px;"></i> Core Implementation</span>
+            <div class="code-snippet"><span class="type">int</span> maxSubarraySum(<span class="type">int</span>[] nums) {
+                <span class="type">int</span> currMax = nums[0];
+                <span class="type">int</span> globalMax = nums[0];
+
+                <span class="keyword">for</span> (<span class="type">int</span> i = 1; i < nums.length; i++) {
+                currMax = Math.max(nums[i], currMax + nums[i]);
+                globalMax = Math.max(globalMax, currMax);
+                }
+                <span class="keyword">return</span> globalMax;
+                }</div>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.9rem;">
+                <i class="fas fa-arrow-right" style="color:var(--teal);"></i> <b>Decision at each step:</b> extend or start fresh
+                <br><i class="fas fa-arrow-right" style="color:var(--teal);"></i> <b>Track two values:</b> current max (ending here) and global max (overall)
+            </div>
+        </div>
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-lightbulb" style="margin-right:6px;"></i> Core Idea</span>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.95rem;">
+                <p style="padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                    <b>At each position i, decide:</b>
+                </p>
+                <p style="padding:0.4rem 0; border-bottom:1px solid var(--border-soft);">
+                    <span style="color:var(--green);">1️⃣</span> <b>Start fresh</b> — begin a new subarray at nums[i]
+                </p>
+                <p style="padding:0.4rem 0;">
+                    <span style="color:var(--amber);">2️⃣</span> <b>Extend</b> — add nums[i] to the current subarray
+                </p>
+                <div style="margin-top:0.8rem; padding:0.6rem; background:var(--bg-panel); border-radius:8px; border:1px solid var(--border-soft);">
+                    <code style="color:var(--teal);">currMax = max(nums[i], currMax + nums[i])</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. STEP BY STEP EXAMPLE -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>Step by Step Example</h2>
+        <p class="desc">Watch how Kadane's Algorithm processes the array <code>[-2, 1, -3, 4, -1, 2, 1, -5, 4]</code></p>
+    </div>
+
+    <div class="card">
+        <table class="viz-table">
+            <thead>
+            <tr>
+                <th>i</th>
+                <th>Element</th>
+                <th>currMax (ending here)</th>
+                <th>globalMax (overall)</th>
+                <th>Decision</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td>0</td><td class="highlight-red">-2</td><td class="highlight-red">-2</td><td class="highlight-red">-2</td><td>Start with first element</td></tr>
+            <tr><td>1</td><td class="highlight">1</td><td class="highlight">1</td><td class="highlight">1</td><td>Start fresh at 1</td></tr>
+            <tr><td>2</td><td class="highlight-red">-3</td><td>-2</td><td>1</td><td>Extend with -3</td></tr>
+            <tr><td>3</td><td class="highlight-gold">4</td><td class="highlight-gold">4</td><td class="highlight-gold">4</td><td>Start fresh at 4</td></tr>
+            <tr><td>4</td><td>-1</td><td>3</td><td>4</td><td>Extend with -1</td></tr>
+            <tr><td>5</td><td class="highlight-green">2</td><td class="highlight-green">5</td><td class="highlight-green">5</td><td>Extend with 2</td></tr>
+            <tr><td>6</td><td class="highlight-green">1</td><td class="highlight-green">6</td><td class="highlight-green">6</td><td>Extend with 1</td></tr>
+            <tr><td>7</td><td>-5</td><td>1</td><td>6</td><td>Extend with -5</td></tr>
+            <tr><td>8</td><td>4</td><td>5</td><td>6</td><td>Extend with 4</td></tr>
+            </tbody>
+        </table>
+        <div style="margin-top:1rem; padding:0.8rem; background:var(--teal-dim); border-radius:10px; border:1px solid rgba(79,216,196,0.25);">
+            <b style="color:var(--teal);">✅ Result:</b> Maximum subarray sum = <b style="color:var(--green);">6</b> (subarray: <code>[4, -1, 2, 1]</code>)
+        </div>
+    </div>
+
+    <!-- 3. CORE VARIATIONS -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>The 4 Core Variations</h2>
+        <p class="desc">Kadane's Algorithm can be adapted to solve many different problems.</p>
+    </div>
+
+    <div class="variation-grid">
+        <!-- Variation 1: Classic -->
+        <div class="variation-card v1">
+            <div class="vname">Classic Kadane <span class="tag">Max Sum</span></div>
+            <div class="vdesc">Find the maximum sum of a contiguous subarray.</div>
+            <div class="vcode">currMax = Math.max(nums[i], currMax + nums[i]);
+                globalMax = Math.max(globalMax, currMax);</div>
+            <div class="vuse"><b>Use for:</b> Maximum Subarray (LeetCode 53)</div>
+        </div>
+
+        <!-- Variation 2: Product -->
+        <div class="variation-card v2">
+            <div class="vname">Product Variation <span class="tag">Max Product</span></div>
+            <div class="vdesc">Track both max and min (negative × negative = positive).</div>
+            <div class="vcode">currMax = max(nums[i], currMax*nums[i], currMin*nums[i]);
+                currMin = min(nums[i], currMax*nums[i], currMin*nums[i]);</div>
+            <div class="vuse"><b>Use for:</b> Maximum Product Subarray (LeetCode 152)</div>
+        </div>
+
+        <!-- Variation 3: Circular -->
+        <div class="variation-card v3">
+            <div class="vname">Circular Variation <span class="tag">Wrap Around</span></div>
+            <div class="vdesc">Max subarray that can wrap around the array boundaries.</div>
+            <div class="vcode">circularMax = totalSum - minSubarraySum;
+                return Math.max(normalMax, circularMax);</div>
+            <div class="vuse"><b>Use for:</b> Maximum Sum Circular Subarray (LeetCode 918)</div>
+        </div>
+
+        <!-- Variation 4: With Deletion -->
+        <div class="variation-card v4">
+            <div class="vname">With Deletion <span class="tag">Forward + Backward</span></div>
+            <div class="vdesc">Max subarray sum after deleting at most one element.</div>
+            <div class="vcode">forward[i] = max sum ending at i
+                backward[i] = max sum starting at i
+                max = max(forward[i-1] + backward[i+1])</div>
+            <div class="vuse"><b>Use for:</b> Maximum Subarray Sum with One Deletion (LeetCode 1186)</div>
+        </div>
+    </div>
+
+    <!-- 4. HOW TO RECOGNIZE -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>How to Recognize Kadane's Pattern</h2>
+        <p class="desc">These clues in problem statements should immediately make you think of Kadane's Algorithm.</p>
+    </div>
+    <div class="recog-grid">
+        <div class="recog-item"><i class="fas fa-chart-line"></i><span class="hint">"Maximum subarray sum"</span><span class="reason">→ Classic Kadane</span></div>
+        <div class="recog-item"><i class="fas fa-calculator"></i><span class="hint">"Maximum product subarray"</span><span class="reason">→ Product Variation</span></div>
+        <div class="recog-item"><i class="fas fa-rotate"></i><span class="hint">"Circular array"</span><span class="reason">→ Circular Variation</span></div>
+        <div class="recog-item"><i class="fassync-alt"></i>
+            <span class="hint">"Delete one element"</span>
+            <span class="reason">→ Forward + Backward Kadane</span>
+        </div>
+
+        <div class="recog-item">
+            <i class="fas fa-wave-square"></i>
+            <span class="hint">"Largest contiguous sum"</span>
+            <span class="reason">→ Standard Kadane</span>
+        </div>
+
+        <div class="recog-item">
+            <i class="fas fa-bolt"></i>
+            <span class="hint">"Maximum score"</span>
+            <span class="reason">→ Often Kadane DP</span>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- 5. COMMON MISTAKES -->
+    <!-- ================================================= -->
+
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Common Mistakes</h2>
+        <p class="desc">
+            These mistakes are responsible for most wrong answers during interviews.
+        </p>
+    </div>
+
+    <div class="mistake-grid">
+
+        <div class="mistake">
+            <div class="mtitle">
+                ❌ Initializing current sum with 0
+            </div>
+
+            <p>
+                If the array contains only negative numbers,
+                answer becomes incorrect.
+            </p>
+
+            <div class="fix">
+                <b>Correct:</b>
+
+                Initialize using first element.
+            </div>
+        </div>
+
+        <div class="mistake">
+
+            <div class="mtitle">
+                ❌ Resetting sum before updating answer
+            </div>
+
+            <p>
+
+                Update global answer first,
+                then continue.
+
+            </p>
+
+            <div class="fix">
+
+                <b>Correct:</b>
+
+                globalMax = Math.max(globalMax,currentMax)
+
+            </div>
+
+        </div>
+
+        <div class="mistake">
+
+            <div class="mtitle">
+
+                ❌ Forgetting all-negative case
+
+            </div>
+
+            <p>
+
+                Returning zero for
+                [-5,-2,-1]
+                is wrong.
+
+            </p>
+
+            <div class="fix">
+
+                <b>Correct:</b>
+
+                Never initialize answer with 0.
+
+            </div>
+
+        </div>
+
+        <div class="mistake">
+
+            <div class="mtitle">
+
+                ❌ Confusing Prefix Sum and Kadane
+
+            </div>
+
+            <p>
+
+                Prefix Sum computes range sums.
+
+                Kadane finds best contiguous sum.
+
+            </p>
+
+            <div class="fix">
+
+                <b>Remember:</b>
+
+                Prefix = Query
+
+                Kadane = Optimization
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================================================= -->
+    <!-- 6. CHEAT SHEET -->
+    <!-- ================================================= -->
+
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Revision Cheat Sheet</h2>
+    </div>
+
+    <div class="card">
+
+        <table class="cheat-table">
+
+            <thead>
+
+            <tr>
+
+                <th>Question asks...</th>
+
+                <th>Think</th>
+
+                <th>Pattern</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr>
+
+                <td class="lbl">Maximum Sum</td>
+
+                <td>Classic Kadane</td>
+
+                <td>DP</td>
+
+            </tr>
+
+            <tr>
+
+                <td class="lbl">Maximum Product</td>
+
+                <td>Track Max & Min</td>
+
+                <td>Kadane Variant</td>
+
+            </tr>
+
+            <tr>
+
+                <td class="lbl">Circular Array</td>
+
+                <td>Total - Minimum</td>
+
+                <td>Circular Kadane</td>
+
+            </tr>
+
+            <tr>
+
+                <td class="lbl">Delete One Element</td>
+
+                <td>Forward + Backward</td>
+
+                <td>DP</td>
+
+            </tr>
+
+            <tr>
+
+                <td class="lbl">Maximum Rectangle</td>
+
+                <td>Compress Rows + Kadane</td>
+
+                <td>2D Kadane</td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- ================================================= -->
+    <!-- 7. PRACTICE CHECKLIST -->
+    <!-- ================================================= -->
+
+    <div class="sec">
+
+        <div class="sec-num">
+
+            07
+
+        </div>
+
+        <h2>
+
+            Practice Checklist
+
+        </h2>
+
+    </div>
+
+    <div class="card">
+
+        <div class="progress-wrap">
+
+            <div class="progress-bar">
+
+                <div class="progress-fill" id="progressFill"></div>
+
+            </div>
+
+            <div class="progress-label">
+
+<span id="progressText">
+
+0%
+
+</span>
+
+                Completed
+
+            </div>
+
+        </div>
+
+        <div class="checklist">
+
+            <label class="check-item">
+
+                <input type="checkbox" hidden>
+
+                <div class="check-box">
+
+                    ✓
+
+                </div>
+
+                <span class="label">
+
+Maximum Subarray (53)
+
+</span>
+
+                <span class="tier">
+
+Easy
+
+</span>
+
+            </label>
+
+            <label class="check-item">
+
+                <input type="checkbox" hidden>
+
+                <div class="check-box">
+
+                    ✓
+
+                </div>
+
+                <span class="label">
+
+Maximum Product Subarray (152)
+
+</span>
+
+                <span class="tier">
+
+Medium
+
+</span>
+
+            </label>
+
+            <label class="check-item">
+
+                <input type="checkbox" hidden>
+
+                <div class="check-box">
+
+                    ✓
+
+                </div>
+
+                <span class="label">
+
+Maximum Circular Sum (918)
+
+</span>
+
+                <span class="tier">
+
+Medium
+
+</span>
+
+            </label>
+
+            <label class="check-item">
+
+                <input type="checkbox" hidden>
+
+                <div class="check-box">
+
+                    ✓
+
+                </div>
+
+                <span class="label">
+
+Maximum Sum After Deletion (1186)
+
+</span>
+
+                <span class="tier">
+
+Hard
+
+</span>
+
+            </label>
+
+            <label class="check-item">
+
+                <input type="checkbox" hidden>
+
+                <div class="check-box">
+
+                    ✓
+
+                </div>
+
+                <span class="label">
+
+Maximum Rectangle
+
+</span>
+
+                <span class="tier">
+
+Hard
+
+</span>
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <footer>
+
+        Built for DSA Pattern Mastery • Kadane's Algorithm • Java • O(n)
+
+    </footer>
+
+    <script>
+
+        const checks = document.querySelectorAll(".check-item");
+
+        const fill = document.getElementById("progressFill");
+
+        const txt = document.getElementById("progressText");
+
+        function update(){
+
+            let done=0;
+
+            checks.forEach(c=>{
+
+                const box=c.querySelector("input");
+
+                if(box.checked){
+
+                    done++;
+
+                    c.classList.add("done");
+
+                }else{
+
+                    c.classList.remove("done");
+
+                }
+
+            });
+
+            const percent=Math.round(done/checks.length*100);
+
+            fill.style.width=percent+"%";
+
+            txt.innerText=percent+"%";
+
+            localStorage.setItem("kadane-progress",JSON.stringify([...checks].map(c=>c.querySelector("input").checked)));
+
+        }
+
+        checks.forEach(c=>{
+
+            c.addEventListener("click",()=>{
+
+                const box=c.querySelector("input");
+
+                box.checked=!box.checked;
+
+                update();
+
+            });
+
+        });
+
+        const saved=JSON.parse(localStorage.getItem("kadane-progress")||"[]");
+
+        saved.forEach((v,i)=>{
+
+            if(checks[i])
+
+                checks[i].querySelector("input").checked=v;
+
+        });
+
+        update();
+
+    </script>
+
+</body>
+
+</html>

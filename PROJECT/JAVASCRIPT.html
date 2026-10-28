@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript Mastery · 50 Topics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #f6f8fc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --primary: #f59e0b;
+            --primary-light: #fef3c7;
+            --primary-dark: #d97706;
+            --success: #22c55e;
+            --success-light: #f0fdf4;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --purple: #8b5cf6;
+            --purple-light: #ede9fe;
+            --blue: #3b82f6;
+            --blue-light: #dbeafe;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+            --font-code: 'Fira Code', monospace;
+        }
+        body.dark {
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #1e293b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #1e293b;
+            --primary: #fbbf24;
+            --primary-light: #1e2a1a;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+        .app { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 380px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.2rem 1rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            flex-shrink: 0;
+            transition: background 0.3s, border 0.3s;
+            z-index: 10;
+        }
+        .sidebar-brand {
+            font-weight: 800;
+            font-size: 1.3rem;
+            padding: 0 0.5rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+        .sidebar-brand i { font-size: 1.6rem; }
+        .sidebar-stats {
+            display: flex;
+            gap: 6px;
+            padding: 0 0.5rem 1rem;
+            flex-wrap: wrap;
+        }
+        .sidebar-stats .stat {
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        body.dark .sidebar-stats .stat { background: #1e2a1a; color: #fbbf24; }
+        .sidebar-search {
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+            position: relative;
+        }
+        .sidebar-search input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.2s;
+            color: var(--text);
+        }
+        .sidebar-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
+        .sidebar-search .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .topic-list {
+            list-style: none;
+            padding: 0 0.2rem;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+        .topic-list li {
+            padding: 4px 10px;
+            margin: 1px 0;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+        .topic-list li:hover { background: var(--border-light); }
+        .topic-list li.active {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+        body.dark .topic-list li.active { background: var(--primary); color: #0f172a; }
+        .topic-list li .badge {
+            margin-left: auto;
+            font-size: 0.45rem;
+            padding: 1px 8px;
+            border-radius: 30px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .topic-list li .badge.core { background: var(--primary-light); color: var(--primary-dark); }
+        .topic-list li .badge.advanced { background: var(--purple-light); color: #6d28d9; }
+        .topic-list li .badge.done { background: var(--success-light); color: #166534; }
+        body.dark .topic-list li .badge.core { background: #1e2a1a; color: #fbbf24; }
+        body.dark .topic-list li .badge.advanced { background: #1a1a2a; color: #a78bfa; }
+        body.dark .topic-list li .badge.done { background: #0f2a1a; color: #4ade80; }
+        .topic-list li .num { opacity: 0.4; font-size: 0.55rem; min-width: 20px; }
+
+        .progress-track {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .progress-track .bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .progress-track .bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .main {
+            flex: 1;
+            padding: 2rem 2.5rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-width: 0;
+            width: 100%;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .top-bar .breadcrumb {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .top-bar .breadcrumb span { color: var(--text-secondary); }
+        .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .top-actions button {
+            background: var(--border-light);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .top-actions button:hover { background: var(--border); }
+        body.dark .top-actions button { background: #334155; color: #e2e8f0; }
+        .top-actions button.primary { background: var(--primary); color: #0f172a; }
+        .top-actions button.primary:hover { background: var(--primary-dark); }
+
+        .topic-detail {
+            background: var(--bg-card);
+            padding: 2rem 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: background 0.3s, border 0.3s;
+        }
+        .topic-detail h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .topic-detail .sub {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .topic-detail .sub .tag {
+            font-size: 0.65rem;
+            padding: 2px 12px;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        .topic-detail .section {
+            margin: 1.8rem 0 0.8rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topic-detail p, .topic-detail li { line-height: 1.8; color: var(--text-secondary); }
+        .topic-detail ul, .topic-detail .code-box {
+            background: var(--border-light);
+            padding: 1.2rem 1.8rem;
+            border-radius: var(--radius-sm);
+            margin: 0.8rem 0;
+        }
+        .topic-detail ul li { margin: 4px 0; }
+        .code-box {
+            font-family: var(--font-code);
+            white-space: pre-wrap;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem 1.5rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .box {
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+        .box.tip { background: var(--primary-light); border-color: var(--primary); }
+        .box.mistake { background: var(--danger-light); border-color: var(--danger); }
+        .box.success { background: var(--success-light); border-color: var(--success); }
+        .box.purple { background: var(--purple-light); border-color: var(--purple); }
+        .box.blue { background: var(--blue-light); border-color: var(--blue); }
+        body.dark .box.tip { background: #1e2a1a; border-color: #fbbf24; }
+        body.dark .box.mistake { background: #2d1a1a; border-color: #f87171; }
+        body.dark .box.success { background: #0f2a1a; border-color: #4ade80; }
+        body.dark .box.purple { background: #1a1a2a; border-color: #a78bfa; }
+        body.dark .box.blue { background: #0a1a2a; border-color: #60a5fa; }
+        .box strong { color: var(--text); }
+
+        .keypoints { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.8rem 0; }
+        .keypoints span {
+            background: var(--border-light);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-family: var(--font-code);
+        }
+        body.dark .keypoints span { background: #334155; }
+
+        .related-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0.8rem 0;
+        }
+        .related-topics span {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            background: var(--border-light);
+            cursor: pointer;
+            transition: 0.15s;
+            color: var(--text-secondary);
+        }
+        .related-topics span:hover { background: var(--primary); color: #0f172a; }
+        body.dark .related-topics span:hover { background: var(--primary); color: #0f172a; }
+
+        @media (max-width: 820px) {
+            .app { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .topic-list { max-height: 250px; }
+            .main { padding: 1.2rem; }
+            .topic-detail { padding: 1.5rem; }
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--border-light); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        body.dark ::-webkit-scrollbar-track { background: #1e293b; }
+        body.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><i class="fab fa-js-square"></i> JS Mastery</div>
+        <div class="sidebar-stats">
+            <span class="stat" id="statTotal">📚 50 Topics</span>
+            <span class="stat" id="statDone">✅ 0 Done</span>
+            <span class="stat" id="statCore">⭐ 0 Core</span>
+            <span class="stat" id="statAdv">🚀 0 Advanced</span>
+        </div>
+        <div class="sidebar-search">
+            <span class="search-icon"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" placeholder="Search 50 topics..." />
+        </div>
+        <ul class="topic-list" id="topicList"></ul>
+        <div class="progress-track" id="progressTrack">
+            📌 0 / 50 mastered
+            <div class="bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+    </aside>
+    <main class="main">
+        <div class="top-bar">
+            <div class="breadcrumb"><i class="fas fa-code"></i> / <span id="breadcrumbTopic">JavaScript</span></div>
+            <div class="top-actions">
+                <button id="markDoneBtn"><i class="fas fa-check-circle"></i> Mark Done</button>
+                <button id="cheatSheetToggle"><i class="fas fa-list-check"></i> Cheat Sheet</button>
+                <button id="themeToggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+        <div class="topic-detail" id="topicDetail"></div>
+    </main>
+</div>
+<script>
+    // ---- 50 JAVASCRIPT TOPICS ----
+    var topics = [
+        "JavaScript Engine & Runtime",
+        "Execution Context & Call Stack",
+        "Hoisting & Temporal Dead Zone",
+        "Scopes & Closures",
+        "Lexical Environment",
+        "this Keyword — All 4 Rules",
+        "call, apply, bind",
+        "Prototypes & Prototypal Inheritance",
+        "Classes (ES6)",
+        "Objects — Deep Dive",
+        "Primitives vs Reference Types",
+        "Type Coercion",
+        "Equality (== vs ===)",
+        "Truthy & Falsy Values",
+        "Event Loop & Concurrency",
+        "Microtasks vs Macrotasks",
+        "Promises & Async/Await",
+        "Callbacks & Callback Hell",
+        "Error Handling (try/catch)",
+        "Modules (ESM vs CommonJS)",
+        "Arrow Functions",
+        "Spread & Rest Operators",
+        "Destructuring",
+        "Template Literals",
+        "Map, Set, WeakMap, WeakSet",
+        "Closures — Practical Uses",
+        "Higher-Order Functions",
+        "Currying & Partial Application",
+        "Function Composition",
+        "Memoization",
+        "Debouncing & Throttling",
+        "Event Delegation",
+        "Web Workers",
+        "Service Workers",
+        "Proxies & Reflect",
+        "Symbols & Iterators",
+        "Generators & Yield",
+        "Async Generators",
+        "Decorators (Stage 3)",
+        "Optional Chaining & Nullish Coalescing",
+        "Private Fields (#)",
+        "Top-Level Await",
+        "Dynamic Imports",
+        "WeakRefs & FinalizationRegistry",
+        "Array Methods (map, filter, reduce)",
+        "Performance Optimization",
+        "Memory Management",
+        "Functional Programming in JS",
+        "Design Patterns in JS",
+        "Testing (Jest, Mocha)"
+    ];
+
+    // ---- COMPLETE DATA ----
+    var topicData = {};
+
+    // Core topics (0-24)
+    topicData[0] = {
+        desc: "JavaScript Engine (V8, SpiderMonkey) executes JS code. Runtime includes engine, Web APIs, callback queue, event loop.",
+        example: "V8 engine used in Chrome and Node.js.",
+        diagram: "JS RUNTIME:\n+-------------------+\n|  JS Engine (V8)   |\n|  +-------------+  |\n|  | Memory Heap |  |\n|  | Call Stack  |  |\n|  +-------------+  |\n+-------------------+\n       ↓\n+-------------------+\n|  Web APIs         |\n|  (DOM, setTimeout)|\n+-------------------+\n       ↓\n+-------------------+\n|  Callback Queue   |\n+-------------------+\n       ↓\n|  Event Loop       |",
+        adv: "✅ Fast execution\n✅ Just-in-time compilation\n✅ Cross-platform",
+        dis: "❌ Single-threaded\n❌ Memory management",
+        use: "Browsers, Node.js, Deno, Bun",
+        interview: "Q: JS Engine vs Runtime?\nA: Engine executes code. Runtime adds APIs, event loop, queues.",
+        cheat: "• Engine: Parses + Executes\n• Runtime: Environment",
+        keypoints: ["V8", "Event Loop", "Heap", "Stack"],
+        related: [1, 14, 15],
+        category: "core"
+    };
+    topicData[1] = {
+        desc: "Execution Context is environment where code runs. Call Stack tracks function calls.",
+        example: "Global EC → function EC → execution.",
+        diagram: "EXECUTION CONTEXT:\n+------------------+\n|  Variable Object |\n|  Scope Chain     |\n|  this            |\n+------------------+\n\nCALL STACK:\n[global] → [foo] → [bar] → [baz]",
+        adv: "✅ Predictable execution\n✅ Debugging",
+        dis: "❌ Stack overflow (infinite recursion)",
+        use: "All JS code execution",
+        interview: "Q: Execution Context?\nA: Environment for code execution. Has VO, scope chain, this.",
+        cheat: "• Global EC: Window\n• Function EC: Per function",
+        keypoints: ["Variable Object", "Scope Chain", "this"],
+        related: [0, 2, 3],
+        category: "core"
+    };
+    topicData[2] = {
+        desc: "Hoisting moves declarations to top. TDZ is time between entering scope and declaration.",
+        example: "console.log(x) → undefined (var). console.log(y) → ReferenceError (let).",
+        diagram: "HOISTING:\nvar x; → x = undefined (hoisted)\nlet y; → TDZ (not hoisted)\nfunction foo() {} → hoisted (entire)",
+        adv: "✅ var hoisting useful\n✅ Function hoisting",
+        dis: "❌ Confusing behavior\n❌ TDZ errors",
+        use: "Understanding JS behavior",
+        interview: "Q: Hoisting vs TDZ?\nA: var hoisted to undefined. let/const have TDZ.",
+        cheat: "• var: Hoisted (undefined)\n• let/const: TDZ\n• functions: Hoisted (entire)",
+        keypoints: ["Hoisting", "TDZ", "undefined", "ReferenceError"],
+        related: [1, 3, 5],
+        category: "core"
+    };
+    topicData[3] = {
+        desc: "Scope defines variable visibility. Closure is function that remembers its lexical scope.",
+        example: "function outer() { let x = 1; return function inner() { console.log(x); } }",
+        diagram: "SCOPES:\nGlobal Scope\n  ↓\nFunction Scope\n  ↓\nBlock Scope (let/const)\n\nCLOSURE:\nfunction outer() {\n  let x = 1;\n  return function inner() {\n    console.log(x); // remembers x\n  }\n}",
+        adv: "✅ Data privacy\n✅ Function factories\n✅ Stateful functions",
+        dis: "❌ Memory leaks\n❌ Hard to debug",
+        use: "Private variables, Currying, HOCs",
+        interview: "Q: Closure kya hai?\nA: Function that remembers its lexical scope even when executed outside.",
+        cheat: "• Closure: Function + Lexical Scope\n• Use: Private state",
+        keypoints: ["Lexical Scope", "Closure", "Private variables"],
+        related: [1, 2, 25],
+        category: "core"
+    };
+    topicData[4] = {
+        desc: "Lexical Environment is the actual record of variable bindings in a scope.",
+        example: "Each scope has its own lexical environment.",
+        diagram: "LEXICAL ENVIRONMENT:\n+------------------+\n|  Environment     |\n|  +------------+  |\n|  | Binding 1  |  |\n|  | Binding 2  |  |\n|  +------------+  |\n|  Outer ref      |\n+------------------+",
+        adv: "✅ Determines variable lookup\n✅ Scope chain",
+        dis: "❌ Memory overhead",
+        use: "Closures, Scope resolution",
+        interview: "Q: Lexical Environment?\nA: Data structure storing variable bindings. Has outer reference.",
+        cheat: "• Environment: Stores variables\n• Outer: Parent scope",
+        keypoints: ["Environment", "Bindings", "Outer reference"],
+        related: [1, 3, 5],
+        category: "core"
+    };
+    topicData[5] = {
+        desc: "'this' refers to the execution context. 4 rules: Default, Implicit, Explicit, New.",
+        example: "new → this = new object. obj.foo() → this = obj. foo() → this = global.",
+        diagram: "this RULES:\n1. DEFAULT: this = global (non-strict)\n2. IMPLICIT: obj.foo() → this = obj\n3. EXPLICIT: call/apply/bind\n4. NEW: this = new object",
+        adv: "✅ Flexible\n✅ Dynamic",
+        dis: "❌ Confusing\n❌ Loses context",
+        use: "Object methods, Constructors, Event handlers",
+        interview: "Q: this rules?\nA: Default, Implicit, Explicit, New. Arrow functions inherit this.",
+        cheat: "• Default: global\n• Implicit: obj\n• Explicit: call/apply/bind\n• New: new object",
+        keypoints: ["Default", "Implicit", "Explicit", "New"],
+        related: [3, 6, 20],
+        category: "core"
+    };
+    topicData[6] = {
+        desc: "call, apply, bind explicitly set 'this'. call takes args individually, apply takes array, bind returns new function.",
+        example: "fn.call(obj, 1, 2) → fn.apply(obj, [1,2]) → fn.bind(obj)(1,2)",
+        diagram: "call: fn.call(this, arg1, arg2)\napply: fn.apply(this, [arg1, arg2])\nbind: fn.bind(this) → new function",
+        adv: "✅ Control this\n✅ Borrow methods\n✅ Partial application",
+        dis: "❌ Overhead\n❌ Confusing",
+        use: "Method borrowing, Currying, Event handlers",
+        interview: "Q: call vs apply vs bind?\nA: call/apply execute, bind returns function. apply takes array.",
+        cheat: "• call: Individual args\n• apply: Array args\n• bind: New function",
+        keypoints: ["call", "apply", "bind"],
+        related: [5, 20, 21],
+        category: "core"
+    };
+    topicData[7] = {
+        desc: "Prototypes are the mechanism for inheritance in JS. Objects inherit from other objects.",
+        example: "arr.__proto__ → Array.prototype → Object.prototype",
+        diagram: "PROTOTYPE CHAIN:\nmyObject\n   ↓\nObject.prototype\n   ↓\nnull\n\nArray → Array.prototype → Object.prototype → null",
+        adv: "✅ Memory efficient\n✅ Dynamic inheritance\n✅ Method sharing",
+        dis: "❌ Confusing\n❌ Override issues",
+        use: "Inheritance, Method sharing, Polyfills",
+        interview: "Q: Prototypal Inheritance?\nA: Objects inherit directly from other objects via prototype chain.",
+        cheat: "• __proto__: Actual prototype\n• prototype: Constructor property",
+        keypoints: ["__proto__", "prototype", "Chain"],
+        related: [3, 8, 9],
+        category: "core"
+    };
+    topicData[8] = {
+        desc: "Classes are syntactic sugar over prototypes. Introduced in ES6.",
+        example: "class Animal { constructor(name) { this.name = name; } speak() {} }",
+        diagram: "CLASS SYNTAX:\nclass Animal {\n  constructor(name) { this.name = name; }\n  speak() { console.log(this.name); }\n}\n// Same as:\nfunction Animal(name) { this.name = name; }\nAnimal.prototype.speak = function() {};",
+        adv: "✅ Clean syntax\n✅ Familiar OOP\n✅ Built-in methods",
+        dis: "❌ Still prototypes\n❌ Not true classes",
+        use: "OOP patterns, Inheritance, Encapsulation",
+        interview: "Q: Classes vs Prototypes?\nA: Classes are syntactic sugar over prototypes.",
+        cheat: "• class: Constructor\n• extends: Inheritance\n• super: Parent call",
+        keypoints: ["class", "constructor", "extends", "super"],
+        related: [7, 9, 10],
+        category: "core"
+    };
+    topicData[9] = {
+        desc: "Objects are collections of key-value pairs. Can be created via {}, new Object(), or Object.create().",
+        example: "const obj = { a: 1, b: 2 }; Object.keys(obj);",
+        diagram: "OBJECT METHODS:\nObject.keys() → array of keys\nObject.values() → array of values\nObject.entries() → [key, value] pairs\nObject.freeze() → immutable\nObject.seal() → no new props\nObject.assign() → merge objects",
+        adv: "✅ Flexible\n✅ Dynamic\n✅ Easy to use",
+        dis: "❌ No types\n❌ Mutation issues",
+        use: "Data structures, Configuration, DTOs",
+        interview: "Q: Object methods?\nA: keys, values, entries, freeze, seal, assign.",
+        cheat: "• keys: Keys array\n• values: Values array\n• entries: [[k,v]]",
+        keypoints: ["keys", "values", "entries", "freeze"],
+        related: [7, 8, 10],
+        category: "core"
+    };
+    topicData[10] = {
+        desc: "Primitives (string, number, boolean, null, undefined, symbol) are immutable. Reference types (object, array, function) are mutable.",
+        example: "let a = 1; let b = a; b = 2; // a = 1 (primitive) | let c = {x:1}; let d = c; d.x = 2; // c.x = 2 (reference)",
+        diagram: "PRIMITIVES: Stored in stack (value)\nlet a = 1 → stack: a = 1\n\nREFERENCE: Stored in heap (reference)\nlet obj = {} → stack: ref → heap: {}",
+        adv: "✅ Primitive: Fast, immutable\n✅ Reference: Flexible",
+        dis: "❌ Reference: Mutation issues\n❌ Primitive: No methods",
+        use: "Primitive: Values\nReference: Complex data",
+        interview: "Q: Primitives vs Reference?\nA: Primitives store value, reference stores pointer to heap.",
+        cheat: "• Primitives: Stack, value\n• References: Heap, pointer",
+        keypoints: ["Stack", "Heap", "Mutable", "Immutable"],
+        related: [9, 11, 12],
+        category: "core"
+    };
+    topicData[11] = {
+        desc: "Type Coercion automatically converts values between types.",
+        example: "1 + '2' → '12'. true + 1 → 2. '5' - 1 → 4.",
+        diagram: "COERCION RULES:\n+ (string concat): number → string\n- (subtraction): string → number\n== (abstract equality): coercion\nBoolean: truthy/falsy",
+        adv: "✅ Flexible\n✅ Convenient",
+        dis: "❌ Unexpected results\n❌ Bugs",
+        use: "Everywhere in JS",
+        interview: "Q: Type Coercion?\nA: JS automatically converts types. Avoid using ==.",
+        cheat: "• +: String concat\n• -: Number\n• ==: Coercion",
+        keypoints: ["String", "Number", "Boolean"],
+        related: [10, 12, 13],
+        category: "core"
+    };
+    topicData[12] = {
+        desc: "== checks equality with coercion. === checks strict equality (no coercion).",
+        example: "1 == '1' → true. 1 === '1' → false. null == undefined → true.",
+        diagram: "== (Abstract): Coerces types\n=== (Strict): No coercion\n\nAlways prefer === except when\nchecking null/undefined",
+        adv: "===: Predictable\n==: Convenient",
+        dis: "==: Coercion surprises\n===: More typing",
+        use: "=== Everywhere\n== null/undefined",
+        interview: "Q: == vs ===?\nA: == coerces, === doesn't. Always use ===.",
+        cheat: "• ==: Coercion\n• ===: Strict",
+        keypoints: ["Equality", "Coercion", "Strict"],
+        related: [11, 13, 14],
+        category: "core"
+    };
+    topicData[13] = {
+        desc: "Truthy values are treated as true in boolean context. Falsy: false, 0, '', null, undefined, NaN.",
+        example: "if (0) // false. if ('hello') // true. if ([]) // true.",
+        diagram: "FALSY:\nfalse, 0, '', null, undefined, NaN\n\nTRUTHY: Everything else\n(including {}, [], '0', 'false')",
+        adv: "✅ Simple conditions\n✅ Default values",
+        dis: "❌ Gotchas (empty array is truthy)",
+        use: "Conditionals, Defaults, Short-circuiting",
+        interview: "Q: Truthy/Falsy?\nA: Falsy: false, 0, '', null, undefined, NaN. Everything else is truthy.",
+        cheat: "• Falsy: false, 0, '', null, undefined, NaN",
+        keypoints: ["Truthy", "Falsy", "Boolean context"],
+        related: [11, 12, 15],
+        category: "core"
+    };
+    topicData[14] = {
+        desc: "Event Loop handles asynchronous operations. Call Stack, Web APIs, Callback Queue, Microtask Queue.",
+        example: "setTimeout → Web API → Callback Queue → Event Loop → Call Stack.",
+        diagram: "EVENT LOOP:\nCall Stack → (empty) → Microtask Queue → (empty) → Callback Queue\n\nPriority: Microtasks > Macrotasks\nMicrotasks: Promises, MutationObserver\nMacrotasks: setTimeout, setInterval, I/O",
+        adv: "✅ Non-blocking\n✅ Asynchronous\n✅ Responsive",
+        dis: "❌ Complex\n❌ Starvation",
+        use: "Async operations, I/O, APIs",
+        interview: "Q: Event Loop?\nA: Handles async operations. Microtasks prioritized over macrotasks.",
+        cheat: "• Microtasks: Promises\n• Macrotasks: setTimeout",
+        keypoints: ["Event Loop", "Microtask", "Macrotask"],
+        related: [0, 15, 16],
+        category: "core"
+    };
+    topicData[15] = {
+        desc: "Microtasks (Promises, queueMicrotask) run before macrotasks (setTimeout, setInterval).",
+        example: "Promise.then() → Microtask. setTimeout → Macrotask.",
+        diagram: "MICROTASK QUEUE:\nPromise.then()\nqueueMicrotask()\nMutationObserver()\n\nMACROTASK QUEUE:\nsetTimeout()\nsetInterval()\nI/O events",
+        adv: "✅ Predictable order\n✅ Better performance",
+        dis: "❌ Starvation possible",
+        use: "Promise resolution, State updates",
+        interview: "Q: Microtasks vs Macrotasks?\nA: Microtasks run before macrotasks in the event loop.",
+        cheat: "• Micro: Promises\n• Macro: setTimeout",
+        keypoints: ["Microtask", "Macrotask", "Priority"],
+        related: [14, 16, 17],
+        category: "core"
+    };
+    topicData[16] = {
+        desc: "Promises represent async operations. Async/await is syntactic sugar over Promises.",
+        example: "fetch(url).then(res => res.json()).then(data => {}).catch(err => {});",
+        diagram: "PROMISE STATES:\nPending → Fulfilled (resolve)\nPending → Rejected (reject)\n\nasync function foo() {\n  try {\n    const data = await fetch(url);\n  } catch (err) {}\n}",
+        adv: "✅ Clean async code\n✅ Error handling\n✅ Chaining",
+        dis: "❌ Complex nesting\n❌ Debugging hard",
+        use: "API calls, File I/O, Timers",
+        interview: "Q: Promises vs Async/Await?\nA: Async/await is syntactic sugar over promises.",
+        cheat: "• Promise: .then/.catch\n• async/await: Try/catch",
+        keypoints: ["Promise", "async", "await", "then/catch"],
+        related: [14, 15, 17],
+        category: "core"
+    };
+    topicData[17] = {
+        desc: "Callbacks are functions passed as arguments. Callback Hell is nested callbacks.",
+        example: "fs.readFile('a', (err, data) => { fs.readFile('b', () => {}) });",
+        diagram: "CALLBACK HELL:\ndoA(() => {\n  doB(() => {\n    doC(() => {\n      // pyramid of doom\n    })\n  })\n})\n\nSolution: Promises, Async/Await",
+        adv: "✅ Simple\n✅ Works everywhere",
+        dis: "❌ Callback hell\n❌ Error handling hard",
+        use: "Legacy code, Event listeners",
+        interview: "Q: Callback Hell?\nA: Nested callbacks. Solved by Promises/Async/Await.",
+        cheat: "• Problem: Nested\n• Solution: Promises",
+        keypoints: ["Callback", "Callback Hell", "Pyramid of Doom"],
+        related: [16, 17, 18],
+        category: "core"
+    };
+    topicData[18] = {
+        desc: "Error Handling uses try/catch/finally. Also error-first callbacks and Promise.catch.",
+        example: "try { risky() } catch(err) { console.error(err) } finally { cleanup() }",
+        diagram: "ERROR TYPES:\nSyntaxError\nReferenceError\nTypeError\nRangeError\nCustom: new Error('msg')\n\ntry { } catch(err) { } finally { }",
+        adv: "✅ Graceful failure\n✅ Debugging\n✅ Cleanup",
+        dis: "❌ Overhead\n❌ Silent failures",
+        use: "Everywhere",
+        interview: "Q: Error Handling?\nA: Use try/catch for sync, .catch() for promises.",
+        cheat: "• try/catch: Sync\n• .catch(): Async",
+        keypoints: ["try", "catch", "finally", "throw"],
+        related: [16, 17, 19],
+        category: "core"
+    };
+    topicData[19] = {
+        desc: "ESM (import/export) is standard. CommonJS (require/module.exports) is Node.js default.",
+        example: "ESM: import x from './x.js'. CommonJS: const x = require('./x.js');",
+        diagram: "ESM (ES Modules):\nimport { foo } from './foo.js'\nexport default bar\n\nCommonJS:\nconst foo = require('./foo.js')\nmodule.exports = bar",
+        adv: "ESM: Static, Tree-shaking\nCommonJS: Dynamic, Node.js",
+        dis: "ESM: Node.js support\nCommonJS: Not browser",
+        use: "ESM: Modern JS\nCommonJS: Node.js",
+        interview: "Q: ESM vs CommonJS?\nA: ESM is standard. CommonJS is Node.js default.",
+        cheat: "• ESM: import/export\n• CJS: require/module.exports",
+        keypoints: ["ESM", "CommonJS", "import", "require"],
+        related: [16, 18, 20],
+        category: "core"
+    };
+    topicData[20] = {
+        desc: "Arrow functions have shorter syntax and lexically bind this.",
+        example: "const add = (a,b) => a + b; // no this binding",
+        diagram: "ARROW vs REGULAR:\nRegular: this = caller\nArrow: this = lexical (parent)\n\nRegular: function() {}\nArrow: () => {}",
+        adv: "✅ Concise\n✅ Lexical this\n✅ No arguments object",
+        dis: "❌ No this binding\n❌ No super\n❌ No new",
+        use: "Callbacks, Methods (when this needed)",
+        interview: "Q: Arrow functions?\nA: Lexical this, shorter syntax. Can't be used as constructors.",
+        cheat: "• Arrow: Lexical this\n• Regular: Dynamic this",
+        keypoints: ["Arrow", "Lexical this", "Concise"],
+        related: [5, 6, 21],
+        category: "core"
+    };
+    topicData[21] = {
+        desc: "Spread (...) expands iterables. Rest (...) collects remaining arguments.",
+        example: "Spread: [...arr, 4]. Rest: function(...args) {}.",
+        diagram: "SPREAD: [1, 2, ...arr, 5]\nREST: function(a, b, ...rest) {}\n\nSpread: array → elements\nRest: elements → array",
+        adv: "✅ Concise\n✅ Immutable operations\n✅ Flexible functions",
+        dis: "❌ Shallow copy only\n❌ Confusing",
+        use: "Array operations, Function parameters, Object copy",
+        interview: "Q: Spread vs Rest?\nA: Spread expands, Rest collects. Both use ... syntax.",
+        cheat: "• Spread: Expand\n• Rest: Collect",
+        keypoints: ["Spread", "Rest", "..."],
+        related: [20, 22, 23],
+        category: "core"
+    };
+    topicData[22] = {
+        desc: "Destructuring extracts values from arrays/objects into variables.",
+        example: "const { name, age } = obj; const [a, b] = arr;",
+        diagram: "OBJECT DESTRUCTURING:\nconst { prop, alias: p } = obj\nconst { prop = default } = obj\n\nARRAY DESTRUCTURING:\nconst [first, second] = arr\nconst [, , third] = arr\nconst [a, ...rest] = arr",
+        adv: "✅ Concise\n✅ Multiple assignment\n✅ Default values",
+        dis: "❌ Overuse\n❌ Harder to read",
+        use: "Function params, Object extraction, Swapping",
+        interview: "Q: Destructuring?\nA: Extracts values into variables. Works for objects and arrays.",
+        cheat: "• Object: { prop }\n• Array: [ a, b ]",
+        keypoints: ["Object", "Array", "Default"],
+        related: [21, 23, 24],
+        category: "core"
+    };
+    topicData[23] = {
+        desc: "Template literals use backticks for strings with embedded expressions.",
+        example: "`Hello ${name}!`; Multi-line strings.",
+        diagram: "TEMPLATE LITERALS:\n`string text`\n`string ${expression}`\n`multi\n line`\n\nTagged templates:\ntag`Hello ${name}`",
+        adv: "✅ Expressions\n✅ Multi-line\n✅ Tags",
+        dis: "❌ Performance\n❌ Security (XSS)",
+        use: "Strings with variables, HTML templates, SQL",
+        interview: "Q: Template Literals?\nA: Backtick strings with ${} for expressions.",
+        cheat: "• ${}: Expression\n• Multi-line: Yes",
+        keypoints: ["Template", "Expression", "Multi-line"],
+        related: [21, 22, 24],
+        category: "core"
+    };
+    topicData[24] = {
+        desc: "Map (key-value), Set (unique values), WeakMap/WeakSet (weak references).",
+        example: "const map = new Map(); map.set('key', 'value'); const set = new Set([1,2,3]);",
+        diagram: "MAP: keys can be any type, iterable\nSET: unique values, iterable\nWEAKMAP: keys must be objects, no iteration\nWEAKSET: values must be objects, no iteration",
+        adv: "Map/Set: Flexible, Iterable\nWeakMap/Set: Memory efficient",
+        dis: "Map/Set: Performance\nWeakMap/Set: Limited API",
+        use: "Map: Key-value stores\nSet: Unique values\nWeakMap: Private data",
+        interview: "Q: Map vs Object?\nA: Map keys can be any type, iterable, better for frequent updates.",
+        cheat: "• Map: Any key\n• Set: Unique\n• Weak: GC",
+        keypoints: ["Map", "Set", "WeakMap", "WeakSet"],
+        related: [9, 10, 25],
+        category: "core"
+    };
+
+    // Advanced topics (25-49)
+    for (var i = 25; i < 50; i++) {
+        topicData[i] = {
+            desc: "Advanced JavaScript concept with practical applications in modern development.",
+            example: "Practical example demonstrating this concept in action.",
+            diagram: "+-----------------------------------+\n|  Visual representation of this   |\n|  concept to help understanding   |\n+-----------------------------------+",
+            adv: "✅ Improves code quality\n✅ Better performance\n✅ Cleaner syntax",
+            dis: "❌ Learning curve\n❌ Can be overused\n❌ May affect readability",
+            use: "Modern JavaScript development, Frameworks, Libraries",
+            interview: "Q: How would you explain this concept?\nA: Focus on practical applications and common use cases.",
+            cheat: "• Key point 1\n• Key point 2\n• Key point 3",
+            keypoints: ["Concept 1", "Concept 2", "Concept 3"],
+            related: [0, 1, 2],
+            category: "advanced"
+        };
+    }
+
+    // Override specific advanced topics with detailed data
+    var advancedDetails = {
+        25: { desc: "Closures are used for data privacy, function factories, and stateful functions.", example: "function counter() { let count = 0; return () => ++count; }", diagram: "PRACTICAL CLOSURES:\n1. Private Variables\n2. Function Factories\n3. Event Handlers\n4. Memoization\n5. Module Pattern", adv: "✅ Data privacy\n✅ State persistence\n✅ Function factories", dis: "❌ Memory leaks\n❌ Debugging hard", use: "Private state, Currying, React hooks", interview: "Q: Closure practical uses?\nA: Private variables, function factories, memoization, event handlers.", cheat: "• Private: IIFE\n• Factory: Function returns function", keypoints: ["Private", "Factory", "State"], related: [3, 4, 27], category: "advanced" },
+        26: { desc: "Higher-Order Functions take functions as arguments or return functions.", example: "Array.map(), filter(), reduce(), sort()", diagram: "HOF TYPES:\n1. Takes function: map, filter, forEach\n2. Returns function: bind, curry\n3. Both: compose", adv: "✅ Reusability\n✅ Composition\n✅ Declarative", dis: "❌ Performance overhead\n❌ Harder to debug", use: "Array methods, Event handlers, Functional programming", interview: "Q: Higher-Order Functions?\nA: Functions that take or return functions. Examples: map, filter, reduce.", cheat: "• map: Transform\n• filter: Select\n• reduce: Aggregate", keypoints: ["map", "filter", "reduce", "forEach"], related: [20, 27, 28], category: "advanced" },
+        27: { desc: "Currying transforms a function with multiple args into sequence of functions.", example: "curry(fn)(a)(b)(c) instead of fn(a,b,c).", diagram: "CURRYING:\nconst add = (a, b) => a + b;\nconst curriedAdd = curry(add);\ncurriedAdd(1)(2) // 3\n\nPARTIAL APPLICATION:\nconst addOne = curriedAdd(1);\naddOne(2) // 3", adv: "✅ Reusability\n✅ Composition\n✅ Partial application", dis: "❌ Overhead\n❌ Complexity", use: "Functional programming, Configuration, Event handling", interview: "Q: Currying?\nA: Transforms fn(a,b,c) to fn(a)(b)(c). Enables partial application.", cheat: "• Curry: fn(a)(b)(c)\n• Partial: fn(a, b)", keypoints: ["Curry", "Partial", "Composition"], related: [20, 26, 28], category: "advanced" },
+        28: { desc: "Function Composition combines multiple functions to create a new function.", example: "compose(f, g)(x) = f(g(x))", diagram: "COMPOSE:\nconst compose = (f, g) => (x) => f(g(x))\nconst pipe = (f, g) => (x) => g(f(x))\n\nconst add1 = x => x + 1\nconst double = x => x * 2\nconst addThenDouble = compose(double, add1)\naddThenDouble(3) // 8", adv: "✅ Reusability\n✅ Clean pipeline\n✅ Modularity", dis: "❌ Overhead\n❌ Harder to debug", use: "Data transformation, Functional programming", interview: "Q: Function Composition?\nA: Combining functions. compose(f,g)(x) = f(g(x)).", cheat: "• compose: Right to left\n• pipe: Left to right", keypoints: ["compose", "pipe", "Pipeline"], related: [26, 27, 29], category: "advanced" },
+        29: { desc: "Memoization caches function results to avoid re-computation.", example: "factorial with memoization caches results.", diagram: "MEMOIZATION:\nconst memoize = (fn) => {\n  const cache = {};\n  return (...args) => {\n    const key = JSON.stringify(args);\n    if (cache[key]) return cache[key];\n    const result = fn(...args);\n    cache[key] = result;\n    return result;\n  }\n}", adv: "✅ Performance\n✅ Redundant computation", dis: "❌ Memory usage\n❌ Cache invalidation", use: "Fibonacci, Factorial, Expensive computations", interview: "Q: Memoization?\nA: Caches function results. Optimizes expensive operations.", cheat: "• Cache: Store results\n• Key: Arguments", keypoints: ["Cache", "Performance", "Memoize"], related: [25, 26, 27], category: "advanced" },
+        30: { desc: "Debouncing delays function execution. Throttling limits execution rate.", example: "Search input → debounce. Scroll events → throttle.", diagram: "DEBOUNCE: Delays execution until pause\nInput → wait → execute\n\nTHROTTLE: Executes at most once per interval\nScroll → execute every 100ms", adv: "Debounce: API calls, Search\nThrottle: Scroll, Resize", dis: "Debounce: Delays\nThrottle: May skip", use: "Search inputs, Scroll events, Resize events", interview: "Q: Debounce vs Throttle?\nA: Debounce delays until pause. Throttle limits rate.", cheat: "• Debounce: After pause\n• Throttle: At rate", keypoints: ["Debounce", "Throttle", "Performance"], related: [14, 15, 16], category: "advanced" },
+        31: { desc: "Event Delegation uses event bubbling to handle events on parent element.", example: "ul.addEventListener('click', handleClick) instead of each li.", diagram: "EVENT DELEGATION:\nParent (ul) → click event\nChild (li) → event bubbles up\n\nTarget: event.target\nCurrentTarget: event.currentTarget", adv: "✅ Memory efficient\n✅ Dynamic elements\n✅ Single listener", dis: "❌ Event propagation\n❌ target checking", use: "Lists, Tables, Dynamic content", interview: "Q: Event Delegation?\nA: Use parent to handle events from children via event bubbling.", cheat: "• Bubbling: Upward\n• target: Triggered element", keypoints: ["Bubbling", "Delegation", "target"], related: [14, 15, 20], category: "advanced" },
+        32: { desc: "Web Workers run JavaScript in background threads.", example: "const worker = new Worker('worker.js'); worker.postMessage(data);", diagram: "WEB WORKERS:\nMain Thread → Worker (background)\nWorker → postMessage → Main\n\nNo DOM access\nNo blocking\nParallel execution", adv: "✅ Non-blocking\n✅ Parallel\n✅ Heavy tasks", dis: "❌ No DOM access\n❌ Limited APIs\n❌ Overhead", use: "Heavy computation, Data processing, I/O", interview: "Q: Web Workers?\nA: Background threads for heavy tasks. No DOM access.", cheat: "• Worker: Background\n• postMessage: Communication", keypoints: ["Worker", "postMessage", "Parallel"], related: [14, 15, 33], category: "advanced" },
+        33: { desc: "Service Workers act as network proxies for offline support and caching.", example: "PWA uses service worker for offline support.", diagram: "SERVICE WORKER:\nMain → Register → SW\nNetwork request → SW → Cache or Network\n\nFeatures:\n- Offline support\n- Push notifications\n- Background sync", adv: "✅ Offline\n✅ Cache\n✅ Push notifications", dis: "❌ HTTPS required\n❌ Complex lifecycle", use: "PWAs, Offline apps, Caching", interview: "Q: Service Workers?\nA: Network proxy for offline support, caching, push notifications.", cheat: "• Offline: Cache first\n• HTTPS: Required", keypoints: ["Service Worker", "Cache", "Offline"], related: [32, 37, 39], category: "advanced" },
+        34: { desc: "Proxies intercept operations on objects. Reflect provides default behavior.", example: "new Proxy(obj, { get(target, prop) {} })", diagram: "PROXY:\nconst proxy = new Proxy(target, handler)\nhandler: get, set, delete, has, etc.\n\nREFLECT:\nReflect.get(target, prop)\nReflect.set(target, prop, value)", adv: "✅ Interception\n✅ Validation\n✅ Observability", dis: "❌ Performance\n❌ Complexity", use: "Validation, Logging, Virtual properties", interview: "Q: Proxy vs Reflect?\nA: Proxy intercepts operations. Reflect provides default behavior.", cheat: "• Proxy: Trap\n• Reflect: Default", keypoints: ["Proxy", "Reflect", "Trap"], related: [9, 10, 35], category: "advanced" },
+        35: { desc: "Symbols create unique identifiers. Iterators define iteration protocol.", example: "const sym = Symbol('desc'); const iter = arr[Symbol.iterator]();", diagram: "SYMBOL:\nconst s1 = Symbol('id')\nconst s2 = Symbol('id') // s1 !== s2\n\nITERATOR:\n[Symbol.iterator]() → { next() }\nfor (const item of iterable) {}", adv: "✅ Unique keys\n✅ Iteration protocol\n✅ Extensibility", dis: "❌ Hidden properties\n❌ Debugging", use: "Meta-programming, Iterables, Enums", interview: "Q: Symbols and Iterators?\nA: Symbols are unique. Iterators define iteration behavior.", cheat: "• Symbol: Unique\n• Iterator: { next }", keypoints: ["Symbol", "Iterator", "Iterable"], related: [24, 34, 36], category: "advanced" },
+        36: { desc: "Generators can pause and resume execution using yield.", example: "function* gen() { yield 1; yield 2; }", diagram: "GENERATOR:\nfunction* gen() {\n  yield 1; // pause\n  yield 2;\n  return 3;\n}\n\nconst g = gen();\ng.next() → { value: 1, done: false }\ng.next() → { value: 2, done: false }\ng.next() → { value: 3, done: true }", adv: "✅ Lazy evaluation\n✅ Infinite sequences\n✅ Async control", dis: "❌ Complex\n❌ Debugging hard", use: "Lazy sequences, Async iteration, State machines", interview: "Q: Generators?\nA: Functions that can pause/resume. Use yield to pause.", cheat: "• yield: Pause\n• next(): Resume", keypoints: ["Generator", "yield", "next"], related: [35, 37, 38], category: "advanced" },
+        37: { desc: "Async Generators combine async/await with generators.", example: "async function* gen() { yield await fetch(url); }", diagram: "ASYNC GENERATOR:\nasync function* gen() {\n  yield await fetch('/data');\n  yield await fetch('/more');\n}\n\nfor await (const item of gen()) {\n  console.log(item);\n}", adv: "✅ Async iteration\n✅ Streaming\n✅ Lazy async", dis: "❌ Complex\n❌ Error handling", use: "Streaming data, Pagination, Batch processing", interview: "Q: Async Generators?\nA: Generators that yield promises. Use for await...of.", cheat: "• async function*: Async gen\n• for await: Iteration", keypoints: ["Async", "Generator", "for await"], related: [16, 36, 38], category: "advanced" },
+        38: { desc: "Decorators (Stage 3) allow adding metadata to classes and methods.", example: "@readonly class MyClass { @log method() {} }", diagram: "DECORATORS:\n@decorator\nclass MyClass {}\n\n@decorator\nmethod() {}\n\nUse: TypeScript, Babel\nStage 3 (coming to JS)", adv: "✅ Metadata\n✅ Reusability\n✅ Clean syntax", dis: "❌ Not stable\n❌ Complexity", use: "Class decoration, Method wrapping, Validation", interview: "Q: Decorators?\nA: Stage 3 proposal for adding metadata. Used in TypeScript/Angular.", cheat: "• @decorator: Syntax\n• Stage 3: Stable soon", keypoints: ["Decorator", "Metadata", "Stage 3"], related: [8, 20, 39], category: "advanced" },
+        39: { desc: "Optional Chaining (?.) and Nullish Coalescing (??) handle null/undefined safely.", example: "obj?.prop; value ?? 'default';", diagram: "OPTIONAL CHAINING:\nobj?.prop // undefined if obj is null/undefined\nobj?.method?.()\n\nNULLISH COALESCING:\nvalue ?? 'default' // uses default if null/undefined\n(not for '' or 0)", adv: "✅ Safer access\n✅ Cleaner code\n✅ Defaults", dis: "❌ Confusing\n❌ Overuse", use: "API responses, Deep object access", interview: "Q: Optional Chaining and Nullish Coalescing?\nA: ?. for safe access. ?? for null/undefined defaults.", cheat: "• ?.: Safe access\n• ??: Nullish default", keypoints: ["Optional Chaining", "Nullish Coalescing", "Safe access"], related: [10, 11, 22], category: "advanced" },
+        40: { desc: "Private fields (#) provide encapsulation in classes.", example: "class MyClass { #private = 1; #method() {} }", diagram: "PRIVATE FIELDS:\nclass MyClass {\n  #privateField = 42;\n  #privateMethod() {}\n  \n  publicMethod() {\n    this.#privateField; // ✅\n    this.#privateMethod(); // ✅\n  }\n}\n\nOutside: Cannot access #", adv: "✅ Encapsulation\n✅ True privacy\n✅ No naming conflicts", dis: "❌ Harder to test\n❌ WeakMap alternative", use: "OOP, Data hiding, Encapsulation", interview: "Q: Private fields?\nA: # prefix creates private fields. Can't be accessed outside class.", cheat: "• #: Private\n• Cannot access outside", keypoints: ["Private", "Encapsulation", "#"], related: [8, 20, 34], category: "advanced" },
+        41: { desc: "Top-Level Await allows await at module level.", example: "const data = await fetch(url); export default data;", diagram: "TOP-LEVEL AWAIT:\n// module.js\nconst data = await fetch('/api')\nexport default data\n\n// Only works in ES modules\n// Imports wait for module to load", adv: "✅ Cleaner code\n✅ Dynamic imports\n✅ Module loading", dis: "❌ Blocks imports\n❌ Not in CJS", use: "Loading config, Fetching data, Dynamic imports", interview: "Q: Top-Level Await?\nA: await at module level. Only in ES modules.", cheat: "• Top-level: Module level\n• Blocks: Module loading", keypoints: ["Top-Level", "await", "ESM"], related: [16, 19, 42], category: "advanced" },
+        42: { desc: "Dynamic Imports load modules on demand.", example: "const module = await import('./module.js');", diagram: "DYNAMIC IMPORT:\n// Static: import x from './x.js'\n// Dynamic: import('./x.js')\n\nif (condition) {\n  const { foo } = await import('./module.js')\n}\n\nLazy loading, Code splitting", adv: "✅ Lazy loading\n✅ Code splitting\n✅ Conditional imports", dis: "❌ Async\n❌ Bundle size", use: "Routing, Feature flags, Lazy loading", interview: "Q: Dynamic Imports?\nA: import() loads modules on demand. Returns a promise.", cheat: "• import(): Lazy\n• Returns: Promise", keypoints: ["Dynamic Import", "Lazy", "Code Split"], related: [19, 41, 42], category: "advanced" },
+        43: { desc: "WeakRefs and FinalizationRegistry help with memory management.", example: "new WeakRef(obj); registry.register(obj, cleanup);", diagram: "WEAKREF:\nconst ref = new WeakRef(obj);\nconst obj = ref.deref(); // returns obj or undefined\n\nFINALIZATIONREGISTRY:\nconst registry = new FinalizationRegistry(cleanup);\nregistry.register(obj, 'token');", adv: "✅ Memory management\n✅ Cleanup\n✅ Prevent leaks", dis: "❌ Non-deterministic\n❌ Complex", use: "Caching, Resource cleanup, Memory optimization", interview: "Q: WeakRefs?\nA: Hold weak references. Don't prevent GC. Used with FinalizationRegistry.", cheat: "• WeakRef: Weak reference\n• FinalizationRegistry: Cleanup", keypoints: ["WeakRef", "Finalization", "GC"], related: [24, 29, 44], category: "advanced" },
+        44: { desc: "Array Methods: map, filter, reduce, forEach, some, every, find, etc.", example: "[1,2,3].map(x => x*2).filter(x => x>2).reduce((a,b)=>a+b);", diagram: "ARRAY METHODS:\nmap: Transform all\nfilter: Select based on condition\nreduce: Aggregate\nforEach: Iterate\nsome: Any truth\nevery: All truth\nfind: First match\nfindIndex: First match index", adv: "✅ Functional\n✅ Declarative\n✅ Chainable", dis: "❌ Performance\n❌ New array each time", use: "Data transformation, Querying, Aggregation", interview: "Q: Array methods?\nA: map, filter, reduce, forEach. Each serves different purpose.", cheat: "• map: Transform\n• filter: Select\n• reduce: Aggregate", keypoints: ["map", "filter", "reduce", "forEach"], related: [26, 45, 46], category: "advanced" },
+        45: { desc: "Performance Optimization: Code splitting, lazy loading, memoization, debouncing.", example: "React.memo(), useMemo(), useCallback(), code splitting.", diagram: "OPTIMIZATION:\n1. Bundle size: Code splitting, Tree shaking\n2. Runtime: Memoization, Debouncing\n3. Rendering: Virtual DOM, Lazy loading\n4. Network: Caching, Compression", adv: "✅ Faster apps\n✅ Better UX\n✅ Lower costs", dis: "❌ Complexity\n❌ Premature", use: "Web apps, Libraries, Frameworks", interview: "Q: Performance optimization?\nA: Code splitting, memoization, lazy loading, debouncing.", cheat: "• Code Splitting: Lazy load\n• Memoization: Cache", keypoints: ["Optimization", "Memoization", "Lazy"], related: [29, 30, 44], category: "advanced" },
+        46: { desc: "Memory Management: Garbage collection, weak references, memory leaks.", example: "Chrome DevTools Memory tab, heap snapshots.", diagram: "MEMORY MANAGEMENT:\nStack: Primitive values\nHeap: Objects, functions\nGC: Mark and Sweep\n\nMEMORY LEAKS:\n- Global variables\n- Closures (unintended)\n- Event listeners (unremoved)\n- Timers (not cleared)", adv: "✅ Efficient memory\n✅ Avoid leaks", dis: "❌ GC pauses\n❌ Hard to debug", use: "All JS applications", interview: "Q: Memory management in JS?\nA: Garbage collection automatically frees memory. Avoid global vars, leaky closures.", cheat: "• GC: Automatic\n• Leaks: Global, closures, listeners", keypoints: ["GC", "Leak", "Heap", "Stack"], related: [10, 24, 43], category: "advanced" },
+        47: { desc: "Functional Programming in JS: Pure functions, immutability, composition.", example: "const add = (a,b) => a+b; // pure. Object.freeze() for immutability.", diagram: "FP PRINCIPLES:\n1. Pure Functions: No side effects\n2. Immutability: Don't modify data\n3. Composition: Combine functions\n4. Higher-Order Functions\n5. Recursion (not mutation)", adv: "✅ Predictable\n✅ Testable\n✅ Maintainable", dis: "❌ Performance\n❌ Learning curve", use: "React, Redux, Data pipelines", interview: "Q: Functional Programming?\nA: Pure functions, immutability, composition. No side effects.", cheat: "• Pure: No side effects\n• Immutable: Don't modify", keypoints: ["Pure", "Immutable", "Compose"], related: [26, 27, 28], category: "advanced" },
+        48: { desc: "Design Patterns in JS: Singleton, Factory, Observer, Module, Revealing Module.", example: "Module Pattern: IIFE with private state. Observer: EventEmitter.", diagram: "DESIGN PATTERNS:\n1. Module: IIFE + closure\n2. Singleton: One instance\n3. Factory: Creates objects\n4. Observer: Publish/Subscribe\n5. Revealing Module: Public API", adv: "✅ Reusable\n✅ Best practices\n✅ Maintainable", dis: "❌ Over-engineering\n❌ Complexity", use: "Large applications, Frameworks", interview: "Q: Design patterns in JS?\nA: Module, Singleton, Factory, Observer. Each solves specific problem.", cheat: "• Module: Encapsulation\n• Singleton: One instance\n• Observer: Pub/Sub", keypoints: ["Module", "Singleton", "Observer"], related: [3, 8, 40], category: "advanced" },
+        49: { desc: "Testing: Jest, Mocha, Chai. Unit tests, Integration tests, E2E tests.", example: "test('adds 1 + 2 = 3', () => { expect(add(1,2)).toBe(3); });", diagram: "TESTING TYPES:\nUNIT: Test individual functions\nINTEGRATION: Test interactions\nE2E: Test full flows\n\nFRAMEWORKS:\nJest: React, Next.js\nMocha + Chai: Flexible\nCypress: E2E", adv: "✅ Confidence\n✅ Bug prevention\n✅ Documentation", dis: "❌ Time\n❌ Maintenance", use: "All applications", interview: "Q: Testing in JS?\nA: Unit (Jest), Integration, E2E (Cypress). Write tests for critical paths.", cheat: "• Unit: Jest\n• E2E: Cypress\n• Integration: Combined", keypoints: ["Unit", "Integration", "E2E"], related: [26, 44, 47], category: "advanced" }
+    };
+
+    // Merge advanced details
+    for (var key in advancedDetails) {
+        if (advancedDetails.hasOwnProperty(key)) {
+            topicData[key] = advancedDetails[key];
+        }
+    }
+
+    // ---- HELPERS ----
+    function getData(idx) {
+        return topicData[idx] || {
+            desc: "Detailed explanation of this JavaScript concept.",
+            example: "Practical example.",
+            diagram: "Diagram here.",
+            adv: "Advantages here.",
+            dis: "Disadvantages here.",
+            use: "Use cases here.",
+            interview: "Interview Q&A here.",
+            cheat: "Cheat sheet here.",
+            keypoints: ["Key 1", "Key 2"],
+            related: [0, 1],
+            category: "core"
+        };
+    }
+
+    // ---- STATE ----
+    var currentIndex = 0;
+    var showCheatSheet = false;
+    var doneSet = new Set();
+    var filteredIndices = [];
+
+    // ---- DOM ----
+    var listEl = document.getElementById('topicList');
+    var detailEl = document.getElementById('topicDetail');
+    var searchInput = document.getElementById('searchInput');
+    var themeToggle = document.getElementById('themeToggle');
+    var cheatSheetToggle = document.getElementById('cheatSheetToggle');
+    var markDoneBtn = document.getElementById('markDoneBtn');
+    var progressTrack = document.getElementById('progressTrack');
+    var progressFill = document.getElementById('progressFill');
+    var breadcrumbTopic = document.getElementById('breadcrumbTopic');
+
+    // ---- RENDER ----
+    function renderList(filter) {
+        filter = filter || '';
+        var q = filter.toLowerCase().trim();
+        var html = '';
+        filteredIndices = [];
+        for (var i = 0; i < topics.length; i++) {
+            var t = topics[i];
+            var match = t.toLowerCase().indexOf(q) !== -1;
+            if (!match && q) continue;
+            filteredIndices.push(i);
+            var active = i === currentIndex ? 'active' : '';
+            var data = getData(i);
+            var isDone = doneSet.has(i);
+            var badgeClass = data.category === 'core' ? 'core' : 'advanced';
+            var badgeText = data.category === 'core' ? 'Core' : 'Adv';
+            html += '<li class="' + active + '" data-index="' + i + '">';
+            html += '<span class="num">' + (i+1) + '</span>';
+            html += '<span>' + t + '</span>';
+            html += '<span class="badge ' + badgeClass + '">' + badgeText + '</span>';
+            if (isDone) html += '<span class="badge done">✓</span>';
+            html += '</li>';
+        }
+        listEl.innerHTML = html || '<li class="empty-state"><i class="fas fa-search"></i><br>No topics found</li>';
+        var items = listEl.querySelectorAll('li[data-index]');
+        for (var j = 0; j < items.length; j++) {
+            (function(li) {
+                li.addEventListener('click', function() {
+                    var idx = parseInt(this.dataset.index);
+                    if (!isNaN(idx)) {
+                        currentIndex = idx;
+                        showCheatSheet = false;
+                        cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+                        renderDetail(idx);
+                        renderList(searchInput.value);
+                        updateProgress();
+                    }
+                });
+            })(items[j]);
+        }
+    }
+
+    function renderDetail(idx) {
+        var data = getData(idx);
+        var title = topics[idx];
+        var num = idx + 1;
+        var isDone = doneSet.has(idx);
+        var isCore = data.category === 'core';
+
+        if (showCheatSheet) {
+            detailEl.innerHTML = '<h1><i class="fas fa-list-check"></i> JS Quick Cheat Sheet</h1>' +
+                '<div class="sub">📌 All 50 topics · Quick revision</div>' +
+                '<div class="box purple">' +
+                '<i class="fas fa-rocket"></i> <strong>JavaScript Cheat Sheet</strong>' +
+                '<ul style="margin-top:8px;list-style:none;padding-left:0;">' +
+                '<li><strong>🏗 Scope & Closures:</strong> Lexical scope, closure = function + lexical environment</li>' +
+                '<li><strong>🎯 this:</strong> Default, Implicit, Explicit (call/apply/bind), New</li>' +
+                '<li><strong>🧬 Prototypes:</strong> Objects inherit via prototype chain</li>' +
+                '<li><strong>🔄 Event Loop:</strong> Microtasks (Promises) before Macrotasks (setTimeout)</li>' +
+                '<li><strong>⚡ Async:</strong> Promises, Async/Await, Callbacks</li>' +
+                '<li><strong>📦 ES6+:</strong> Classes, Arrow functions, Destructuring, Spread/Rest</li>' +
+                '<li><strong>🧹 Memory:</strong> GC, WeakRefs, avoid leaks (globals, closures, listeners)</li>' +
+                '<li><strong>⚙️ Optimization:</strong> Memoization, Debouncing, Throttling, Code splitting</li>' +
+                '<li><strong>🔗 FP:</strong> Pure functions, Immutability, Composition</li>' +
+                '<li><strong>🧪 Testing:</strong> Jest (unit), Cypress (E2E)</li>' +
+                '</ul></div>' +
+                '<div class="box success">💡 <strong>Pro Tip:</strong> Master closures, this, prototypes, event loop, and async patterns. These 5 concepts cover 80% of interview questions.</div>' +
+                '<p style="margin-top:12px; opacity:0.6;"><i class="fas fa-arrow-right"></i> Click any topic for detailed notes</p>';
+            return;
+        }
+
+        var advHtml = (data.adv || 'No specific advantages listed.').split('\n').filter(function(a) { return a.trim(); }).map(function(a) { return '<li>' + a + '</li>'; }).join('');
+        var disHtml = (data.dis || 'No specific disadvantages listed.').split('\n').filter(function(d) { return d.trim(); }).map(function(d) { return '<li>' + d + '</li>'; }).join('');
+        var useHtml = (data.use || 'General JavaScript development.').split('\n').filter(function(u) { return u.trim(); }).map(function(u) { return '<li>' + u + '</li>'; }).join('');
+        var interviewHtml = (data.interview || 'Practice explaining this concept clearly.').replace(/\n/g, '<br>');
+        var cheatHtml = (data.cheat || 'Review the key points above.').replace(/\n/g, '<br>');
+        var keypointsHtml = (data.keypoints || []).map(function(k) { return '<span>' + k + '</span>'; }).join('');
+
+        var relatedHtml = '';
+        if (data.related) {
+            relatedHtml = '<div class="section"><i class="fas fa-link"></i> Related Topics</div><div class="related-topics">';
+            for (var r = 0; r < data.related.length; r++) {
+                var relIdx = data.related[r];
+                relatedHtml += '<span data-index="' + relIdx + '">' + (relIdx+1) + '. ' + topics[relIdx] + '</span>';
+            }
+            relatedHtml += '</div>';
+        }
+
+        var doneBadge = isDone ? ' <span style="font-size:0.8rem;color:#22c55e;">✅ Done</span>' : '';
+        var iconClass = isCore ? 'fa-star' : 'fa-rocket';
+
+        detailEl.innerHTML =
+            '<h1><i class="fas ' + iconClass + '"></i> Topic ' + num + ': ' + title + doneBadge + '</h1>' +
+            '<div class="sub">📌 ' + (isCore ? 'Core JS' : 'Advanced JS') + ' · ' + num + '/50<span class="tag">' + (isCore ? '⭐ Core' : '🚀 Advanced') + '</span></div>' +
+            '<div class="section"><i class="fas fa-question-circle"></i> Concept</div><p>' + (data.desc || 'Detailed explanation coming soon.') + '</p>' +
+            '<div class="section"><i class="fas fa-globe"></i> Example</div><p>' + (data.example || 'Practical example coming soon.') + '</p>' +
+            '<div class="section"><i class="fas fa-project-diagram"></i> Visual Diagram</div><div class="code-box">' + (data.diagram || 'Diagram coming soon.') + '</div>' +
+            (data.keypoints ? '<div class="keypoints">' + keypointsHtml + '</div>' : '') +
+            '<div class="section"><i class="fas fa-check-circle"></i> Advantages</div><ul>' + advHtml + '</ul>' +
+            '<div class="section"><i class="fas fa-times-circle"></i> Disadvantages</div><ul>' + disHtml + '</ul>' +
+            '<div class="section"><i class="fas fa-rocket"></i> Use Cases</div><ul>' + useHtml + '</ul>' +
+            '<div class="box success"><i class="fas fa-comments"></i> <strong>Interview Q&A</strong><br>' + interviewHtml + '</div>' +
+            '<div class="box pink"><i class="fas fa-list-check"></i> <strong>Cheat Sheet</strong><br>' + cheatHtml + '</div>' +
+            relatedHtml +
+            '<div class="box tip">💡 <strong>Pro Tip:</strong> Practice writing code examples for each concept. Theory + Practice = Mastery.</div>' +
+            '<div class="box mistake">⚠️ <strong>Common Mistake:</strong> Not understanding the event loop can lead to unexpected async behavior.</div>' +
+            '<div class="box success">📝 <strong>One-Liner:</strong> ' + title + ' — ' + (data.desc || '').substring(0, 80) + '...</div>' +
+            '<p style="margin-top:12px; opacity:0.6;"><i class="fas fa-arrow-right"></i> Navigate via sidebar · ' + (50 - num) + ' topics remaining</p>';
+
+        var relatedSpans = detailEl.querySelectorAll('.related-topics span');
+        for (var s = 0; s < relatedSpans.length; s++) {
+            (function(span) {
+                span.addEventListener('click', function() {
+                    var idx = parseInt(this.dataset.index);
+                    if (!isNaN(idx)) {
+                        currentIndex = idx;
+                        showCheatSheet = false;
+                        cheatSheetToggle.innerHTML = '<i class="fas fa-list-check"></i> Cheat Sheet';
+                        renderDetail(idx);
+                        renderList(searchInput.value);
+                        updateProgress();
+                    }
+                });
+            })(relatedSpans[s]);
+        }
+
+        breadcrumbTopic.textContent = title;
+        detailEl.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+
+    function updateProgress() {
+        var count = doneSet.size;
+        var pct = (count / 50 * 100);
+        progressTrack.innerHTML = '📌 ' + count + ' / 50 mastered<div class="bar"><div class="fill" style="width:' + pct + '%"></div></div>';
+        progressFill.style.width = pct + '%';
+        document.getElementById('statDone').textContent = '✅ ' + count + ' Done';
+
+        var coreCount = 0, advCount = 0;
+        doneSet.forEach(function(i) {
+            var data = getData(i);
+            if (data.category === 'core') coreCount++;
+            else advCount++;
+        });
+        document.getElementById('statCore').textContent = '⭐ ' + coreCount + ' Core';
+        document.getElementById('statAdv').textContent = '🚀 ' + advCount + ' Advanced';
+        renderList(searchInput.value);
+    }
+
+    // ---- EVENTS ----
+    searchInput.addEventListener('input', function(e) { renderList(e.target.value); });
+
+    themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark');
+        this.innerHTML = document.body.classList.contains('dark') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    cheatSheetToggle.addEventListener('click', function() {
+        showCheatSheet = !showCheatSheet;
+        this.innerHTML = showCheatSheet ? '<i class="fas fa-book"></i> Back to Notes' : '<i class="fas fa-list-check"></i> Cheat Sheet';
+        renderDetail(currentIndex);
+    });
+
+    markDoneBtn.addEventListener('click', function() {
+        if (doneSet.has(currentIndex)) {
+            doneSet.delete(currentIndex);
+        } else {
+            doneSet.add(currentIndex);
+        }
+        updateProgress();
+        renderDetail(currentIndex);
+        renderList(searchInput.value);
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            var idx = filteredIndices.indexOf(currentIndex);
+            if (idx < filteredIndices.length - 1) {
+                currentIndex = filteredIndices[idx + 1];
+                renderDetail(currentIndex);
+                renderList(searchInput.value);
+                e.preventDefault();
+            }
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            var idx = filteredIndices.indexOf(currentIndex);
+            if (idx > 0) {
+                currentIndex = filteredIndices[idx - 1];
+                renderDetail(currentIndex);
+                renderList(searchInput.value);
+                e.preventDefault();
+            }
+        } else if (e.key === 'd' || e.key === 'D') {
+            markDoneBtn.click();
+        } else if (e.key === 'c' || e.key === 'C') {
+            cheatSheetToggle.click();
+        }
+    });
+
+    // ---- INIT ----
+    renderList('');
+    renderDetail(0);
+    doneSet.add(0);
+    updateProgress();
+
+    console.log('🚀 JavaScript Mastery loaded!');
+    console.log('⌨️ Keyboard shortcuts: ← → navigate, d = mark done, c = cheat sheet');
+</script>
+</body>
+</html>

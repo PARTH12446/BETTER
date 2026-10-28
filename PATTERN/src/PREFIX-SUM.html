@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefix Sum · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e17;
+            color: #e8edf6;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem 4rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1180px; margin: 0 auto; }
+        ::selection { background: rgba(79,216,196,0.25); color: #4fd8c4; }
+
+        /* ----- hero ----- */
+        .hero { padding: 1.5rem 0 2.5rem; border-bottom: 1px solid #182236; margin-bottom: 2.5rem; }
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #4fd8c4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 24px; height: 1px; background: #4fd8c4; }
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            letter-spacing: -0.02em;
+            color: #e8edf6;
+        }
+        .hero h1 span { color: #5a6579; }
+        .hero .lede {
+            font-size: 1.05rem;
+            color: #8f9bb0;
+            max-width: 680px;
+            margin: 0.8rem 0 1.5rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #8f9bb0;
+            border: 1px solid #212c40;
+            border-radius: 8px;
+            padding: 6px 14px;
+            background: #0e1420;
+        }
+        .stat b { color: #e8edf6; font-weight: 600; }
+
+        /* ----- cards & grid ----- */
+        .sec { margin: 3.5rem 0 1.2rem; }
+        .sec-num { font-family: 'JetBrains Mono', monospace; color: #5a6579; font-size: 0.8rem; }
+        .sec h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: #e8edf6;
+            margin-top: 0.2rem;
+        }
+        .sec .desc {
+            color: #8f9bb0;
+            margin-top: 0.5rem;
+            max-width: 700px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+            margin-top: 1.2rem;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .concept-text ul { margin: 0.8rem 0 0 1.2rem; color: #8f9bb0; }
+        .concept-text ul li { margin-bottom: 0.5rem; }
+        .concept-text ul li b { color: #e8edf6; }
+
+        .callout {
+            margin-top: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            background: rgba(79,216,196,0.08);
+            border: 1px solid rgba(79,216,196,0.2);
+            font-size: 0.92rem;
+            color: #e8edf6;
+        }
+        .callout b { color: #4fd8c4; }
+
+        .mini-array {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+        }
+        .mini-array .cell-mini {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.85rem;
+            background: #1a2333;
+            border: 1px solid #212c40;
+            color: #5a6579;
+        }
+        .mini-array .cell-mini.prefix {
+            background: rgba(79,216,196,0.12);
+            border-color: #4fd8c4;
+            color: #4fd8c4;
+        }
+
+        /* ----- decision tree ----- */
+        .tree { display: flex; flex-direction: column; gap: 0; margin-top: 1.5rem; }
+        .tree-q {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            background: #0e1420;
+            border: 1px solid #212c40;
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .tree-q .q { color: #e8edf6; }
+        .tree-q .a { color: #5a6579; font-size: 0.8rem; }
+        .tree-arrow {
+            text-align: center;
+            color: #5a6579;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            padding: 4px 0;
+        }
+        .tree-result {
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .tree-result.t1 { background: rgba(79,216,196,0.08); border-color: rgba(79,216,196,0.3); color: #4fd8c4; }
+        .tree-result.t2 { background: rgba(246,173,85,0.08); border-color: rgba(246,173,85,0.3); color: #f6ad55; }
+
+        /* ----- pattern cards ----- */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .pattern-card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .pattern-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .pattern-card.p1::before { background: #4fd8c4; }
+        .pattern-card.p2::before { background: #f6ad55; }
+        .pattern-card.p3::before { background: #b394f6; }
+        .pattern-card .ptag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .pattern-card.p1 .ptag { color: #4fd8c4; }
+        .pattern-card.p2 .ptag { color: #f6ad55; }
+        .pattern-card.p3 .ptag { color: #b394f6; }
+        .pattern-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin: 0.4rem 0 0.6rem;
+            color: #e8edf6;
+        }
+        .pattern-card p { color: #8f9bb0; font-size: 0.9rem; margin-bottom: 0.8rem; }
+        .pattern-card ul { list-style: none; }
+        .pattern-card ul li {
+            font-size: 0.85rem;
+            color: #8f9bb0;
+            padding: 4px 0;
+            border-top: 1px solid #182236;
+        }
+        .pattern-card ul li:first-child { border-top: none; }
+        .pattern-card ul li b { color: #e8edf6; font-weight: 500; }
+
+        /* ----- visualizer ----- */
+        .viz {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-top: 1.5rem;
+        }
+        .viz-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.6rem;
+        }
+        .viz-head .name { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: #e8edf6; }
+        .viz-head .sub { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #5a6579; margin-top: 2px; }
+        .viz-controls { display: flex; gap: 8px; }
+        .btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            border: 1px solid #212c40;
+            background: #0e1420;
+            color: #e8edf6;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+        .btn:hover { border-color: #4fd8c4; color: #4fd8c4; }
+        .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .btn:disabled:hover { border-color: #212c40; color: #e8edf6; }
+        .btn.primary {
+            background: #4fd8c4;
+            color: #08130f;
+            border-color: #4fd8c4;
+            font-weight: 600;
+        }
+        .btn.primary:hover { filter: brightness(1.1); }
+
+        .array-stage {
+            position: relative;
+            padding-top: 44px;
+            padding-bottom: 56px;
+            overflow-x: auto;
+        }
+        .array-inner { position: relative; display: inline-block; min-width: 100%; }
+        .array-row { display: flex; gap: 8px; position: relative; z-index: 2; }
+        .cell {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: #1a2333;
+            border: 1px solid #212c40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #5a6579;
+            transition: background .25s ease, border-color .25s ease, color .25s ease;
+        }
+        .cell.prefix-cell {
+            background: rgba(79,216,196,0.12);
+            border-color: #4fd8c4;
+            color: #4fd8c4;
+        }
+        .cell.highlight {
+            background: rgba(246,173,85,0.12);
+            border-color: #f6ad55;
+            color: #f6ad55;
+        }
+        .cell.range {
+            background: rgba(179,148,246,0.12);
+            border-color: #b394f6;
+            color: #b394f6;
+        }
+        .idx-row { display: flex; gap: 8px; margin-top: 6px; }
+        .idx-row span { width: 56px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #5a6579; }
+        .pointer-marker {
+            position: absolute;
+            top: 0;
+            width: 56px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            transition: left .35s cubic-bezier(.4,0,.2,1);
+            z-index: 3;
+        }
+        .pointer-marker .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        .pointer-marker .stem { width: 1px; height: 12px; background: #5a6579; margin: 2px auto 0; }
+        .viz-log {
+            margin-top: 1.4rem;
+            padding: 1rem 1.2rem;
+            background: #0e1420;
+            border: 1px solid #182236;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #e8edf6;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .viz-log .step-count { color: #5a6579; font-size: 0.75rem; }
+        .viz-log .msg b { color: #4fd8c4; }
+        .viz-log.done { border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.06); }
+        .viz-log.done .msg b { color: #4ade80; }
+
+        /* ----- problem groups ----- */
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 3rem 0 1.2rem;
+        }
+        .group-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .group-head h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; color: #e8edf6; }
+        .group-head .count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #5a6579;
+            border: 1px solid #212c40;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+        }
+        .problem-card {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid #212c40;
+            transition: border-color .2s ease, transform .2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: #4fd8c4; }
+        .problem-card.g2 { border-left-color: #f6ad55; }
+        .problem-card.g3 { border-left-color: #b394f6; }
+        .problem-card .phead { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+        .problem-card .pnum { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #5a6579; }
+        .problem-card .pname { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; color: #e8edf6; margin-top: 2px; }
+        .problem-card .plc {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            background: #0e1420;
+            border: 1px solid #212c40;
+            color: #8f9bb0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc { color: #8f9bb0; font-size: 0.85rem; margin: 0.6rem 0; }
+        .problem-card .papproach {
+            background: #0e1420;
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.82rem;
+            color: #8f9bb0;
+            border: 1px solid #182236;
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: #e8edf6; }
+        .problem-card .ppitfall {
+            font-size: 0.8rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.06);
+            border: 1px solid rgba(248,113,113,0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .ppitfall b { color: #f87171; }
+        .pfoot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+        .complexity { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #5a6579; }
+
+        /* ----- mistakes ----- */
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .mistake {
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid #f87171;
+        }
+        .mistake .mtitle { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #f8b4ac; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .mistake p { font-size: 0.85rem; color: #8f9bb0; }
+        .mistake .fix { margin-top: 0.5rem; font-size: 0.83rem; color: #4ade80; }
+        .mistake .fix b { font-family: 'JetBrains Mono', monospace; }
+
+        /* ----- checklist ----- */
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #0e1420;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #212c40;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4fd8c4, #b394f6);
+            transition: width .3s ease;
+        }
+        .progress-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #8f9bb0; white-space: nowrap; }
+        .checklist { display: flex; flex-direction: column; gap: 0.5rem; }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: #121927;
+            border: 1px solid #212c40;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: #5a6579; }
+        .check-item.done { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid #5a6579;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: #0a0e17;
+        }
+        .check-item.done .check-box { background: #4ade80; border-color: #4ade80; }
+        .check-item span.label { font-size: 0.88rem; color: #8f9bb0; }
+        .check-item.done span.label { color: #e8edf6; text-decoration: line-through; text-decoration-color: #5a6579; }
+        .check-item .tier { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #5a6579; }
+
+        /* ----- cheat table ----- */
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1.5rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #5a6579;
+            padding: 10px 14px;
+            border-bottom: 1px solid #212c40;
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #182236;
+            color: #8f9bb0;
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl { font-family: 'Space Grotesk', sans-serif; color: #e8edf6; font-weight: 600; }
+
+        footer { text-align: center; margin-top: 4rem; color: #5a6579; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+
+        @media (max-width: 960px) {
+            .concept-grid { grid-template-columns: 1fr; }
+            .pattern-grid { grid-template-columns: 1fr; }
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- ===== HERO ===== -->
+    <div class="hero">
+        <div class="eyebrow">Algorithm Notes · Arrays &amp; Strings</div>
+        <h1>Prefix Sum <span>— from recognition to mastery</span></h1>
+        <p class="lede">The prefix sum pattern is about precomputing cumulative totals to answer range queries in O(1) time. The skill is recognizing when repeated sum calculations can be replaced with a single precomputed array.</p>
+        <div class="stat-row">
+            <div class="stat">⏱ <b>O(n)</b> preprocessing, <b>O(1)</b> queries</div>
+            <div class="stat">💾 <b>O(n)</b> extra space</div>
+            <div class="stat"><b>15</b> problems</div>
+        </div>
+    </div>
+
+    <!-- ===== 1. CORE IDEA ===== -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What problem does this actually solve?</h2>
+        <p class="desc">A brute-force approach computes the sum of a range by looping through it — that's O(n) per query. Prefix sum precomputes cumulative sums once, then answers any range sum query in O(1) time.</p>
+    </div>
+
+    <div class="concept-grid">
+        <div class="card concept-text">
+            <p>The key insight is that the sum of any subarray can be derived from two prefix sums:</p>
+            <ul>
+                <li><b>Prefix sum array:</b> <code>prefix[i] = arr[0] + arr[1] + ... + arr[i]</code></li>
+                <li><b>Range sum:</b> <code>sum(i, j) = prefix[j] - prefix[i-1]</code> (with <code>prefix[-1] = 0</code>)</li>
+                <li>This turns O(n) range queries into O(1) after a single O(n) precomputation.</li>
+            </ul>
+            <div class="callout"><b>The one question that decides everything:</b> do you need to answer many range sum queries on a static array? If yes, prefix sum is your tool.</div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="mini-array" id="concept-array"></div>
+        </div>
+    </div>
+
+    <!-- ===== 2. DECISION TREE ===== -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>Identify the pattern before you write a line of code</h2>
+        <p class="desc">Ask these in order. The first "yes" tells you to reach for prefix sum.</p>
+    </div>
+    <div class="card">
+        <div class="tree">
+            <div class="tree-q"><span class="q">1. Do you need to answer multiple range sum queries on a static array?</span><span class="a">check first</span></div>
+            <div class="tree-arrow">yes ↓</div>
+            <div class="tree-result t1">→ Prefix Sum <span>precompute cumulative sums, answer queries in O(1)</span></div>
+            <div class="tree-arrow">no ↓</div>
+            <div class="tree-q"><span class="q">2. Are you counting subarrays that satisfy a sum-related condition (e.g., sum = k, odd sum, at most k)?</span><span class="a">check second</span></div>
+            <div class="tree-arrow">yes ↓</div>
+            <div class="tree-result t2">→ Prefix Sum + Hashmap <span>use prefix sums with a hashmap to count subarrays efficiently</span></div>
+        </div>
+    </div>
+
+    <div class="pattern-grid">
+        <div class="pattern-card p1">
+            <div class="ptag">Core Pattern</div>
+            <h3>Range Sum Queries</h3>
+            <p>Precompute prefix sums to answer any range sum in O(1).</p>
+            <ul>
+                <li><b>Preprocess:</b> <code>prefix[i] = prefix[i-1] + arr[i]</code></li>
+                <li><b>Query:</b> <code>sum(i,j) = prefix[j] - prefix[i-1]</code></li>
+                <li><b>Edge:</b> <code>prefix[-1] = 0</code> for i = 0</li>
+                <li><b>Classic:</b> Range Sum Query — Immutable</li>
+            </ul>
+        </div>
+        <div class="pattern-card p2">
+            <div class="ptag">Extended Pattern</div>
+            <h3>Subarray Counting</h3>
+            <p>Use prefix sums with a hashmap to count subarrays with a given property.</p>
+            <ul>
+                <li><b>Key idea:</b> <code>prefix[j] - prefix[i-1] = k</code></li>
+                <li><b>Transform:</b> <code>prefix[i-1] = prefix[j] - k</code></li>
+                <li><b>Count:</b> maintain frequency of prefix sums seen so far</li>
+                <li><b>Classic:</b> Subarray Sum Equals K</li>
+            </ul>
+        </div>
+        <div class="pattern-card p3">
+            <div class="ptag">Common pitfall</div>
+            <h3>Off-by-one in range sum</h3>
+            <p>The formula changes depending on whether you include the start index.</p>
+            <ul>
+                <li><b>Wrong:</b> <code>prefix[j] - prefix[i]</code> (excludes arr[i])</li>
+                <li><b>Right:</b> <code>prefix[j] - prefix[i-1]</code> (includes arr[i])</li>
+                <li>Always initialize <code>prefix[-1] = 0</code> conceptually</li>
+                <li>Or use 1-indexed prefix array to simplify</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 3. INTERACTIVE VISUALIZERS ===== -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>Watch the pattern run, one step at a time</h2>
+        <p class="desc">Step through a real trace. Each click is exactly one step — read the log line before you click again.</p>
+    </div>
+
+    <!-- Visualizer 1: Range Sum Query -->
+    <div class="viz">
+        <div class="viz-head">
+            <div>
+                <div class="name">303 · Range Sum Query — Immutable</div>
+                <div class="sub">nums = [-2, 0, 3, -5, 2, -1]  ·  query (2, 5)</div>
+            </div>
+            <div class="viz-controls">
+                <button class="btn" id="v1-reset">Reset</button>
+                <button class="btn primary" id="v1-next">Next step →</button>
+            </div>
+        </div>
+        <div class="array-stage"><div class="array-inner" id="v1-stage"></div></div>
+        <div class="viz-log" id="v1-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v1-count">Step 0 / 8</span></div>
+    </div>
+
+    <!-- Visualizer 2: Subarray Sum Equals K -->
+    <div class="viz">
+        <div class="viz-head">
+            <div>
+                <div class="name">560 · Subarray Sum Equals K</div>
+                <div class="sub">nums = [1, 2, 3]  ·  k = 3</div>
+            </div>
+            <div class="viz-controls">
+                <button class="btn" id="v2-reset">Reset</button>
+                <button class="btn primary" id="v2-next">Next step →</button>
+            </div>
+        </div>
+        <div class="array-stage"><div class="array-inner" id="v2-stage"></div></div>
+        <div class="viz-log" id="v2-log"><span class="msg">Click <b>Next step</b> to begin.</span><span class="step-count" id="v2-count">Step 0 / 6</span></div>
+    </div>
+
+    <!-- ===== 4. PROBLEMS ===== -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>All 15 problems, with the pitfall that actually trips people up</h2>
+        <p class="desc">Each card includes the approach in plain terms and the one mistake that's most common on that exact problem.</p>
+    </div>
+
+    <div class="group-head"><div class="group-dot" style="background:#4fd8c4"></div><h3>Range Sum &amp; Basic Prefix</h3><span class="count">8 problems</span></div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <div class="group-head"><div class="group-dot" style="background:#f6ad55"></div><h3>Subarray Counting with Hashmap</h3><span class="count">7 problems</span></div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <!-- ===== 5. COMMON MISTAKES ===== -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>Mistakes that show up across almost every problem</h2>
+        <p class="desc">If your prefix sum solution is wrong, it's very likely one of these three things.</p>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Off-by-one in range sum formula</div>
+            <p>Using <code>prefix[j] - prefix[i]</code> instead of <code>prefix[j] - prefix[i-1]</code> when i > 0. This excludes the element at index i from the sum.</p>
+            <div class="fix">Fix: use 1-indexed prefix array where <code>prefix[0] = 0</code>, then <code>sum(i,j) = prefix[j+1] - prefix[i]</code>.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Forgetting to initialize hashmap with 0</div>
+            <p>In subarray counting problems, the empty prefix sum (0) needs to be in the hashmap before processing. Without it, you'll miss subarrays starting at index 0.</p>
+            <div class="fix">Fix: always initialize <code>map = {0: 1}</code> before iterating.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Using prefix sum when array changes</div>
+            <p>Prefix sum is for static arrays. If the array is updated frequently, prefix sum preprocessing is wasted — you'd need a Fenwick tree or segment tree instead.</p>
+            <div class="fix">Fix: if the problem has updates, consider a Fenwick tree (BIT) or segment tree instead.</div>
+        </div>
+    </div>
+
+    <!-- ===== 6. MASTERY PATH ===== -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Suggested practice order</h2>
+        <p class="desc">Work top to bottom — each tier assumes you're comfortable with the one above it.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 15 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <!-- ===== 7. CHEAT SHEET ===== -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>Cheat sheet</h2>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Pattern</th><th>Preprocessing</th><th>Query</th><th>Problems</th></tr></thead>
+            <tbody>
+            <tr>
+                <td class="lbl" style="color:#4fd8c4">Range Sum</td>
+                <td><code>prefix[i] = prefix[i-1] + arr[i]</code></td>
+                <td><code>sum(i,j) = prefix[j] - prefix[i-1]</code></td>
+                <td>303, 724, 643, 795, 745, 1004, 1493, 1524</td>
+            </tr>
+            <tr>
+                <td class="lbl" style="color:#f6ad55">Subarray Counting</td>
+                <td><code>prefix = prefix + arr[i]</code> + hashmap</td>
+                <td><code>count += map[prefix - k]</code></td>
+                <td>560, 325, 1248, 930, 523, 1171, 1590</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>Prefix Sum · Mastery Notes — all problems from LeetCode</footer>
+</div>
+
+<script>
+    /* ============================================================
+       Concept mini-array
+       ============================================================ */
+    (function(){
+        const el = document.getElementById("concept-array");
+        const arr = [3, 1, 4, 1, 5];
+        const prefix = [3, 4, 8, 9, 14];
+        arr.forEach((v, idx) => {
+            const c = document.createElement("div");
+            c.className = "cell-mini";
+            c.textContent = v;
+            if (idx === 1) {
+                c.classList.add("prefix");
+                c.textContent = `${v} → ${prefix[idx]}`;
+                c.style.fontSize = "0.7rem";
+                c.style.width = "60px";
+            }
+            el.appendChild(c);
+        });
+        // Add arrow
+        const arrow = document.createElement("div");
+        arrow.textContent = "→";
+        arrow.style.color = "#5a6579";
+        arrow.style.fontSize = "1.2rem";
+        arrow.style.margin = "0 4px";
+        el.appendChild(arrow);
+        prefix.forEach((v, idx) => {
+            const c = document.createElement("div");
+            c.className = "cell-mini prefix";
+            c.textContent = v;
+            el.appendChild(c);
+        });
+    })();
+
+    /* ============================================================
+       Visualizer 1 — Range Sum Query
+       ============================================================ */
+    (function(){
+        const nums = [-2, 0, 3, -5, 2, -1];
+        const prefix = [];
+        let sum = 0;
+        nums.forEach(v => { sum += v; prefix.push(sum); });
+        const stage = document.getElementById("v1-stage");
+        const buildArray = (container, vals) => {
+            container.innerHTML = "";
+            const row = document.createElement("div");
+            row.className = "array-row";
+            row.id = container.id + "-row";
+            vals.forEach(v => {
+                const c = document.createElement("div");
+                c.className = "cell";
+                c.textContent = v;
+                row.appendChild(c);
+            });
+            const idxRow = document.createElement("div");
+            idxRow.className = "idx-row";
+            vals.forEach((_, i) => {
+                const s = document.createElement("span");
+                s.textContent = i;
+                idxRow.appendChild(s);
+            });
+            container.appendChild(row);
+            container.appendChild(idxRow);
+        };
+        const setCellStates = (container, classes) => {
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            [...row.children].forEach((cell, i) => {
+                cell.className = "cell";
+                if (classes[i]) cell.classList.add(classes[i]);
+            });
+        };
+        const placePointers = (container, pointers) => {
+            container.querySelectorAll(".pointer-marker").forEach(el => el.remove());
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            const cells = [...row.children];
+            pointers.forEach(p => {
+                if (p.index < 0 || p.index >= cells.length) return;
+                const m = document.createElement("div");
+                m.className = "pointer-marker";
+                m.style.left = (p.index * 64) + "px";
+                const color = p.color || '#4fd8c4';
+                m.innerHTML = `<span class="tag" style="background:rgba(79,216,196,0.1);color:${color};border:1px solid ${color}">${p.label}</span><div class="stem" style="background:${color}"></div>`;
+                container.appendChild(m);
+            });
+        };
+
+        buildArray(stage, nums);
+        // Show prefix array as well
+        const steps = [
+            { classes: [], msg: "Compute prefix sums: [−2, −2, 1, −4, −2, −3]" },
+            { classes: ['prefix-cell'], msg: "prefix[0] = -2" },
+            { classes: ['prefix-cell', 'prefix-cell'], msg: "prefix[1] = -2 + 0 = -2" },
+            { classes: ['prefix-cell', 'prefix-cell', 'prefix-cell'], msg: "prefix[2] = -2 + 3 = 1" },
+            { classes: ['prefix-cell', 'prefix-cell', 'prefix-cell', 'prefix-cell'], msg: "prefix[3] = 1 + (-5) = -4" },
+            { classes: ['prefix-cell', 'prefix-cell', 'prefix-cell', 'prefix-cell', 'prefix-cell'], msg: "prefix[4] = -4 + 2 = -2" },
+            { classes: ['prefix-cell', 'prefix-cell', 'prefix-cell', 'prefix-cell', 'prefix-cell', 'prefix-cell'], msg: "prefix[5] = -2 + (-1) = -3" },
+            { classes: ['range','range','range','range'], msg: "Query (2,5): sum = prefix[5] - prefix[1] = -3 - (-2) = -1 ✅", done: true },
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v1-next");
+        const resetBtn = document.getElementById("v1-reset");
+        const log = document.getElementById("v1-log");
+        const count = document.getElementById("v1-count");
+
+        function render() {
+            if (i < 0) {
+                setCellStates(stage, []);
+                placePointers(stage, []);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            setCellStates(stage, s.classes);
+            if (i === steps.length - 1) {
+                placePointers(stage, [{ index: 1, label: 'i-1=1', color: '#f6ad55' }, { index: 5, label: 'j=5', color: '#4fd8c4' }]);
+            } else if (i >= 0 && i < steps.length - 1) {
+                placePointers(stage, [{ index: i, label: `i=${i}`, color: '#4fd8c4' }]);
+            }
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if (s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", () => { if (i < steps.length - 1) { i++; render(); } });
+        resetBtn.addEventListener("click", () => { i = -1; render(); });
+        render();
+    })();
+
+    /* ============================================================
+       Visualizer 2 — Subarray Sum Equals K
+       ============================================================ */
+    (function(){
+        const nums = [1, 2, 3];
+        const k = 3;
+        const stage = document.getElementById("v2-stage");
+        const buildArray = (container, vals) => {
+            container.innerHTML = "";
+            const row = document.createElement("div");
+            row.className = "array-row";
+            row.id = container.id + "-row";
+            vals.forEach(v => {
+                const c = document.createElement("div");
+                c.className = "cell";
+                c.textContent = v;
+                row.appendChild(c);
+            });
+            const idxRow = document.createElement("div");
+            idxRow.className = "idx-row";
+            vals.forEach((_, i) => {
+                const s = document.createElement("span");
+                s.textContent = i;
+                idxRow.appendChild(s);
+            });
+            container.appendChild(row);
+            container.appendChild(idxRow);
+        };
+        const setCellStates = (container, classes) => {
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            [...row.children].forEach((cell, i) => {
+                cell.className = "cell";
+                if (classes[i]) cell.classList.add(classes[i]);
+            });
+        };
+        const placePointers = (container, pointers) => {
+            container.querySelectorAll(".pointer-marker").forEach(el => el.remove());
+            const row = document.getElementById(container.id + "-row");
+            if (!row) return;
+            const cells = [...row.children];
+            pointers.forEach(p => {
+                if (p.index < 0 || p.index >= cells.length) return;
+                const m = document.createElement("div");
+                m.className = "pointer-marker";
+                m.style.left = (p.index * 64) + "px";
+                const color = p.color || '#4fd8c4';
+                m.innerHTML = `<span class="tag" style="background:rgba(79,216,196,0.1);color:${color};border:1px solid ${color}">${p.label}</span><div class="stem" style="background:${color}"></div>`;
+                container.appendChild(m);
+            });
+        };
+
+        buildArray(stage, nums);
+        const steps = [
+            { classes: [], msg: "Initialize map = {0: 1}, count = 0, prefix = 0" },
+            { classes: ['range'], msg: "i=0, prefix=1, need=1-3=-2 → map[-2]=0 → add 0" },
+            { classes: ['range', 'range'], msg: "i=1, prefix=3, need=3-3=0 → map[0]=1 → count += 1" },
+            { classes: ['range', 'range', 'range'], msg: "i=2, prefix=6, need=6-3=3 → map[3]=1 → count += 1" },
+            { classes: ['range', 'range', 'range'], msg: "Done! count = 2 (subarrays: [3] at i=1, [1,2] at i=0..1)", done: true },
+        ];
+        let i = -1;
+        const nextBtn = document.getElementById("v2-next");
+        const resetBtn = document.getElementById("v2-reset");
+        const log = document.getElementById("v2-log");
+        const count = document.getElementById("v2-count");
+
+        function render() {
+            if (i < 0) {
+                setCellStates(stage, []);
+                placePointers(stage, []);
+                log.className = "viz-log";
+                log.innerHTML = `<span class="msg">Click <b>Next step</b> to begin.</span>`;
+                count.textContent = `Step 0 / ${steps.length}`;
+                nextBtn.disabled = false;
+                return;
+            }
+            const s = steps[i];
+            setCellStates(stage, s.classes);
+            if (i > 0 && i < steps.length - 1) {
+                placePointers(stage, [{ index: i-1, label: `i=${i-1}`, color: '#f6ad55' }]);
+            }
+            log.className = s.done ? "viz-log done" : "viz-log";
+            log.innerHTML = `<span class="msg">${s.msg}</span>`;
+            count.textContent = `Step ${i+1} / ${steps.length}`;
+            if (s.done) nextBtn.disabled = true;
+        }
+        nextBtn.addEventListener("click", () => { if (i < steps.length - 1) { i++; render(); } });
+        resetBtn.addEventListener("click", () => { i = -1; render(); });
+        render();
+    })();
+
+    /* ============================================================
+       Problem data
+       ============================================================ */
+    const problems = {
+        a: [
+            { num: "303", name: "Range Sum Query — Immutable", tag: "range", desc: "Compute the sum of elements between indices i and j.", approach: "Precompute prefix sums. For query(i,j), return prefix[j] - (i>0 ? prefix[i-1] : 0).", pitfall: "Forgetting to handle i=0 separately — prefix[-1] doesn't exist.", complexity: "O(n) prep · O(1) query" },
+            { num: "724", name: "Find Pivot Index", tag: "range", desc: "Find the index where the sum of left elements equals the sum of right elements.", approach: "Compute total sum. Iterate, tracking left_sum; right_sum = total - left_sum - nums[i].", pitfall: "Not initializing left_sum to 0 before the loop, or using right_sum incorrectly.", complexity: "O(n) · O(1)" },
+            { num: "643", name: "Maximum Average Subarray I", tag: "range", desc: "Find the subarray of size k with the maximum average.", approach: "Use prefix sums to compute each window sum in O(1) after preprocessing.", pitfall: "Using floating point division at every step instead of comparing sums.", complexity: "O(n) · O(n) or O(1)" },
+            { num: "795", name: "Number of Subarrays with Bounded Maximum", tag: "range", desc: "Count subarrays with maximum in [L, R].", approach: "Use two pointers with prefix sums or a sliding window approach.", pitfall: "Double counting subarrays when the maximum is exactly R.", complexity: "O(n) · O(1)" },
+            { num: "745", name: "Prefix and Suffix Search", tag: "range", desc: "Find the word with a given prefix and suffix.", approach: "Use a trie with weights or a hashmap of prefix-suffix combinations.", pitfall: "Not handling empty prefix/suffix strings correctly.", complexity: "O(n · L²) · O(n · L²)" },
+            { num: "1004", name: "Max Consecutive Ones III", tag: "range", desc: "Find the longest subarray with at most K zeros.", approach: "Use sliding window with prefix sums or two pointers.", pitfall: "Using prefix sums but not updating the answer during the shrink phase.", complexity: "O(n) · O(1)" },
+            { num: "1493", name: "Longest Subarray of 1's After Deleting One Element", tag: "range", desc: "Find the longest subarray of 1s after deleting one element.", approach: "Use sliding window with at most one zero allowed, then subtract 1 from the result.", pitfall: "Forgetting to subtract 1 when the entire array is filled with 1s.", complexity: "O(n) · O(1)" },
+            { num: "1524", name: "Number of Subarrays with Odd Sum", tag: "range", desc: "Count subarrays with an odd sum.", approach: "Track prefix sum parity. Odd count = odd_prefix_count * even_prefix_count.", pitfall: "Using modulo at every step instead of tracking parity as a boolean.", complexity: "O(n) · O(1)" },
+        ],
+        b: [
+            { num: "560", name: "Subarray Sum Equals K", tag: "hashmap", desc: "Count subarrays whose sum equals k.", approach: "Use a hashmap to store prefix sum frequencies. For each prefix, check if prefix - k exists.", pitfall: "Forgetting to initialize map with {0: 1}, missing subarrays starting at index 0.", complexity: "O(n) · O(n)" },
+            { num: "325", name: "Maximum Size Subarray Sum Equals K", tag: "hashmap", desc: "Find the maximum length of a subarray with sum k.", approach: "Store the earliest index for each prefix sum. For each prefix, if prefix - k exists, update max length.", pitfall: "Updating the map with later occurrences of the same prefix sum — always keep the earliest.", complexity: "O(n) · O(n)" },
+            { num: "1248", name: "Count Number of Nice Subarrays", tag: "hashmap", desc: "Count subarrays with exactly k odd numbers.", approach: "Convert array to 1 for odd, 0 for even, then use prefix sum hashmap with k.", pitfall: "Forgetting that odd numbers are the only ones that matter — even numbers don't change the prefix sum.", complexity: "O(n) · O(n)" },
+            { num: "930", name: "Binary Subarrays With Sum", tag: "hashmap", desc: "Count binary subarrays with sum equal to target.", approach: "Same as Subarray Sum Equals K, but the array only contains 0s and 1s.", pitfall: "Using the target as the sum, not the number of 1s — they're the same thing.", complexity: "O(n) · O(n)" },
+            { num: "523", name: "Continuous Subarray Sum", tag: "hashmap", desc: "Check if there's a subarray of size ≥2 with sum divisible by k.", approach: "Use prefix sum modulo k. If the same remainder appears twice with index difference ≥2, return true.", pitfall: "Checking only for equal remainders, but forgetting that sum % k == 0 is also a valid condition.", complexity: "O(n) · O(n)" },
+            { num: "1171", name: "Remove Zero Sum Consecutive Nodes from Linked List", tag: "hashmap", desc: "Remove consecutive nodes that sum to 0 from a linked list.", approach: "Use prefix sum with a map from prefix sum to node. If a prefix sum repeats, remove the segment.", pitfall: "Not handling the case where the zero-sum segment starts from the head of the list.", complexity: "O(n) · O(n)" },
+            { num: "1590", name: "Make Sum Divisible by P", tag: "hashmap", desc: "Remove the smallest subarray so that the remaining sum is divisible by p.", approach: "Use prefix sums modulo p. Find the shortest subarray with sum ≡ total_mod.", pitfall: "Forgetting that the subarray to remove can't be the entire array.", complexity: "O(n) · O(n)" },
+        ]
+    };
+
+    function renderProblems(groupId, cls, arr) {
+        const container = document.getElementById(groupId);
+        arr.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            card.innerHTML = `
+                <div class="phead">
+                    <div><div class="pnum">LeetCode ${p.num}</div><div class="pname">${p.name}</div></div>
+                    <div class="plc">${p.tag}</div>
+                </div>
+                <div class="pdesc">${p.desc}</div>
+                <div class="papproach"><b>Approach —</b> ${p.approach}</div>
+                <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+                <div class="pfoot"><span class="complexity">${p.complexity}</span></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+    renderProblems("group-a", "g1", problems.a);
+    renderProblems("group-b", "g2", problems.b);
+
+    /* ============================================================
+       Mastery checklist
+       ============================================================ */
+    const allProblems = [
+        { n: "303 Range Sum Query", tier: "start here" },
+        { n: "724 Find Pivot Index", tier: "start here" },
+        { n: "643 Maximum Average Subarray I", tier: "start here" },
+        { n: "560 Subarray Sum Equals K", tier: "core" },
+        { n: "325 Maximum Size Subarray Sum = K", tier: "core" },
+        { n: "1248 Count Number of Nice Subarrays", tier: "core" },
+        { n: "930 Binary Subarrays With Sum", tier: "core" },
+        { n: "523 Continuous Subarray Sum", tier: "stretch" },
+        { n: "1004 Max Consecutive Ones III", tier: "stretch" },
+        { n: "1493 Longest Subarray of 1's After Deleting One", tier: "stretch" },
+        { n: "795 Number of Subarrays with Bounded Maximum", tier: "stretch" },
+        { n: "1171 Remove Zero Sum Consecutive Nodes", tier: "hard" },
+        { n: "1590 Make Sum Divisible by P", tier: "hard" },
+        { n: "745 Prefix and Suffix Search", tier: "hard" },
+        { n: "1524 Number of Subarrays with Odd Sum", tier: "core" },
+    ];
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress() {
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done / allProblems.length * 100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+
+    allProblems.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", () => { item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>

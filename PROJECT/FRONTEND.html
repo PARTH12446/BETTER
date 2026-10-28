@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React & JavaScript · Frontend Question Bank</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f9;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2332;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.25rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0b1e33;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i.fa-react {
+            color: #61dafb;
+        }
+        .header h1 i.fa-js {
+            color: #f7df1e;
+        }
+
+        .subhead {
+            color: #475569;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+            border-left: 4px solid #2563eb;
+            padding-left: 1rem;
+            background: #eef2ff;
+            border-radius: 0 8px 8px 0;
+            padding: 0.75rem 1.25rem;
+            line-height: 1.5;
+        }
+
+        .topic-grid {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0.5rem 0.75rem;
+            margin-bottom: 2.5rem;
+            background: white;
+            padding: 0.9rem 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+        .topic-grid::-webkit-scrollbar { height: 4px; }
+        .topic-grid::-webkit-scrollbar-thumb { background: #b9c8e0; border-radius: 12px; }
+
+        .topic-grid span {
+            font-weight: 600;
+            color: #334155;
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .topic-btn {
+            background: transparent;
+            border: 1px solid #d1d9e6;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .topic-btn:hover {
+            background: #e6edf8;
+            border-color: #7c9bcf;
+            transform: translateY(-1px);
+        }
+
+        .topic-btn.active {
+            background: #1e3a6f;
+            border-color: #1e3a6f;
+            color: white;
+            box-shadow: 0 4px 8px rgba(30,58,111,0.2);
+        }
+
+        .question-section {
+            background: white;
+            border-radius: 28px;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            margin-top: 0.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0b1e33;
+        }
+
+        .section-header .badge {
+            background: #dbeafe;
+            color: #1e4a7a;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.7rem 1rem 0.7rem 1.2rem;
+            background: #fafcff;
+            border-radius: 14px;
+            border-left: 4px solid transparent;
+            transition: 0.15s;
+            line-height: 1.5;
+        }
+
+        .question-item:hover {
+            background: #f1f6fe;
+            border-left-color: #2563eb;
+        }
+
+        .q-number {
+            font-weight: 600;
+            color: #4b6a99;
+            min-width: 2rem;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .q-text {
+            color: #1e293b;
+            font-size: 0.98rem;
+        }
+
+        .q-text code {
+            background: #eef2f6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #1e3a5f;
+        }
+
+        .footer-note {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #dce2ec;
+            padding-top: 2rem;
+        }
+
+        .footer-note i {
+            color: #2563eb;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .question-section { padding: 1.5rem; }
+            .topic-grid { padding: 0.75rem 1rem; }
+            .section-header h2 { font-size: 1.4rem; }
+            .question-item { padding: 0.5rem 0.7rem; }
+            .badge { display: none; }
+            .header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <i class="fab fa-react"></i>
+            <i class="fab fa-js"></i>
+            React &amp; JavaScript
+        </h1>
+    </div>
+    <div class="subhead">
+        <i class="fas fa-list-check" style="margin-right: 0.6rem;"></i>
+        20 JavaScript topics + 25 React topics · 450+ questions · master frontend
+    </div>
+
+    <!-- TOPIC NAV -->
+    <div class="topic-grid" id="topicNav">
+        <span><i class="fas fa-tag"></i> Topics:</span>
+    </div>
+
+    <!-- QUESTION DISPLAY -->
+    <div class="question-section" id="questionSection">
+        <div class="section-header">
+            <h2 id="topicTitle">Loading…</h2>
+            <span class="badge" id="questionCount">0 questions</span>
+        </div>
+        <div class="question-list" id="questionList"></div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-brain"></i> Use as self-assessment · each topic contains 10 questions
+    </div>
+</div>
+
+<script>
+    // ----------------------------------------------------------------
+    // DATA: JAVASCRIPT (20 topics) + REACT (25 topics) · 10 questions each
+    // ----------------------------------------------------------------
+    const TOPICS = {
+
+        // ========== JAVASCRIPT ==========
+        'JS: Basics & Syntax': [
+            "What are the different data types in JavaScript?",
+            "Explain the difference between let, const, and var.",
+            "What is hoisting in JavaScript?",
+            "What is the difference between == and ===?",
+            "Explain the concept of closures in JavaScript.",
+            "What is the difference between null and undefined?",
+            "What are template literals and how are they used?",
+            "Explain the typeof operator and its limitations.",
+            "What is the difference between function declaration and function expression?",
+            "What are the different ways to create objects in JavaScript?"
+        ],
+        'JS: Functions & Scope': [
+            "What is the difference between function scope and block scope?",
+            "Explain how the 'this' keyword works in JavaScript.",
+            "What are arrow functions and how do they differ from regular functions?",
+            "What is the spread operator and how is it used?",
+            "Explain the rest parameter syntax in JavaScript.",
+            "What are default parameters in functions?",
+            "What is a higher-order function?",
+            "Explain the concept of currying in JavaScript.",
+            "What is the difference between call, apply, and bind?",
+            "What is IIFE (Immediately Invoked Function Expression) and when is it used?"
+        ],
+        'JS: Arrays & Objects': [
+            "What are the different array methods in JavaScript?",
+            "Explain the difference between map, filter, and reduce.",
+            "How do you clone an object in JavaScript?",
+            "What is the difference between Object.keys, Object.values, and Object.entries?",
+            "How do you check if an object has a specific property?",
+            "Explain the difference between array.forEach and array.map.",
+            "What is the purpose of the splice method?",
+            "How do you merge two arrays in JavaScript?",
+            "What are the different ways to iterate over an object?",
+            "Explain the concept of destructuring in arrays and objects."
+        ],
+        'JS: Prototypes & Inheritance': [
+            "What is prototypal inheritance in JavaScript?",
+            "What is the prototype chain and how does it work?",
+            "Explain the difference between __proto__ and prototype.",
+            "How do you implement inheritance in JavaScript?",
+            "What is the purpose of the Object.create method?",
+            "What are classes in JavaScript and how do they work?",
+            "Explain the difference between class and constructor function.",
+            "What is the instanceof operator and how does it work?",
+            "What is method overriding in JavaScript?",
+            "How do you add methods to built-in objects?"
+        ],
+        'JS: Asynchronous JavaScript': [
+            "What is the event loop in JavaScript?",
+            "Explain the difference between synchronous and asynchronous code.",
+            "What are callbacks and callback hell?",
+            "How do Promises work in JavaScript?",
+            "What is the difference between Promise.all and Promise.race?",
+            "How does async/await work and when should it be used?",
+            "What is the purpose of the fetch API?",
+            "How do you handle errors in async code?",
+            "What is the difference between setTimeout and setInterval?",
+            "What are microtasks and macrotasks in the event loop?"
+        ],
+        'JS: ES6+ Features': [
+            "What are the new features introduced in ES6?",
+            "Explain the let and const keywords and their benefits.",
+            "What are arrow functions and their advantages?",
+            "What is destructuring assignment?",
+            "Explain the spread and rest operators.",
+            "What are template literals and how are they used?",
+            "What are modules in ES6 and how do they work?",
+            "Explain the Map and Set data structures.",
+            "What are Symbols in JavaScript?",
+            "What are optional chaining and nullish coalescing operators?"
+        ],
+        'JS: DOM Manipulation': [
+            "How do you select DOM elements in JavaScript?",
+            "What is the difference between innerHTML and textContent?",
+            "How do you add event listeners to DOM elements?",
+            "What is event delegation and why is it useful?",
+            "What is the difference between event.target and event.currentTarget?",
+            "How do you create and append elements to the DOM?",
+            "What are the different node types in the DOM?",
+            "Explain the concept of the DOM tree.",
+            "How do you remove an element from the DOM?",
+            "What is the DocumentFragment and when would you use it?"
+        ],
+        'JS: Closures & Scope': [
+            "What is a closure and how does it work?",
+            "How does lexical scoping work in JavaScript?",
+            "What is the difference between global and local scope?",
+            "Explain the concept of the scope chain.",
+            "How do closures help in data privacy?",
+            "What is the module pattern and how does it relate to closures?",
+            "What is a memory leak and how can closures cause them?",
+            "How do you create private variables in JavaScript?",
+            "What is the difference between closure and IIFE?",
+            "How does variable scope work with loops?"
+        ],
+        'JS: Error Handling': [
+            "What are the different types of errors in JavaScript?",
+            "How do you handle errors using try-catch?",
+            "What is the purpose of the finally block?",
+            "How do you create custom error objects?",
+            "What is the difference between throw and return?",
+            "How do you handle asynchronous errors?",
+            "What is error propagation in JavaScript?",
+            "What are the best practices for error handling?",
+            "What is the purpose of the Error object?",
+            "How do you handle promise rejections globally?"
+        ],
+        'JS: Modern Features (ES2020+)': [
+            "What is the optional chaining operator (?.) and how does it work?",
+            "What is the nullish coalescing operator (??) and when is it used?",
+            "Explain the BigInt data type.",
+            "What is the globalThis object?",
+            "What are the new features in ES2020?",
+            "What is the Promise.allSettled method?",
+            "Explain the import() function for dynamic imports.",
+            "What is the matchAll method for strings?",
+            "What are the new string methods (trimStart, trimEnd)?",
+            "What is the new array method flatMap?"
+        ],
+        'JS: Events & Event Handling': [
+            "What is the event model in JavaScript?",
+            "What is the difference between capturing and bubbling phases?",
+            "How do you prevent default behavior of an event?",
+            "What is event.stopPropagation and when is it used?",
+            "How do you remove an event listener?",
+            "What are custom events and how do you create them?",
+            "What is the difference between mouseover and mouseenter?",
+            "How do you handle keyboard events?",
+            "What are touch events and how do they work?",
+            "How do you implement event delegation efficiently?"
+        ],
+        'JS: Promises & Async Patterns': [
+            "What is a Promise and what are its states?",
+            "How do you chain promises?",
+            "What is the purpose of Promise.resolve and Promise.reject?",
+            "How do you handle multiple promises concurrently?",
+            "What is the difference between Promise.finally and then/catch?",
+            "How do you convert a callback-based function to a promise?",
+            "What is the async/await pattern and how does it simplify async code?",
+            "How do you handle errors in async/await?",
+            "What is a promise cancellation pattern?",
+            "How do you implement a retry mechanism for failed async operations?"
+        ],
+        'JS: Web APIs & Browser APIs': [
+            "What is the localStorage API and how is it used?",
+            "What is the difference between localStorage and sessionStorage?",
+            "How do you use the fetch API to make HTTP requests?",
+            "What is the Geolocation API?",
+            "How do you use the History API?",
+            "What is the Web Worker API and when is it used?",
+            "How do you use the WebSocket API?",
+            "What is the Notification API?",
+            "How do you use the Canvas API?",
+            "What is the Intersection Observer API and how is it used?"
+        ],
+        'JS: Functional Programming': [
+            "What is functional programming and its principles?",
+            "What is immutability and why is it important?",
+            "Explain the concept of pure functions.",
+            "What are higher-order functions in JavaScript?",
+            "What is function composition?",
+            "How do you implement memoization in JavaScript?",
+            "What are the benefits of using map, filter, and reduce?",
+            "What is the difference between imperative and declarative programming?",
+            "What are side effects and how do you manage them?",
+            "How do you implement functional programming patterns in JavaScript?"
+        ],
+        'JS: Performance & Optimization': [
+            "What is debouncing and when is it used?",
+            "What is throttling and how is it different from debouncing?",
+            "How do you optimize DOM manipulation for performance?",
+            "What is the difference between reflow and repaint?",
+            "How do you optimize JavaScript performance?",
+            "What are memory leaks and how do you prevent them?",
+            "How do you use the browser's performance tools?",
+            "What is code splitting and how does it improve performance?",
+            "What is the difference between defer and async script loading?",
+            "How do you implement lazy loading for images?"
+        ],
+        'JS: Testing (Jest, Mocha)': [
+            "What are the different types of testing in JavaScript?",
+            "How do you write unit tests using Jest?",
+            "What is the difference between Jest and Mocha?",
+            "How do you test asynchronous code with Jest?",
+            "What are spies and mocks in testing?",
+            "How do you perform snapshot testing?",
+            "What is code coverage and how is it measured?",
+            "How do you test DOM interactions?",
+            "What is the purpose of beforeAll and afterAll hooks?",
+            "How do you test React components with React Testing Library?"
+        ],
+        'JS: Design Patterns': [
+            "What is the Module pattern in JavaScript?",
+            "What is the Singleton pattern and when is it used?",
+            "How do you implement the Observer pattern?",
+            "What is the Factory pattern?",
+            "What is the Decorator pattern?",
+            "What is the MVC pattern?",
+            "What is the Pub/Sub pattern?",
+            "How do you implement the Strategy pattern?",
+            "What is the Proxy pattern in JavaScript?",
+            "What is the Dependency Injection pattern?"
+        ],
+        'JS: Node.js vs Browser JS': [
+            "What are the key differences between Node.js and browser JavaScript?",
+            "How does the global object differ in Node.js?",
+            "What are the differences in module systems?",
+            "How does event handling differ in Node.js?",
+            "What is the purpose of the require function?",
+            "How do you handle file system operations in Node.js?",
+            "What is the difference between browser APIs and Node.js APIs?",
+            "How do you handle environment variables in both environments?",
+            "What are the security differences?",
+            "How does debugging differ between Node.js and the browser?"
+        ],
+        'JS: Bundlers & Build Tools': [
+            "What is Webpack and why is it used?",
+            "What is the difference between Webpack, Parcel, and Vite?",
+            "What are loaders in Webpack?",
+            "What are plugins in Webpack?",
+            "What is code splitting and how is it implemented?",
+            "What is tree shaking and how does it work?",
+            "What is the purpose of Babel in JavaScript development?",
+            "How does the development server work in build tools?",
+            "What are the benefits of using a module bundler?",
+            "How do you configure Webpack for a React application?"
+        ],
+        'JS: Security': [
+            "What is XSS and how do you prevent it?",
+            "What is CSRF and how do you prevent it?",
+            "How do you prevent SQL injection in JavaScript?",
+            "What is content security policy (CSP)?",
+            "How do you securely store sensitive data in the browser?",
+            "What is the Same-Origin policy and how does it work?",
+            "How do you implement input validation and sanitization?",
+            "What is the purpose of CORS?",
+            "How do you secure HTTP headers in a JavaScript application?",
+            "What are the best practices for JavaScript security?"
+        ],
+
+        // ========== REACT ==========
+        'React: Core Concepts': [
+            "What is React and what are its main features?",
+            "What is the difference between React and ReactDOM?",
+            "What are components in React?",
+            "Explain the difference between state and props.",
+            "What is JSX and how does it work?",
+            "What are keys in React and why are they important?",
+            "What is the virtual DOM and how does it work?",
+            "What are the lifecycle methods in React class components?",
+            "What is the difference between controlled and uncontrolled components?",
+            "What is the purpose of the React Fragment?"
+        ],
+        'React: Components & Props': [
+            "How do you create a functional component in React?",
+            "What is the difference between functional and class components?",
+            "How do you pass props to child components?",
+            "What is prop drilling and how do you avoid it?",
+            "What are default props and how are they used?",
+            "How do you validate props using PropTypes?",
+            "What is the children prop and how is it used?",
+            "How do you communicate between sibling components?",
+            "What is the difference between props and state?",
+            "How do you pass functions as props?"
+        ],
+        'React: State Management': [
+            "What is the useState hook and how does it work?",
+            "How do you manage state in class components?",
+            "What is the difference between useState and useReducer?",
+            "How do you update state based on previous state?",
+            "What are the rules of hooks in React?",
+            "How do you manage state in large applications?",
+            "What is React Context and when is it used?",
+            "What is the difference between local and global state?",
+            "How do you use the useReducer hook for complex state logic?",
+            "What are the best practices for state management?"
+        ],
+        'React: Hooks (Part 1)': [
+            "What are hooks in React and why were they introduced?",
+            "Explain the useEffect hook and its use cases.",
+            "What is the difference between useEffect and useLayoutEffect?",
+            "How do you handle side effects in React?",
+            "What is the useContext hook and how is it used?",
+            "What is the useRef hook and when is it used?",
+            "How do you use the useCallback hook?",
+            "What is the useMemo hook and when should you use it?",
+            "How do you create custom hooks?",
+            "What are the rules for using hooks?"
+        ],
+        'React: Hooks (Part 2)': [
+            "What is the useImperativeHandle hook and when is it used?",
+            "What is the useDebugValue hook?",
+            "How do you use the useTransition hook?",
+            "What is the useDeferredValue hook?",
+            "How do you use the useId hook?",
+            "What is the useSyncExternalStore hook?",
+            "How do you implement custom hooks for data fetching?",
+            "What is the difference between useMemo and useCallback?",
+            "How do you optimize performance using hooks?",
+            "What are the best practices for custom hooks?"
+        ],
+        'React: Forms & User Input': [
+            "How do you handle forms in React?",
+            "What is the difference between controlled and uncontrolled inputs?",
+            "How do you validate forms in React?",
+            "What are the best practices for form handling?",
+            "How do you handle multiple form inputs?",
+            "What is the useForm hook and how is it used?",
+            "How do you implement form submission in React?",
+            "What is the difference between onChange and onSubmit?",
+            "How do you reset a form in React?",
+            "What are the strategies for form validation libraries?"
+        ],
+        'React: Routing': [
+            "What is React Router and why is it used?",
+            "What are the different types of routers in React Router?",
+            "How do you define routes in React Router?",
+            "What is the difference between Link and NavLink?",
+            "How do you navigate programmatically in React?",
+            "What are route parameters and how do you access them?",
+            "What is the useNavigate hook?",
+            "How do you handle nested routes?",
+            "What is the useLocation hook and when is it used?",
+            "How do you implement protected routes?"
+        ],
+        'React: Styling': [
+            "What are the different ways to style React components?",
+            "What is CSS-in-JS and how does it work?",
+            "What is styled-components and how is it used?",
+            "What is the difference between CSS Modules and styled-components?",
+            "How do you use inline styles in React?",
+            "What are the advantages of using CSS preprocessors in React?",
+            "How do you implement responsive design in React?",
+            "What is the theme system in styled-components?",
+            "How do you use Tailwind CSS with React?",
+            "What are the best practices for styling React applications?"
+        ],
+        'React: Lifecycle Methods': [
+            "What are the lifecycle methods in React class components?",
+            "Explain the componentDidMount lifecycle method.",
+            "What is the purpose of componentDidUpdate?",
+            "When is componentWillUnmount called and why is it important?",
+            "How do you handle lifecycle events in functional components?",
+            "What is the useEffect hook and how does it replace lifecycle methods?",
+            "What is the difference between componentDidMount and useEffect?",
+            "How do you implement error boundaries in React?",
+            "What is the static getDerivedStateFromError method?",
+            "What are the best practices for lifecycle methods?"
+        ],
+        'React: Context API': [
+            "What is the Context API and why is it used?",
+            "How do you create a context in React?",
+            "What is the Provider and Consumer in Context API?",
+            "How do you consume context using the useContext hook?",
+            "What is the difference between Context and Redux?",
+            "How do you update context values?",
+            "What are the performance considerations with Context?",
+            "How do you use multiple contexts in a React application?",
+            "What is the use of the Context.displayName property?",
+            "What are the best practices for using Context API?"
+        ],
+        'React: Refs & DOM Manipulation': [
+            "What are refs in React and why are they used?",
+            "How do you create refs in functional and class components?",
+            "What is the difference between createRef and useRef?",
+            "How do you access DOM nodes using refs?",
+            "What is the forwardRef function and when is it used?",
+            "How do you use refs with custom components?",
+            "What is the useImperativeHandle hook?",
+            "How do you handle focus and text selection using refs?",
+            "What are the use cases for refs in React?",
+            "What are the best practices for using refs?"
+        ],
+        'React: Performance Optimization': [
+            "What are the performance optimization techniques in React?",
+            "What is React.memo and how does it work?",
+            "What is the useMemo hook and when should it be used?",
+            "What is the useCallback hook and why is it important?",
+            "What is the difference between useMemo and React.memo?",
+            "How do you implement lazy loading in React?",
+            "What is code splitting and how is it implemented?",
+            "How do you optimize re-renders in React?",
+            "What are the performance tools available in React?",
+            "What are the best practices for React performance?"
+        ],
+        'React: Rendering & Re-rendering': [
+            "What triggers re-rendering in React?",
+            "How does React determine when to re-render?",
+            "What is the reconciliation process in React?",
+            "What is the difference between render and commit phases?",
+            "How do you prevent unnecessary re-renders?",
+            "What is the key prop and how does it affect rendering?",
+            "What is the difference between shallow and deep rendering?",
+            "How does React handle updates to state and props?",
+            "What is the purpose of the React.StrictMode?",
+            "How do you debug rendering issues in React?"
+        ],
+        'React: Error Boundaries': [
+            "What are error boundaries in React?",
+            "How do you create an error boundary component?",
+            "What are the lifecycle methods used in error boundaries?",
+            "How do error boundaries help in error handling?",
+            "What are the limitations of error boundaries?",
+            "How do you implement fallback UI with error boundaries?",
+            "How do you handle errors in event handlers vs lifecycle methods?",
+            "What is the difference between error boundaries and try-catch?",
+            "How do you log errors from error boundaries?",
+            "What are the best practices for error boundaries?"
+        ],
+        'React: Code Splitting & Lazy Loading': [
+            "What is code splitting in React and why is it important?",
+            "How do you implement code splitting using React.lazy?",
+            "What is the Suspense component and how is it used?",
+            "What is the difference between React.lazy and dynamic import?",
+            "How do you handle loading states with Suspense?",
+            "What is route-based code splitting?",
+            "How does code splitting affect performance?",
+            "What are the limitations of React.lazy?",
+            "How do you implement error handling with Suspense?",
+            "What are the best practices for code splitting?"
+        ],
+        'React: HOCs & Render Props': [
+            "What are Higher Order Components (HOCs) in React?",
+            "How do you create a HOC?",
+            "What are the use cases for HOCs?",
+            "What is the render prop pattern in React?",
+            "What is the difference between HOCs and render props?",
+            "How do you implement a render prop component?",
+            "What are the advantages and disadvantages of HOCs?",
+            "How do you compose HOCs?",
+            "What is the function of the children prop in render props?",
+            "What are the alternatives to HOCs in modern React?"
+        ],
+        'React: Server-Side Rendering (SSR)': [
+            "What is Server-Side Rendering (SSR) in React?",
+            "What are the benefits of SSR?",
+            "What is the difference between SSR and Client-Side Rendering (CSR)?",
+            "What is hydration in React?",
+            "How do you implement SSR with Next.js?",
+            "What are the challenges of SSR?",
+            "What is the difference between SSR and Static Site Generation (SSG)?",
+            "How does SSR affect performance and SEO?",
+            "What is the use of the renderToString method?",
+            "What are the best practices for SSR in React?"
+        ],
+        'React: State Management (Redux)': [
+            "What is Redux and why is it used in React?",
+            "What are the core principles of Redux?",
+            "What is the difference between Redux and Context API?",
+            "What are actions and reducers in Redux?",
+            "What is a store in Redux and what is its purpose?",
+            "How do you connect React components to Redux?",
+            "What is the use of middleware in Redux?",
+            "What is the difference between Redux and Redux Toolkit?",
+            "How do you handle async actions in Redux?",
+            "What are the best practices for using Redux?"
+        ],
+        'React: Testing React Apps': [
+            "What are the testing tools for React applications?",
+            "What is React Testing Library and why is it used?",
+            "What is the difference between React Testing Library and Enzyme?",
+            "How do you test React components?",
+            "What is the purpose of the render function in testing?",
+            "How do you test user interactions in React?",
+            "What is the fireEvent and userEvent in testing?",
+            "How do you test async code in React?",
+            "What is the role of jest-dom matchers?",
+            "What are the best practices for testing React apps?"
+        ],
+        'React: Hooks (Advanced)': [
+            "What is the difference between useRef and useState?",
+            "How do you create a custom hook for API calls?",
+            "What is the use of the useReducer hook?",
+            "What is the use of the useImperativeHandle hook?",
+            "How do you implement the usePrevious hook?",
+            "What is the purpose of the useDebugValue hook?",
+            "How do you create hooks that depend on other hooks?",
+            "What are the pitfalls of using hooks?",
+            "How do you test custom hooks?",
+            "What are the best practices for creating custom hooks?"
+        ],
+        'React: Next.js Basics': [
+            "What is Next.js and how does it differ from React?",
+            "What are the key features of Next.js?",
+            "How do you create pages in Next.js?",
+            "What is the difference between getStaticProps and getServerSideProps?",
+            "What is the purpose of the _app.js file in Next.js?",
+            "How do you handle routing in Next.js?",
+            "What is the use of the Link component in Next.js?",
+            "How do you implement API routes in Next.js?",
+            "What are the benefits of using Next.js for SSR?",
+            "What is the difference between Next.js and Gatsby?"
+        ],
+        'React: Portals & Refs': [
+            "What are portals in React and when are they used?",
+            "How do you create a portal in React?",
+            "What is the purpose of the createPortal method?",
+            "How do portals affect event bubbling?",
+            "What are the use cases for portals?",
+            "What is the difference between portals and regular rendering?",
+            "How do you use refs with portals?",
+            "What are the limitations of portals?",
+            "How do you implement a modal using portals?",
+            "What are the best practices for using portals?"
+        ],
+        'React: Accessibility (a11y)': [
+            "What is accessibility in React and why is it important?",
+            "What are the common accessibility issues in React apps?",
+            "How do you implement ARIA attributes in React?",
+            "What is the purpose of the role attribute?",
+            "How do you make forms accessible in React?",
+            "What are the keyboard navigation considerations in React?",
+            "How do you manage focus in React?",
+            "What is the use of the aria-label attribute?",
+            "How do you test accessibility in React?",
+            "What are the best practices for accessibility in React?"
+        ],
+        'React: Concurrent Mode & Suspense': [
+            "What is Concurrent Mode in React and how does it work?",
+            "What is the purpose of Suspense in React?",
+            "How does Suspense handle data fetching?",
+            "What is the difference between concurrent and synchronous rendering?",
+            "What are the benefits of Concurrent Mode?",
+            "How do you use the startTransition API?",
+            "What is the useTransition hook?",
+            "How does Suspense integrate with React.lazy?",
+            "What are the limitations of Concurrent Mode?",
+            "What are the best practices for using Suspense?"
+        ],
+        'React: Security Considerations': [
+            "What are the security vulnerabilities in React applications?",
+            "How do you prevent XSS attacks in React?",
+            "What is the danger of using dangerouslySetInnerHTML?",
+            "How do you implement security best practices in React?",
+            "What is the role of Content Security Policy in React?",
+            "How do you protect against CSRF attacks in React?",
+            "What is the importance of sanitizing user input?",
+            "How do you securely handle authentication in React?",
+            "What are the common security pitfalls in React?",
+            "What are the best practices for securing React applications?"
+        ],
+        'React: Deployment & Optimization': [
+            "How do you build a React application for production?",
+            "What are the build optimization techniques for React?",
+            "How do you optimize images in React applications?",
+            "What is the process of deploying a React app?",
+            "How do you handle environment variables in React?",
+            "What are the deployment strategies for React?",
+            "How do you implement caching in React?",
+            "What is the purpose of the build folder?",
+            "How do you optimize bundle size in React?",
+            "What are the best practices for React deployment?"
+        ]
+    };
+
+    // ---------- RENDER ----------
+    const topicNav = document.getElementById('topicNav');
+    const topicTitle = document.getElementById('topicTitle');
+    const questionCount = document.getElementById('questionCount');
+    const questionList = document.getElementById('questionList');
+
+    const topicNames = Object.keys(TOPICS);
+    let activeTopic = topicNames[0];
+
+    function renderNav() {
+        const label = topicNav.querySelector('span');
+        topicNav.innerHTML = '';
+        topicNav.appendChild(label);
+        topicNames.forEach(name => {
+            const btn = document.createElement('button');
+            btn.className = 'topic-btn' + (name === activeTopic ? ' active' : '');
+            btn.textContent = name;
+            btn.dataset.topic = name;
+            btn.addEventListener('click', () => {
+                activeTopic = name;
+                renderNav();
+                renderQuestions(name);
+            });
+            topicNav.appendChild(btn);
+        });
+    }
+
+    function renderQuestions(topicName) {
+        const qs = TOPICS[topicName] || [];
+        topicTitle.textContent = topicName;
+        questionCount.textContent = qs.length + ' questions';
+
+        if (qs.length === 0) {
+            questionList.innerHTML = `<div style="padding:2rem;text-align:center;color:#64748b;">No questions for this topic.</div>`;
+            return;
+        }
+
+        let html = '';
+        qs.forEach((q, idx) => {
+            const num = idx + 1;
+            html += `
+                <div class="question-item">
+                    <span class="q-number">${num}.</span>
+                    <span class="q-text">${q}</span>
+                </div>
+            `;
+        });
+        questionList.innerHTML = html;
+    }
+
+    // init
+    renderNav();
+    renderQuestions(activeTopic);
+</script>
+</body>
+</html>

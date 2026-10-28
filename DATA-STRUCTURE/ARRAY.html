@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrays · Mastery Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-panel: #0e1420;
+            --bg-card: #121927;
+            --bg-cell: #1a2333;
+            --border: #212c40;
+            --border-soft: #182236;
+            --text: #d8dee9;
+            --text-dim: #9aa9bb;
+            --text-faint: #5a6a7e;
+            --teal: #4fd8c4;
+            --teal-dim: rgba(79,216,196,0.14);
+            --amber: #f6ad55;
+            --amber-dim: rgba(246,173,85,0.14);
+            --violet: #b394f6;
+            --violet-dim: rgba(179,148,246,0.14);
+            --green: #4ade80;
+            --red: #f87171;
+            --pink: #f472b6;
+            --pink-dim: rgba(244,114,182,0.14);
+            --orange: #fb923c;
+            --orange-dim: rgba(251,146,60,0.14);
+            --font-d: 'Space Grotesk', sans-serif;
+            --font-b: 'Inter', sans-serif;
+            --font-m: 'JetBrains Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(ellipse 900px 500px at 15% -10%, rgba(79,216,196,0.06), transparent),
+            radial-gradient(ellipse 700px 500px at 100% 20%, rgba(179,148,246,0.05), transparent),
+            var(--bg);
+            color: var(--text);
+            font-family: var(--font-b);
+            padding: 2.5rem 1.5rem 5rem;
+            line-height: 1.6;
+        }
+        .wrap { max-width: 1200px; margin: 0 auto; }
+        ::selection { background: var(--teal-dim); color: var(--teal); }
+
+        .hero {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border-soft);
+            margin-bottom: 2.5rem;
+        }
+        .eyebrow {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--teal); }
+        .hero h1 {
+            font-family: var(--font-d);
+            font-weight: 700;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+        .hero h1 span { color: var(--text-faint); }
+        .hero p.lede {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin-bottom: 1.6rem;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-panel);
+        }
+        .stat b { color: var(--text); font-weight: 600; }
+
+        .sec {
+            margin: 3.5rem 0 1.4rem;
+        }
+        .sec-num {
+            font-family: var(--font-m);
+            color: var(--text-faint);
+            font-size: 0.8rem;
+        }
+        .sec h2 {
+            font-family: var(--font-d);
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--text);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .sec .desc {
+            color: var(--text-dim);
+            margin-top: 0.4rem;
+            max-width: 680px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .callout {
+            margin-top: 1rem;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            background: var(--teal-dim);
+            border: 1px solid rgba(79,216,196,0.25);
+            font-size: 0.92rem;
+            color: var(--text);
+        }
+        .callout b { color: var(--teal); }
+
+        .code-snippet {
+            background: #0d1a28;
+            color: #c8dfff;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-family: var(--font-m);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            margin: 0.6rem 0;
+        }
+        .code-snippet .comment { color: #6a8faa; }
+        .code-snippet .keyword { color: var(--violet); }
+        .code-snippet .string { color: var(--green); }
+        .code-snippet .type { color: var(--teal); }
+
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem 1.2rem;
+            margin-top: 0.4rem;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--bg-panel);
+            padding: 0.4rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.92rem;
+            border: 1px solid var(--border-soft);
+        }
+        .benefit-item i { color: var(--teal); width: 1.3rem; }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 960px) {
+            .pattern-grid { grid-template-columns: 1fr; }
+        }
+
+        .pattern-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            border-top: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .pattern-card:hover { transform: translateY(-2px); }
+        .pattern-card.p1 { border-top-color: var(--teal); }
+        .pattern-card.p2 { border-top-color: var(--amber); }
+        .pattern-card.p3 { border-top-color: var(--violet); }
+        .pattern-card.p4 { border-top-color: var(--pink); }
+        .pattern-card.p5 { border-top-color: var(--green); }
+        .pattern-card.p6 { border-top-color: var(--orange); }
+
+        .pattern-card .pname {
+            font-family: var(--font-d);
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+        .pattern-card .pname .tag {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            color: var(--text-dim);
+            margin-left: 0.5rem;
+        }
+        .pattern-card .pdesc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+        .pattern-card .pcode {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem;
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin: 0.4rem 0;
+            overflow-x: auto;
+        }
+        .pattern-card .puse {
+            font-size: 0.8rem;
+            color: var(--text-faint);
+            margin-top: 0.4rem;
+        }
+        .pattern-card .puse b { color: var(--text); }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.1rem;
+            margin-top: 1.5rem;
+        }
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            border-left: 3px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+        .problem-card:hover { transform: translateY(-2px); }
+        .problem-card.g1 { border-left-color: var(--teal); }
+        .problem-card.g2 { border-left-color: var(--amber); }
+        .problem-card.g3 { border-left-color: var(--violet); }
+        .problem-card.g4 { border-left-color: var(--pink); }
+        .problem-card.g5 { border-left-color: var(--orange); }
+
+        .problem-card .phead {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .problem-card .pnum {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .problem-card .pname {
+            font-family: var(--font-d);
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-top: 2px;
+        }
+        .problem-card .pnum-id {
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .problem-card .pdesc {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            margin: 0.7rem 0;
+        }
+        .problem-card .papproach {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-soft);
+            margin-bottom: 0.6rem;
+        }
+        .problem-card .papproach b { color: var(--text); }
+        .problem-card .papproach .pattern-tag {
+            display: inline-block;
+            background: var(--teal-dim);
+            color: var(--teal);
+            padding: 0.1rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: var(--font-m);
+            margin-bottom: 0.4rem;
+        }
+        .problem-card .ppitfall {
+            font-size: 0.82rem;
+            color: #f8b4ac;
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            padding: 0.6rem 0.85rem;
+            margin-bottom: 0.7rem;
+        }
+        .problem-card .ppitfall b { color: var(--red); }
+        .pfoot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .complexity {
+            font-family: var(--font-m);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+        }
+        .diff-easy {
+            color: var(--green);
+            background: rgba(74,222,128,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-medium {
+            color: var(--amber);
+            background: rgba(246,173,85,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .diff-hard {
+            color: var(--red);
+            background: rgba(248,113,113,0.12);
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 2.5rem 0 1.2rem;
+        }
+        .group-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .group-head h3 {
+            font-family: var(--font-d);
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+        .group-head .count {
+            font-family: var(--font-m);
+            font-size: 0.78rem;
+            color: var(--text-faint);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 720px) {
+            .mistake-grid { grid-template-columns: 1fr; }
+        }
+        .mistake {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border-left: 3px solid var(--red);
+        }
+        .mistake .mtitle {
+            font-family: var(--font-m);
+            font-weight: 600;
+            color: #f8b4ac;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .mistake p {
+            font-size: 0.87rem;
+            color: var(--text-dim);
+        }
+        .mistake .fix {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--green);
+        }
+        .mistake .fix b { font-family: var(--font-m); }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-panel);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--teal), var(--violet));
+            transition: width 0.3s ease;
+        }
+        .progress-label {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            user-select: none;
+        }
+        .check-item:hover { border-color: var(--text-faint); }
+        .check-item.done {
+            border-color: rgba(74,222,128,0.35);
+            background: rgba(74,222,128,0.06);
+        }
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid var(--text-faint);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--bg);
+        }
+        .check-item.done .check-box {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .check-item span.label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .check-item.done span.label {
+            color: var(--text);
+            text-decoration: line-through;
+            text-decoration-color: var(--text-faint);
+        }
+        .check-item .tier {
+            margin-left: auto;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 1rem;
+        }
+        .cheat-table th {
+            text-align: left;
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cheat-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-soft);
+            color: var(--text-dim);
+            vertical-align: top;
+        }
+        .cheat-table tr:last-child td { border-bottom: none; }
+        .cheat-table .lbl {
+            font-family: var(--font-d);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3.5rem;
+            color: var(--text-faint);
+            font-size: 0.8rem;
+            font-family: var(--font-m);
+            border-top: 1px solid var(--border-soft);
+            padding-top: 2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+        .inline-tag {
+            background: var(--border);
+            border-radius: 30px;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+        .meta-chip {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+        .recog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 720px) {
+            .recog-grid { grid-template-columns: 1fr; }
+        }
+        .recog-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-panel);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+        }
+        .recog-item .hint { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .recog-item .reason { color: var(--text-dim); font-size: 0.85rem; }
+        .recog-item i { color: var(--teal); width: 1.5rem; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="eyebrow">Data Structures · Foundation</div>
+        <h1>Arrays <span>— from recognition to mastery</span></h1>
+        <p class="lede">Arrays are the foundation of most algorithmic problems — master the patterns, and you'll solve 80% of problems faster. This guide breaks down every core pattern with approach, code, and the pitfall that actually trips people up.</p>
+        <div class="stat-row">
+            <div class="stat">⚡ <b>O(1)</b> access</div>
+            <div class="stat">💾 <b>Contiguous</b> memory</div>
+            <div class="stat"><b>6</b> core patterns</div>
+            <div class="stat"><b>20</b> problems</div>
+        </div>
+    </div>
+
+    <!-- 1. WHAT IS AN ARRAY -->
+    <div class="sec">
+        <div class="sec-num">01</div>
+        <h2>What is an Array?</h2>
+        <p class="desc">An <b>Array</b> is a linear data structure that stores a collection of elements at contiguous memory locations. Each element can be accessed directly using its index (0-based in most languages).</p>
+    </div>
+    <div class="grid-2">
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-code" style="margin-right:6px;"></i> Declaration</span>
+            <div class="code-snippet"><span class="comment">// Java</span>
+                <span class="type">int</span>[] arr = <span class="keyword">new int</span>[5];
+                <span class="type">int</span>[] arr = {1, 2, 3, 4, 5};
+                ArrayList&lt;<span class="type">Integer</span>&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();
+
+                <span class="comment">// Python</span>
+                arr = [1, 2, 3, 4, 5]</div>
+            <div style="margin-top:0.8rem; color:var(--text-dim); font-size:0.9rem;">
+                <i class="fas fa-check-circle" style="color:var(--green);"></i> O(1) random access
+                <span style="margin-left:1rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> Cache-friendly</span>
+                <span style="margin-left:1rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> Contiguous memory</span>
+            </div>
+        </div>
+        <div class="card">
+            <span class="inline-tag"><i class="fas fa-table" style="margin-right:6px;"></i> Complexity Cheat Sheet</span>
+            <table style="width:100%; margin-top:0.8rem; font-size:0.85rem; border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--border-soft);"><td style="padding:0.3rem 0;">Access by index</td><td style="color:var(--green);">O(1)</td></tr>
+                <tr style="border-bottom:1px solid var(--border-soft);"><td style="padding:0.3rem 0;">Search (unsorted)</td><td style="color:var(--amber);">O(n)</td></tr>
+                <tr style="border-bottom:1px solid var(--border-soft);"><td style="padding:0.3rem 0;">Search (sorted)</td><td style="color:var(--green);">O(log n)</td></tr>
+                <tr style="border-bottom:1px solid var(--border-soft);"><td style="padding:0.3rem 0;">Insert at end</td><td style="color:var(--green);">O(1) amortized</td></tr>
+                <tr><td style="padding:0.3rem 0;">Insert at beginning</td><td style="color:var(--red);">O(n)</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. THE 6 CORE PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">02</div>
+        <h2>The 6 Core Patterns of Arrays</h2>
+        <p class="desc">Master these six patterns and you can solve 90% of array problems.</p>
+    </div>
+
+    <div class="pattern-grid">
+        <!-- Pattern 1: Two Pointers -->
+        <div class="pattern-card p1">
+            <div class="pname">Two Pointers <span class="tag">Opposite / Fast-Slow / Sliding</span></div>
+            <div class="pdesc">Use two pointers to traverse the array from different positions.</div>
+            <div class="pcode"><span class="comment">// Opposite ends</span>
+                <span class="type">int</span> L = 0, R = n - 1;
+                <span class="keyword">while</span> (L < R) {
+                <span class="comment">// process arr[L] and arr[R]</span>
+                <span class="keyword">if</span> (condition) L++;
+                <span class="keyword">else</span> R--;
+                }</div>
+            <div class="puse"><b>Use for:</b> Finding pairs, reversing, partitioning, palindrome</div>
+        </div>
+
+        <!-- Pattern 2: Prefix Sum -->
+        <div class="pattern-card p2">
+            <div class="pname">Prefix Sum <span class="tag">Cumulative</span></div>
+            <div class="pdesc">Precompute cumulative sums for O(1) range queries.</div>
+            <div class="pcode"><span class="type">int</span>[] prefix = <span class="keyword">new int</span>[n];
+                prefix[0] = arr[0];
+                <span class="keyword">for</span> (<span class="type">int</span> i = 1; i < n; i++) {
+                prefix[i] = prefix[i-1] + arr[i];
+                }
+                <span class="comment">// sum[L..R] = prefix[R] - prefix[L-1]</span></div>
+            <div class="puse"><b>Use for:</b> Subarray sums, range queries, cumulative calculations</div>
+        </div>
+
+        <!-- Pattern 3: Kadane's Algorithm -->
+        <div class="pattern-card p3">
+            <div class="pname">Kadane's Algorithm <span class="tag">Max Subarray</span></div>
+            <div class="pdesc">Track current max and global max in a single pass.</div>
+            <div class="pcode"><span class="type">int</span> currMax = arr[0], globalMax = arr[0];
+                <span class="keyword">for</span> (<span class="type">int</span> i = 1; i < n; i++) {
+                currMax = Math.max(arr[i], currMax + arr[i]);
+                globalMax = Math.max(globalMax, currMax);
+                }
+                <span class="keyword">return</span> globalMax;</div>
+            <div class="puse"><b>Use for:</b> Maximum subarray sum, maximum product subarray</div>
+        </div>
+
+        <!-- Pattern 4: Cyclic Sort -->
+        <div class="pattern-card p4">
+            <div class="pname">Cyclic Sort <span class="tag">1 to n</span></div>
+            <div class="pdesc">Place each element at its correct index (arr[i] = i+1).</div>
+            <div class="pcode"><span class="keyword">for</span> (<span class="type">int</span> i = 0; i < n; i++) {
+                <span class="keyword">while</span> (arr[i] != i + 1 &&
+                arr[i] != arr[arr[i] - 1]) {
+                swap(arr, i, arr[i] - 1);
+                }
+                }</div>
+            <div class="puse"><b>Use for:</b> Missing numbers, duplicates, arrays with 1 to n</div>
+        </div>
+
+        <!-- Pattern 5: Dutch National Flag -->
+        <div class="pattern-card p5">
+            <div class="pname">Dutch National Flag <span class="tag">3-Way Partition</span></div>
+            <div class="pdesc">Sort arrays with three values (0, 1, 2) using three pointers.</div>
+            <div class="pcode"><span class="type">int</span> low = 0, mid = 0, high = n - 1;
+                <span class="keyword">while</span> (mid <= high) {
+                <span class="keyword">switch</span> (arr[mid]) {
+                <span class="keyword">case</span> 0: swap(arr, low++, mid++); <span class="keyword">break</span>;
+                <span class="keyword">case</span> 1: mid++; <span class="keyword">break</span>;
+                <span class="keyword">case</span> 2: swap(arr, mid, high--); <span class="keyword">break</span>;
+                }
+                }</div>
+            <div class="puse"><b>Use for:</b> Sorting 0s, 1s, 2s; three-way partitioning</div>
+        </div>
+
+        <!-- Pattern 6: Rotation & Reversal -->
+        <div class="pattern-card p6">
+            <div class="pname">Rotation & Reversal <span class="tag">In-place</span></div>
+            <div class="pdesc">Reverse entire array, then reverse parts to rotate.</div>
+            <div class="pcode"><span class="comment">// Rotate right by k</span>
+                reverse(arr, 0, n - 1);
+                reverse(arr, 0, k - 1);
+                reverse(arr, k, n - 1);
+
+                <span class="comment">// Reverse helper</span>
+                <span class="keyword">void</span> reverse(arr, L, R) {
+                <span class="keyword">while</span> (L < R) swap(arr, L++, R--);
+                }</div>
+            <div class="puse"><b>Use for:</b> Array rotation, reversing, next permutation</div>
+        </div>
+    </div>
+
+    <!-- 3. HOW TO RECOGNIZE PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">03</div>
+        <h2>How to Recognize Array Patterns</h2>
+        <p class="desc">These clues in problem statements should immediately make you think of a specific pattern.</p>
+    </div>
+    <div class="recog-grid">
+        <div class="recog-item"><i class="fas fa-handshake"></i><span class="hint">"Find pair/triplet with sum"</span><span class="reason">→ Two Pointers (opposite ends)</span></div>
+        <div class="recog-item"><i class="fas fa-calculator"></i><span class="hint">"Subarray sum equals K"</span><span class="reason">→ Prefix Sum + HashMap</span></div>
+        <div class="recog-item"><i class="fas fa-chart-line"></i><span class="hint">"Maximum subarray sum"</span><span class="reason">→ Kadane's Algorithm</span></div>
+        <div class="recog-item"><i class="fas fa-sort-numeric-up"></i><span class="hint">"Numbers 1 to n, find missing/duplicate"</span><span class="reason">→ Cyclic Sort</span></div>
+        <div class="recog-item"><i class="fas fa-palette"></i><span class="hint">"Sort 0s, 1s, 2s"</span><span class="reason">→ Dutch National Flag</span></div>
+        <div class="recog-item"><i class="fas fa-rotate-right"></i><span class="hint">"Rotate array by k"</span><span class="reason">→ Reversal technique</span></div>
+        <div class="recog-item"><i class="fas fa-arrows-left-right"></i><span class="hint">"Longest/shortest subarray with condition"</span><span class="reason">→ Sliding Window</span></div>
+        <div class="recog-item"><i class="fas fa-chart-simple"></i><span class="hint">"Buy and sell stock"</span><span class="reason">→ Single pass tracking min/max</span></div>
+        <div class="recog-item"><i class="fas fa-layer-group"></i><span class="hint">"Merge intervals"</span><span class="reason">→ Sort + merge</span></div>
+        <div class="recog-item"><i class="fas fa-arrow-right"></i><span class="hint">"Next permutation"</span><span class="reason">→ Find pivot + reverse</span></div>
+    </div>
+
+    <!-- 4. COMMON MISTAKES -->
+    <div class="sec">
+        <div class="sec-num">04</div>
+        <h2>Common Mistakes</h2>
+        <p class="desc">If your array solution is wrong, it's almost always one of these things.</p>
+    </div>
+    <div class="mistake-grid">
+        <div class="mistake">
+            <div class="mtitle">Index out of bounds</div>
+            <p>Accessing arr[i] when i is < 0 or ≥ n.</p>
+            <div class="fix">Fix: Check <b>i >= 0 && i < n</b> before accessing.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Off-by-one errors</div>
+            <p>Using L < R vs L <= R, or forgetting the last element.</p>
+            <div class="fix">Fix: Be explicit about <b>inclusive vs exclusive</b> ranges.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Modifying array while iterating</div>
+            <p>Changing the array while iterating over it can skip elements.</p>
+            <div class="fix">Fix: Use a <b>copy</b> or track changes separately.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Not handling empty array</div>
+            <p>Solutions fail when n == 0.</p>
+            <div class="fix">Fix: Always handle the <b>empty array</b> edge case first.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Integer overflow in sum</div>
+            <p>Sum of large numbers can exceed int max value.</p>
+            <div class="fix">Fix: Use <b>long</b> for sums in prefix and Kadane.</div>
+        </div>
+        <div class="mistake">
+            <div class="mtitle">Assuming array is sorted</div>
+            <p>Many solutions assume sorted input when it's not.</p>
+            <div class="fix">Fix: <b>Sort first</b> if the pattern requires it.</div>
+        </div>
+    </div>
+
+    <!-- 5. PROBLEMS WITH APPROACH PATTERNS -->
+    <div class="sec">
+        <div class="sec-num">05</div>
+        <h2>All 20 Problems — Approach Patterns</h2>
+        <p class="desc">Each card shows the <b>approach pattern</b> (not the full solution) and the common pitfall for that exact problem.</p>
+    </div>
+
+    <!-- Group A: Two Pointers -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--teal)"></div>
+        <h3>Group A — Two Pointers</h3>
+        <span class="count">5 problems</span>
+    </div>
+    <div class="problem-grid" id="group-a"></div>
+
+    <!-- Group B: Prefix Sum & Kadane -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--amber)"></div>
+        <h3>Group B — Prefix Sum & Kadane</h3>
+        <span class="count">5 problems</span>
+    </div>
+    <div class="problem-grid" id="group-b"></div>
+
+    <!-- Group C: Cyclic Sort & Dutch Flag -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--violet)"></div>
+        <h3>Group C — Cyclic Sort & Dutch Flag</h3>
+        <span class="count">4 problems</span>
+    </div>
+    <div class="problem-grid" id="group-c"></div>
+
+    <!-- Group D: Reversal & Merge -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--pink)"></div>
+        <h3>Group D — Reversal & Merge</h3>
+        <span class="count">3 problems</span>
+    </div>
+    <div class="problem-grid" id="group-d"></div>
+
+    <!-- Group E: Advanced Patterns -->
+    <div class="group-head">
+        <div class="group-dot" style="background:var(--orange)"></div>
+        <h3>Group E — Advanced Patterns</h3>
+        <span class="count">3 problems</span>
+    </div>
+    <div class="problem-grid" id="group-e"></div>
+
+    <!-- 6. MASTERY PATH -->
+    <div class="sec">
+        <div class="sec-num">06</div>
+        <h2>Suggested Practice Order</h2>
+        <p class="desc">Work top to bottom — each tier assumes you're comfortable with the one above it. Click a problem once you can solve it without looking at the approach.</p>
+    </div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-label" id="progress-label">0 / 20 mastered</div>
+        </div>
+        <div class="checklist" id="checklist"></div>
+    </div>
+
+    <!-- 7. CHEAT SHEET -->
+    <div class="sec">
+        <div class="sec-num">07</div>
+        <h2>Pattern Quick Reference</h2>
+    </div>
+    <div class="card">
+        <table class="cheat-table">
+            <thead><tr><th>Pattern</th><th>Use For</th><th>Key Idea</th></tr></thead>
+            <tbody>
+            <tr><td class="lbl" style="color:var(--teal);">Two Pointers</td><td>Pairs, palindrome, reverse</td><td>Two pointers moving toward each other or same direction</td></tr>
+            <tr><td class="lbl" style="color:var(--amber);">Prefix Sum</td><td>Subarray sums, range queries</td><td>Precompute cumulative sums</td></tr>
+            <tr><td class="lbl" style="color:var(--violet);">Kadane's Algorithm</td><td>Max subarray sum/product</td><td>Track current and global max</td></tr>
+            <tr><td class="lbl" style="color:var(--pink);">Cyclic Sort</td><td>Missing/duplicate in 1..n</td><td>Place each element at correct index</td></tr>
+            <tr><td class="lbl" style="color:var(--green);">Dutch Flag</td><td>Sort 0s, 1s, 2s</td><td>Three-way partitioning</td></tr>
+            <tr><td class="lbl" style="color:var(--orange);">Reversal</td><td>Rotation, reverse</td><td>Reverse entire array, then parts</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>Arrays · Mastery Notes — master the patterns, solve any problem</footer>
+</div>
+
+<script>
+    // ============ PROBLEM DATA ============
+    const problems = {
+        a: [
+            {
+                num: "1",
+                name: "Two Sum",
+                desc: "Find two indices such that nums[i] + nums[j] == target.",
+                approach: "Use HashMap to store value → index. For each element, check if complement exists in map.",
+                pattern: "HashMap + One Pass",
+                pitfall: "Using the same element twice — ensure complement is not the current index.",
+                difficulty: "Easy"
+            },
+            {
+                num: "11",
+                name: "Container With Most Water",
+                desc: "Find two lines that form a container holding the most water.",
+                approach: "Two pointers at opposite ends. Move the pointer at the shorter line inward.",
+                pattern: "Two Pointers (Opposite)",
+                pitfall: "Moving both pointers each step — only move the shorter one to potentially find a better answer.",
+                difficulty: "Medium"
+            },
+            {
+                num: "15",
+                name: "3Sum",
+                desc: "Find all unique triplets that sum to zero.",
+                approach: "Sort array. Fix one pointer, use two pointers on the remaining portion. Skip duplicates.",
+                pattern: "Two Pointers + Sorting",
+                pitfall: "Forgetting to skip duplicates for the fixed pointer, not just for L and R.",
+                difficulty: "Medium"
+            },
+            {
+                num: "283",
+                name: "Move Zeroes",
+                desc: "Move all zeroes to the end while preserving relative order of non-zero elements.",
+                approach: "Fast & Slow pointers. Slow marks where to place next non-zero. Fast scans for non-zero values.",
+                pattern: "Two Pointers (Fast & Slow)",
+                pitfall: "Swapping unconditionally instead of only when a non-zero is found.",
+                difficulty: "Easy"
+            },
+            {
+                num: "26",
+                name: "Remove Duplicates from Sorted Array",
+                desc: "Remove duplicates in-place from a sorted array and return the new length.",
+                approach: "Slow pointer tracks the last unique position. Fast pointer scans for new values.",
+                pattern: "Two Pointers (Fast & Slow)",
+                pitfall: "Comparing nums[fast] to nums[fast-1] instead of nums[slow].",
+                difficulty: "Easy"
+            }
+        ],
+        b: [
+            {
+                num: "53",
+                name: "Maximum Subarray",
+                desc: "Find the maximum sum of a contiguous subarray.",
+                approach: "Kadane's Algorithm: track currMax = max(arr[i], currMax + arr[i]) and globalMax.",
+                pattern: "Kadane's Algorithm",
+                pitfall: "Not handling all negative numbers — globalMax should start with arr[0].",
+                difficulty: "Medium"
+            },
+            {
+                num: "121",
+                name: "Best Time to Buy and Sell Stock",
+                desc: "Find the maximum profit from buying and selling one stock.",
+                approach: "Single pass: track min price seen so far, calculate profit for each day.",
+                pattern: "Single Pass (Min Tracking)",
+                pitfall: "Trying to sell before buying — you must buy first.",
+                difficulty: "Easy"
+            },
+            {
+                num: "560",
+                name: "Subarray Sum Equals K",
+                desc: "Count the number of subarrays with sum equal to k.",
+                approach: "Use prefix sum map: store frequency of each prefix sum. For each sum, check if (sum - k) exists.",
+                pattern: "Prefix Sum + HashMap",
+                pitfall: "Forgetting to initialize the map with (0,1) — handles subarrays starting at index 0.",
+                difficulty: "Medium"
+            },
+            {
+                num: "238",
+                name: "Product of Array Except Self",
+                desc: "Return an array where each element is the product of all other elements.",
+                approach: "Use prefix and suffix products. First pass computes left products, second pass multiplies by right products.",
+                pattern: "Prefix/Suffix Products",
+                pitfall: "Using division — the problem explicitly asks for no division.",
+                difficulty: "Medium"
+            },
+            {
+                num: "152",
+                name: "Maximum Product Subarray",
+                desc: "Find the maximum product of a contiguous subarray.",
+                approach: "Kadane's variation: track max and min product (due to negative numbers flipping).",
+                pattern: "Kadane's Variation",
+                pitfall: "Only tracking max product — negative numbers can become max when multiplied by another negative.",
+                difficulty: "Medium"
+            }
+        ],
+        c: [
+            {
+                num: "268",
+                name: "Missing Number",
+                desc: "Find the missing number in an array containing 0 to n.",
+                approach: "Cyclic sort: place each number at its correct index, then find the missing one.",
+                pattern: "Cyclic Sort",
+                pitfall: "Using sum formula (n*(n+1)/2) works but can overflow — cyclic sort is safer.",
+                difficulty: "Easy"
+            },
+            {
+                num: "442",
+                name: "Find All Duplicates in Array",
+                desc: "Find all numbers that appear twice in an array of 1 to n.",
+                approach: "Cyclic sort or mark visited by negating values at indices.",
+                pattern: "Cyclic Sort / Marking",
+                pitfall: "Negating values and forgetting to take absolute value before indexing.",
+                difficulty: "Medium"
+            },
+            {
+                num: "75",
+                name: "Sort Colors",
+                desc: "Sort an array containing 0s, 1s, and 2s in-place.",
+                approach: "Dutch National Flag: three pointers (low, mid, high). Swap 0s to left, 2s to right.",
+                pattern: "Dutch National Flag",
+                pitfall: "Advancing mid after a swap with high — the swapped-in value hasn't been checked yet.",
+                difficulty: "Medium"
+            },
+            {
+                num: "169",
+                name: "Majority Element",
+                desc: "Find the element that appears more than n/2 times.",
+                approach: "Boyer-Moore Voting Algorithm: maintain candidate and count. O(n) time, O(1) space.",
+                pattern: "Boyer-Moore Voting",
+                pitfall: "Assuming the majority element always exists — problem guarantees it.",
+                difficulty: "Easy"
+            }
+        ],
+        d: [
+            {
+                num: "189",
+                name: "Rotate Array",
+                desc: "Rotate the array to the right by k steps.",
+                approach: "Reverse entire array, then reverse first k elements, then reverse the rest.",
+                pattern: "Reversal Technique",
+                pitfall: "Not handling k % n — rotating by n does nothing, but k could be larger than n.",
+                difficulty: "Medium"
+            },
+            {
+                num: "31",
+                name: "Next Permutation",
+                desc: "Find the next lexicographically greater permutation.",
+                approach: "Find the first decreasing element from right, swap with the next larger, reverse the suffix.",
+                pattern: "Find Pivot + Reverse",
+                pitfall: "Not finding the correct pivot — the first element from right that's smaller than its right neighbor.",
+                difficulty: "Medium"
+            },
+            {
+                num: "88",
+                name: "Merge Sorted Array",
+                desc: "Merge two sorted arrays into the first array (which has enough space).",
+                approach: "Two pointers from the end of both arrays. Compare and place the larger at the end.",
+                pattern: "Two Pointers (from end)",
+                pitfall: "Starting from the beginning — you'd overwrite elements in nums1. Start from the end.",
+                difficulty: "Easy"
+            }
+        ],
+        e: [
+            {
+                num: "56",
+                name: "Merge Intervals",
+                desc: "Merge all overlapping intervals.",
+                approach: "Sort intervals by start time. Iterate and merge if overlapping.",
+                pattern: "Sort + Merge",
+                pitfall: "Not handling the case where intervals are already merged correctly.",
+                difficulty: "Medium"
+            },
+            {
+                num: "128",
+                name: "Longest Consecutive Sequence",
+                desc: "Find the length of the longest consecutive elements sequence.",
+                approach: "Store all numbers in a HashSet. For each number, check if it's the start of a sequence.",
+                pattern: "HashSet + Sequence",
+                pitfall: "Checking both directions for every number — only check from the start of a sequence.",
+                difficulty: "Medium"
+            },
+            {
+                num: "162",
+                name: "Find Peak Element",
+                desc: "Find a peak element (greater than its neighbors) in O(log n).",
+                approach: "Binary search: if arr[mid] > arr[mid+1], peak is on the left; else on the right.",
+                pattern: "Binary Search",
+                pitfall: "Not handling the case where the peak is at the first or last element.",
+                difficulty: "Medium"
+            }
+        ]
+    };
+
+    // ============ RENDER PROBLEM CARDS ============
+    function renderProblems(groupId, cls, arr) {
+        const container = document.getElementById(groupId);
+        arr.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "problem-card " + cls;
+            const diffClass = p.difficulty === "Easy" ? "diff-easy" : p.difficulty === "Medium" ? "diff-medium" : "diff-hard";
+            card.innerHTML = `
+                <div class="phead">
+                    <div>
+                        <div class="pnum">LeetCode ${p.num}</div>
+                        <div class="pname">${p.name}</div>
+                    </div>
+                    <div class="pnum-id"><span class="${diffClass}">${p.difficulty}</span></div>
+                </div>
+                <div class="pdesc">${p.desc}</div>
+                <div class="papproach">
+                    <div class="pattern-tag">📊 ${p.pattern}</div>
+                    <b>Approach —</b> ${p.approach}
+                </div>
+                <div class="ppitfall"><b>Common pitfall —</b> ${p.pitfall}</div>
+                <div class="pfoot">
+                    <span class="complexity"><i class="fas fa-array"></i> ${p.pattern}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    renderProblems("group-a", "g1", problems.a);
+    renderProblems("group-b", "g2", problems.b);
+    renderProblems("group-c", "g3", problems.c);
+    renderProblems("group-d", "g4", problems.d);
+    renderProblems("group-e", "g5", problems.e);
+
+    // ============ MASTERY CHECKLIST ============
+    const allProblems = [
+        { n: "1 · Two Sum", tier: "start here" },
+        { n: "121 · Best Time to Buy Stock", tier: "start here" },
+        { n: "26 · Remove Duplicates", tier: "start here" },
+        { n: "283 · Move Zeroes", tier: "start here" },
+        { n: "53 · Maximum Subarray", tier: "core" },
+        { n: "11 · Container With Most Water", tier: "core" },
+        { n: "15 · 3Sum", tier: "core" },
+        { n: "560 · Subarray Sum Equals K", tier: "core" },
+        { n: "238 · Product of Array Except Self", tier: "core" },
+        { n: "75 · Sort Colors", tier: "core" },
+        { n: "268 · Missing Number", tier: "core" },
+        { n: "169 · Majority Element", tier: "core" },
+        { n: "152 · Maximum Product Subarray", tier: "stretch" },
+        { n: "189 · Rotate Array", tier: "stretch" },
+        { n: "31 · Next Permutation", tier: "stretch" },
+        { n: "56 · Merge Intervals", tier: "stretch" },
+        { n: "442 · Find All Duplicates", tier: "stretch" },
+        { n: "128 · Longest Consecutive Sequence", tier: "stretch" },
+        { n: "88 · Merge Sorted Array", tier: "stretch" },
+        { n: "162 · Find Peak Element", tier: "hard" }
+    ];
+
+    const checklistEl = document.getElementById("checklist");
+    const fillEl = document.getElementById("progress-fill");
+    const labelEl = document.getElementById("progress-label");
+
+    function updateProgress() {
+        const done = checklistEl.querySelectorAll(".check-item.done").length;
+        fillEl.style.width = (done / allProblems.length * 100) + "%";
+        labelEl.textContent = `${done} / ${allProblems.length} mastered`;
+    }
+
+    allProblems.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "check-item";
+        item.innerHTML = `<div class="check-box">✓</div><span class="label">${p.n}</span><span class="tier">${p.tier}</span>`;
+        item.addEventListener("click", () => { item.classList.toggle("done"); updateProgress(); });
+        checklistEl.appendChild(item);
+    });
+    updateProgress();
+</script>
+</body>
+</html>
